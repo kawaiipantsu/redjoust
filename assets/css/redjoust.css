@@ -1,0 +1,111 @@
+/*
+Im reseting this style for optimal view using Eric Meyer's CSS Reset - http://meyerweb.com/eric/tools/css/reset/
+------------------------------------------------------------------ */
+body, html  { height: 100%; }
+html, body, div, span, applet, object, iframe,
+/*h1, h2, h3, h4, h5, h6,*/ p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+body { line-height: 1; }
+ol, ul { list-style: none; }
+blockquote, q { quotes: none; }
+blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; }
+:focus { outline: 0; }
+del { text-decoration: line-through; }
+table {border-spacing: 0; } /* IMPORTANT, I REMOVED border-collapse: collapse; FROM THIS LINE IN ORDER TO MAKE THE OUTER BORDER RADIUS WORK */
+
+/*------------------------------------------------------------------ */
+
+html {
+    height: 100%;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+@media (prefers-color-scheme: dark) {
+    body { background: #212836; color: white; }
+  }
+  
+  @media (prefers-color-scheme: light) {
+    body { background: #ddd; color: black; }
+  }
+.logo {
+    height: 100vh;
+    height: 100%;
+    width: 100vw;
+    width: 100%;
+    background-image: url("./../redjoust-banner.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: auto;
+}
+@media only screen and (max-width: 1280px) {
+    .logo { 
+        background-size: contain;
+    }
+}
+.flex {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto
+}
+.spinner {
+    border: 5px solid rgba(18, 65, 145, 255);
+    border-radius: 50%;
+    border-top: 5px solid #ffffff;
+    width: 40px;
+    height: 40px;
+    -webkit-animation: spin 1s linear infinite;
+    /* Safari */
+    animation: spin 1s linear infinite;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0px;
+    bottom: 0;
+    position: fixed;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.center {
+    border: none !important;
+    text-align: center;
+}
