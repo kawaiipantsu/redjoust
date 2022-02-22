@@ -73,7 +73,7 @@ const createWindow = () => {
       }, 1000);
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools()
+    //mainWindow.webContents.openDevTools()
 }
 
 // Make sure we only create the windows when we are actually ready
