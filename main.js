@@ -7,9 +7,10 @@ const path = require('path')
 
 // Prepare for eventually using Squirrel Installer for Windows binaries ?
 // Just so it don't startup the app multiple times doing build process
-if (require('electron-squirrel-startup')) return;
-
-
+if (require('electron-squirrel-startup')) {
+    app.quit();
+    process.exit(0);
+}
 
 // Create RedJoust main window
 const createWindow = () => {

@@ -30,6 +30,7 @@ table {border-spacing: 0; } /* IMPORTANT, I REMOVED border-collapse: collapse; F
 /*------------------------------------------------------------------ */
 
 *, *::after, *::before {
+    user-select: none;
 	-webkit-user-select: none;
 	-webkit-user-drag: none;
 	-webkit-app-region: no-drag;
