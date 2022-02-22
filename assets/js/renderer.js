@@ -1,5 +1,9 @@
 // We are renderer process!
 
+
+//storage.setDataPath("./userdata"); // yodo
+
+
 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     document.getElementById("treetheme").setAttribute("href", "./assets/themes/default-dark/style.css");
     //console.log("Dark theme loaded (startup)");
@@ -71,7 +75,23 @@ document.getElementById("check").addEventListener('change', async () => {
 })
 
 $(function () {
-
+    $("#username").html(window.userInfo.username);
+    //setInterval(() => $("#cpu").html( window.usage.cpu ), 800);
+    $.ajax({url: "https://api.buffer.dk/myip", success: function(result){
+        $("#myip").html(result.ip);
+      }});
+    $("#tree").overlayScrollbars({
+        className       : "os-theme-dark",
+        resize          : "none",
+        sizeAutoCapable : true,
+        paddingAbsolute : true,
+        scrollbars : {
+            visibility       : "visible",
+            autoHide         : "never",
+            dragScrolling    : true,
+            touchSupport     : true
+        }
+    });
     /* Testing out JSTree to see if its a good way to present the left sidebar/treeview
     $('#tree').on("changed.jstree", function (e, data) {
         console.log(data.selected);

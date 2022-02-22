@@ -29,7 +29,9 @@
     "electron-icon-builder": "^2.0.1"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-json-storage": "^4.5.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "os-utils": "^0.0.14"
   },
   "config": {
     "forge": {

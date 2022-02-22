@@ -7,14 +7,16 @@
     <head>
         <meta charset="UTF-8">
         <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-        <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk">
+        <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk">
 
         <link rel="stylesheet" href="./assets/css/redjoust.css">
         <link rel="stylesheet" href="./assets/css/themesvg.css">
+        <link rel="stylesheet" href="./assets/css/OverlayScrollbars.min.css">
         <link rel="stylesheet" href="./assets/themes/default-dark/style.min.css" id="treetheme">
 
         <script src="./assets/js/jquery-3.6.0.min.js"></script>
+        <script src="./assets/js/jquery.overlayScrollbars.min.js"></script>
         <script src="./assets/js/jstree.min.js"></script>
     </head>
     <body>
@@ -24,27 +26,27 @@
             <div class="myinfo boxborder">
                 <table>
                     <tr>
-                        <td class="bold">User</td>
-                        <td>root</td>
+                        <td class="bold">USER</td>
+                        <td id="username"></td>
                     </tr>
                     <tr>
-                        <td class="bold">My IP</td>
-                        <td>111.111.111.111</td>
+                        <td class="bold">MY IP</td>
+                        <td id="myip"></td>
                     </tr>
                     <tr>
-                        <td class="bold">CPU / MEM</td>
-                        <td>100% / 100%</td>
+                        <td class="bold">CPU/MEM</td>
+                        <td><span id="cpu"></span>% / <span id="mem"></span>GB of <span id="total-mem"></span>GB</td>
                     </tr>
                     <tr>
-                        <td class="bold">Current mode</td>
-                        <td>Passive</td>
+                        <td class="bold">MODE</td>
+                        <td id="redjoustmode">Passive</td>
                     </tr>
                 </table>
             </div>
         </div>
         <div class="treeview boxborder">
             <div class="placeholdertree" id="tree">
-                placeholder treeview
+                placeholder treeview<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
             </div>
         </div>
         <div class="mainview boxborder">

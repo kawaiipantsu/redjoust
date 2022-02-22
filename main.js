@@ -1,11 +1,15 @@
 // Modules
 const { app, BrowserWindow, ipcMain, nativeTheme, globalShortcut } = require('electron')
 const os = require('os')
+const osUtils = require('os-utils')
+const storage = require('electron-json-storage')
 const path = require('path')
 
 // Prepare for eventually using Squirrel Installer for Windows binaries ?
 // Just so it don't startup the app multiple times doing build process
 if (require('electron-squirrel-startup')) return;
+
+
 
 // Create RedJoust main window
 const createWindow = () => {
@@ -27,7 +31,7 @@ const createWindow = () => {
             webSecurity: true,
             nodeIntegration : true,
             contextIsolation: true,
-            enableBlinkFeatures: "CSSColorSchemeUARendering",
+            //enableBlinkFeatures: "CSSColorSchemeUARendering", // Security risk ...
             preload: path.join(__dirname, './preload.js') // Heavy lifting ?
         }
     })
@@ -60,14 +64,23 @@ const createWindow = () => {
         nativeTheme.themeSource = 'system'
     })
 
+    setInterval(() => {
+        osUtils.cpuUsage(function (v) {
+            mainWindow.webContents.send("cpu", v * 100 );
+            mainWindow.webContents.send("mem", osUtils.freememPercentage() * 100);
+            mainWindow.webContents.send("total-mem", osUtils.totalmem() / 1024);
+        });
+      }, 1000);
+
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
 }
 
 // Make sure we only create the windows when we are actually ready
 // Many NodeJS api's can only be called/utilized after this is true
 app.whenReady().then(() => {
     createWindow()
+    
     app.on('app-command', (e, cmd) => {
         // Navigate the window back when the user hits their mouse back button
         if (cmd === 'browser-backward' && win.webContents.canGoBack()) {
@@ -76,7 +89,7 @@ app.whenReady().then(() => {
     })
     app.on('activate', () => {
         // MacOS open window handling
-        if (BrowserWindow.getAllWindows().length === 0) createWindow()
+        if (win.getAllWindows().length === 0) createWindow()
     })
     globalShortcut.register('Esc', () => {
         app.quit();
