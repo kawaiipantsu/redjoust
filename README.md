@@ -15,10 +15,10 @@
 
 - Boiler plate layout done (How i want the app to look)
 - Support for Light / Dark OS theme
-- Styled scrollbar (Not using OS dependen functionality)
+- Styled scrollbar (Not using OS dependent functionality)
 - User and system information
 - Fetching remote/public IP
-- Making sure its aleast a bit secure
+- Making sure its at least a bit secure
   - webSecurity on
   - devTools disabled (not doing development)
   - nodeIntegration enabled
@@ -27,13 +27,13 @@
 ## TODO list (what i want to get done short term)
 
 - Make logic to set "mode" ie. passive or active
-- Make logic to set your target (ipaddr, hostname or domain)
-- Make "main view" frontpage when no target is set (to allow setting target and mode)
-- Make "main view" frontpage to show a bit of target info (when target is set show this)
+- Make logic to set your target (ip, hostname or domain)
+- Make "main view" front page when no target is set (to allow setting target and mode)
+- Make "main view" front page to show a bit of target info (when target is set show this)
 - Figure out how i want my "modules" logic
 - Make simple DNS lookup module (json return) to test data
 - Make "mode" logic, modules should follow this
-- Make modules to handle recon/analisys/redteam
+- Make modules to handle recon/analysis/red-team functions
 
 ## What it looks like (what i'm going for)
 
