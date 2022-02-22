@@ -1,0 +1,19 @@
+.moon {
+    enable-background:new 0 0 499.712 499.712;
+}
+.mooncolor1 {
+    fill:#FFD93B;
+}
+.mooncolor2 {
+    fill:#F4C534;
+}
+
+.sun {
+    enable-background:new 0 0 512 512;
+}
+.suncolor1 {
+    fill:#FFD347;
+}
+.suncolor2 {
+    fill:#FFBE31;
+}

@@ -29,39 +29,190 @@ table {border-spacing: 0; } /* IMPORTANT, I REMOVED border-collapse: collapse; F
 
 /*------------------------------------------------------------------ */
 
+*, *::after, *::before {
+	-webkit-user-select: none;
+	-webkit-user-drag: none;
+	-webkit-app-region: no-drag;
+	cursor: default;
+}
+
 html {
     height: 100%;
+    width: 100%;
   }
   body {
-    display: flex;
+    position:absolute;
+    font-family: Helvetica;
+    width: 100%;
     align-items: center;
     justify-content: center;
     height: 100%;
+    overflow-y: hidden; /* Hide vertical scrollbar */
+    overflow-x: hidden; /* Hide horizontal scrollbar */
   }
 
 @media (prefers-color-scheme: dark) {
     body { background: #212836; color: white; }
+    .box { background-color: #161a20; }
+    .ball { transform: translatex(100%); }
+    .footer { color: rgb(105, 105, 105); }
+    .topview { background-color: #303746; }
+    .myinfo table { color: rgb(105, 105, 105); background-color: #1d232e; }
+    .bottomview table { background-color: #1d232e; }
+    .placeholdertree { border: 2px solid #1b1f27; }
+    .placeholdermain { border: 2px solid #1b1f27; }
   }
   
   @media (prefers-color-scheme: light) {
-    body { background: #ddd; color: black; }
+    body { background: #ffffff; color: rgb(41, 41, 41); }
+    .box { background-color:#585858; }
+    .ball { transform: translatex(0%); }
+    .footer { color: rgb(36, 32, 32); }
+    .topview { background-color: #E7E9EB; }
+    .myinfo table { color: rgb(36, 32, 32); background-color: #a3a3a3; }
+    .bottomview table { background-color: #E7E9EB; color: #1d2129;}
+    .placeholdertree { border: 2px solid rgb(235, 229, 232); }
+    .placeholdermain { border: 2px solid rgb(235, 229, 232); }
   }
-.logo {
-    height: 100vh;
-    height: 100%;
-    width: 100vw;
+  
+.boxborder { box-sizing: border-box; }
+.topview {
+    position:absolute;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
     width: 100%;
+    min-width: 900px;
+    padding-right: 10px;
+}
+.treeview {
+    float: left;
+    width: 280px;
+    height: 100%;
+    padding-left: 0px;
+    padding-top: 100px;
+    padding-bottom: 65px;
+}
+.mainview {
+    padding: 5px;
+    height: 100%;
+    width: 100%;
+    padding-right: 40px;
+    padding-top: 100px;
+    padding-left: 295px;
+    padding-bottom: 80px;
+}
+.placeholdertree {
+    background-color: #a3a3a30c;
+    width: 100%;
+    height: 100%;
+    margin: 10px;
+    padding-top: 5px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+.placeholdermain {
+    background-color: #a3a3a30c;
+    width: 100%;
+    height: 100%;
+    margin: 10px;
+    padding: 10px;
+}
+.bottomview {
+    clear:both;
+    position:absolute;
+    bottom: 5px;
+    vertical-align: middle;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    width: 100%;
+    min-width: 900px;
+}
+.bottomview table {
+    width: 100%;
+    padding: 0px;
+    padding-left: 15px;
+    padding-right: 5px;
+    vertical-align: middle;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+.footer {
+    width: 50%;
+    vertical-align: middle;
+    text-align: left;
+    align-items: left;
+    justify-content: left;
+
+}
+.myinfo {
+    height: 90%;
+    width: 300px;
+    float: right;
+    text-align: right;
+    padding-top: 10px;
+}
+.myinfo table {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+}
+.bold { font-weight: bold; }
+.logo {
+    float: left;
+    margin-left: -10px;
+    height: 100%;
+    width: 500px;
     background-image: url("./../redjoust-banner.png");
     background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
-    background-size: auto;
+    background-position: left;
+    background-size: 45%;
 }
-@media only screen and (max-width: 1280px) {
-    .logo { 
-        background-size: contain;
-    }
-}
+.container input[type=checkbox] {
+    display: none;
+  }
+  
+  .btn {
+    align-self: center;
+    margin: 5px 0;
+  }
+  
+  .box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 50px;
+    height: 25px;
+    transition: all 1s ease;
+    position: relative;
+    border-radius: 30px;
+    cursor: pointer;
+  }
+  .box .ball {
+    width: 20px;
+    height: 20px;
+    background-color: rgb(150, 150, 150);
+    transition: all 1s ease;
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid #3d3f42;
+  }
+  .box .scenary {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    transition: all 1s ease;
+    padding: 4px 6px 1px 6px;
+  }
+  .box .scenary svg {
+    width: 14px;
+  }
 .flex {
     -webkit-box-flex: 1;
     -ms-flex: 1 1 auto;

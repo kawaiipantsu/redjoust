@@ -27,8 +27,7 @@ const createWindow = () => {
             webSecurity: true,
             nodeIntegration : true,
             contextIsolation: true,
-            defaultFontFamily: "sansSerif",
-            defaultFontSize: 20,
+            enableBlinkFeatures: "CSSColorSchemeUARendering",
             preload: path.join(__dirname, './preload.js') // Heavy lifting ?
         }
     })
