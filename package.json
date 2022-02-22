@@ -1,7 +1,7 @@
 {
   "name": "redjoust",
   "version": "1.0.0",
-  "description": "A quick and easy to use security analytic and red-team attack surface tool for small reconnaissance tasks",
+  "description": "A quick and easy to use security reconnaissance webapp tool, does OSINT, analysis and red-teaming in both passive and active mode.",
   "main": "main.js",
   "scripts": {
     "start": "electron-forge start",
