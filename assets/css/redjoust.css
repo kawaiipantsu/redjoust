@@ -43,6 +43,7 @@ html {
   }
   body {
     position:absolute;
+    z-index: 10;
     font-family: Helvetica;
     width: 100%;
     align-items: center;
@@ -53,7 +54,7 @@ html {
   }
 
 @media (prefers-color-scheme: dark) {
-    body { background: #212836; color: white; }
+    body { background: #212836; color: rgb(179, 179, 179); }
     .box { background-color: #161a20; }
     .ball { transform: translatex(100%); }
     .footer { color: rgb(105, 105, 105); }
@@ -90,6 +91,41 @@ html {
 #total-mem {
     display: inline-block;
 }
+
+.fg-1 {
+    color:rgb(173, 173, 173)
+}
+
+.statusbarfields {
+    float: left;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+#statusicon {
+    width: 20px;
+    height: 20px;
+    background-image: url("./../icons/menu/set1/idle.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+#statusmessage {
+    width: 200px;
+    margin-left: 10px;
+    margin-top: 2px;
+}
+#message1 {
+    width: 200px;
+    margin-left: 20px;
+}
+#message2 {
+    width: 100px;
+    margin-left: 80px;
+}
+
+
+
 .boxborder { box-sizing: border-box; }
 .topview {
     position:absolute;
@@ -159,7 +195,7 @@ html {
     justify-content: center;
 }
 .footer {
-    width: 50%;
+    width: 100%;
     vertical-align: middle;
     text-align: left;
     align-items: left;
@@ -234,10 +270,66 @@ html {
     -ms-flex: 1 1 auto;
     flex: 1 1 auto
 }
+.lockscreen {
+    position: fixed;
+    display: none;
+    top: 0px !important;
+    left: 0px;
+    z-index: 2000;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000000e0;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -ms-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+}
+.lockscreentext {
+    color:rgb(141, 141, 141);
+    width: 500px;
+    height: 190px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0px;
+    bottom: 0;
+    position: fixed;
+}
+.spinnerplaceholder {
+    width: 40px;
+    height: 40px;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0px;
+    bottom: 0;
+    position: fixed;
+}
+.icondefault {
+    width: 140px;
+    height: 140px;
+    background-image: url("./../icons/web/favicon-32x32.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+.iconlock {
+    width: 140px;
+    height: 140px;
+    background-image: url("./../images/privacyicon.webp");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
 .spinner {
-    border: 5px solid rgba(18, 65, 145, 255);
+    border: 5px solid rgba(0, 0, 0, 0.384);
     border-radius: 50%;
-    border-top: 5px solid #ffffff;
+    border-top: 5px solid #cc0000;
     width: 40px;
     height: 40px;
     -webkit-animation: spin 1s linear infinite;
@@ -271,8 +363,22 @@ html {
         transform: rotate(360deg);
     }
 }
-
-.center {
-    border: none !important;
+.fill { width: 100%; }
+.centerbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 99%;
+    overflow-y: hidden; /* Hide vertical scrollbar */
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+.centerbox span {
     text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+.pages {
+    display: none;
+    width: 100%;
+    height: 100%;
 }

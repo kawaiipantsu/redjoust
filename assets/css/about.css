@@ -1,0 +1,23 @@
+
+*, *::after, *::before {
+    user-select: none;
+	-webkit-user-select: none;
+	-webkit-user-drag: none;
+	-webkit-app-region: no-drag;
+	cursor: default;
+}
+
+  body {
+    font-family: Helvetica;
+    overflow-y: hidden; /* Hide vertical scrollbar */
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+  }
+
+@media (prefers-color-scheme: dark) {
+    body { background: #212836; color: white; }
+  }
+  
+  @media (prefers-color-scheme: light) {
+    body { background: #ffffff; color: rgb(41, 41, 41); }
+  }
+

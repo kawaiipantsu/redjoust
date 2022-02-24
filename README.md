@@ -16,6 +16,7 @@
 - Boiler plate layout done (How i want the app to look)
 - Support for Light / Dark OS theme
 - Styled scrollbar (Not using OS dependent functionality)
+  - Now working for menu sidebar and main window on overflow 
 - User and system information
 - Fetching remote/public IP
 - Making sure its at least a bit secure
@@ -23,6 +24,11 @@
   - devTools disabled (not doing development)
   - nodeIntegration enabled
   - contextIsolation enabled
+  - Privacy mode (enable shading the window for privacy)
+- Privacy/lock screen mode
+- Menu/File bar with shortcuts and icons
+- About window
+- Links to github, wiki (help) and issues
 
 ## TODO list (what i want to get done short term)
 

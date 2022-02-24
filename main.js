@@ -1,9 +1,11 @@
 // Modules
-const { app, BrowserWindow, ipcMain, nativeTheme, globalShortcut } = require('electron')
+const { app, BrowserWindow, Tray, ipcMain, nativeTheme, globalShortcut, nativeImage, Menu, MenuItem } = require('electron')
 const os = require('os')
 const osUtils = require('os-utils')
 const storage = require('electron-json-storage')
 const path = require('path')
+
+//const appIcon = new Tray('') // Support for tray features in the future ???
 
 // Prepare for eventually using Squirrel Installer for Windows binaries ?
 // Just so it don't startup the app multiple times doing build process
@@ -11,6 +13,14 @@ if (require('electron-squirrel-startup')) {
     app.quit();
     process.exit(0);
 }
+
+const openAboutWindow = require('about-window').default;
+
+app.once('window-all-closed', function () {
+    app.quit();
+});
+
+var locked = false;
 
 // Create RedJoust main window
 const createWindow = () => {
@@ -22,8 +32,8 @@ const createWindow = () => {
         fullscreen: false,
         frame: true,
         darkTheme: true,
-        autoHideMenuBar: true,
-        icon: path.join(__dirname, './assets/icons/png/128x128.png'),
+        autoHideMenuBar: false,
+        icon: nativeImage.createFromPath(__dirname + '/assets/redjoust-icon.png').resize({width:64}),
         width: 1280,
         minWidth: 900,
         minHeight: 700,
@@ -65,6 +75,13 @@ const createWindow = () => {
         nativeTheme.themeSource = 'system'
     })
 
+    ipcMain.handle('locked:lock', () => {
+        locked = true;
+    })
+    ipcMain.handle('locked:unlock', () => {
+        locked = false;
+    })
+
     setInterval(() => {
         osUtils.cpuUsage(function (v) {
             mainWindow.webContents.send("cpu", v * 100 );
@@ -73,12 +90,138 @@ const createWindow = () => {
         });
       }, 1000);
 
+
+      const menu = new Menu()
+menu.append(new MenuItem({
+  label: 'File',
+  submenu: [{
+    label: 'Set target',
+    icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/target.png').resize({width:16}),
+    accelerator: process.platform === 'darwin' ? 'Cmd+T' : 'Ctrl+T',
+    click: () => { mainWindow.webContents.send("showpagetarget"); }
+  },
+  {
+    label: 'Set mode',
+    icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/mode.png').resize({width:16}),
+    accelerator: process.platform === 'darwin' ? 'Cmd+M' : 'Ctrl+M',
+    click: () => { mainWindow.webContents.send("showpagemode"); }
+  },
+  {
+    type: 'separator'
+ },
+  {
+    label: 'Lock screen',
+    icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/lock.png').resize({width:16}),
+    accelerator: process.platform === 'darwin' ? 'Cmd+L' : 'Ctrl+L',
+    click: () => { mainWindow.webContents.send("lockscreen"); }
+  },
+  {
+    label: 'Preferences',
+    icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/preferences.png').resize({width:16}),
+    click: () => { mainWindow.webContents.send("showsettings"); }
+  },
+  {
+    type: 'separator'
+ },
+  {
+    role: 'quit',
+    accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Ctrl+Q',
+    click: () => { app.quit(); }
+  }]
+}))
+menu.append(new MenuItem({
+    label: 'Run',
+    submenu: [{
+        label: 'Start ',
+        icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/start.png').resize({width:16}),
+        accelerator: process.platform === 'darwin' ? 'F5' : 'F5',
+        click: () => { mainWindow.webContents.send("showpagedefault") }
+    },
+    {
+        label: 'Stop',
+        icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/stop.png').resize({width:16}),
+        click: () => { mainWindow.webContents.send("showpagetestlong") }
+    }]
+  }))
+menu.append(new MenuItem({
+    label: 'Testing',
+    submenu: [{
+      role: 'toggleDevTools',
+      accelerator: process.platform === 'darwin' ? 'F12' : 'F12',
+      click: () => { mainWindow.webContents.toggleDevTools() }
+    },
+    {
+        label: 'Show default page',
+        click: () => { mainWindow.webContents.send("showpagedefault") }
+    },
+    {
+        label: 'Show long test page',
+        click: () => { mainWindow.webContents.send("showpagetestlong") }
+    },
+    {
+        type: 'separator'
+     },
+    {
+        role: 'resetzoom'
+     },
+     {
+        role: 'zoomin',
+
+     },
+     {
+        role: 'zoomout'
+     }]
+  }))
+  menu.append(new MenuItem({
+    label: 'Help',
+    submenu: [{
+        label: 'Github page',
+        icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/link.png').resize({width:16}),
+        click: () => { require('electron').shell.openExternal("https://github.com/kawaiipantsu/redjoust") }
+      },
+      {
+        role: 'help',
+        icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/link.png').resize({width:16}),
+        accelerator: process.platform === 'darwin' ? 'F1' : 'F1',
+        click: () => { require('electron').shell.openExternal("https://github.com/kawaiipantsu/redjoust/wiki") }
+      },
+      {
+        label: 'Report issue',
+        icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/link.png').resize({width:16}),
+        click: () => { require('electron').shell.openExternal("https://github.com/kawaiipantsu/redjoust/issues") }
+      },
+      {
+        type: 'separator'
+     },
+      {
+        role: 'about',
+        icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/about.png').resize({width:16}),
+        click: () => openAboutWindow({
+            icon_path: path.join(__dirname, './assets/redjoust-icon.png'),
+            css_path: path.join(__dirname, './assets/css/about.css'),
+            copyright: 'Copyright (c) 2022 KawaiiPantsu / Dave',
+            package_json_dir: __dirname,
+            adjust_window_size: true,
+            win_options: {
+                parent: mainWindow,
+                modal: true,
+            },
+            show_close_button: 'Close',
+        })
+      }]
+  }))
+
+Menu.setApplicationMenu(menu)
+
     // Open the DevTools.
     //mainWindow.webContents.openDevTools()
 }
 
 // Make sure we only create the windows when we are actually ready
 // Many NodeJS api's can only be called/utilized after this is true
+
+
+
 app.whenReady().then(() => {
     createWindow()
     
@@ -92,8 +235,10 @@ app.whenReady().then(() => {
         // MacOS open window handling
         if (win.getAllWindows().length === 0) createWindow()
     })
+    // Lets make this so that if any windows are open, close them...
     globalShortcut.register('Esc', () => {
-        app.quit();
+        if ( locked ) console.log("WONT QUIT, SCREEN LOCKED!");
+        else app.quit();
     });
 })
 

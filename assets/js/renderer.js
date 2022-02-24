@@ -74,7 +74,11 @@ document.getElementById("check").addEventListener('change', async () => {
 
 })
 
+
+
+
 $(function () {
+
     $("#username").html(window.userInfo.username);
     //setInterval(() => $("#cpu").html( window.usage.cpu ), 800);
     $.ajax({url: "https://api.buffer.dk/myip", success: function(result){
@@ -93,6 +97,24 @@ $(function () {
             touchSupport     : true
         }
     });
+
+    $(".pages").overlayScrollbars({
+        className       : "os-theme-dark",
+        resize          : "none",
+        sizeAutoCapable : true,
+        paddingAbsolute : true,
+        scrollbars : {
+            visibility       : "visible",
+            autoHide         : "never",
+            dragScrolling    : true,
+            touchSupport     : true
+        }
+    });
+    $( ".setmode" ).on( "click", function() {
+        let mode = $( this ).val()
+        window.setMode.activate(mode)
+        console.log("My value is: "+mode);
+    });
     /* Testing out JSTree to see if its a good way to present the left sidebar/treeview
     $('#tree').on("changed.jstree", function (e, data) {
         console.log(data.selected);
@@ -100,11 +122,8 @@ $(function () {
     */
 });
 
-function reloadStylesheets() {
-    var queryString = '?reload=' + new Date().getTime();
-    $('link[rel="stylesheet"]').each(function () {
-        this.href = this.href.replace(/\?.*|$/, queryString);
-    });
-}
+
+
+
 
 //console.log("Renderer loaded");

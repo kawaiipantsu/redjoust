@@ -11,6 +11,7 @@
         <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk">
 
         <link rel="stylesheet" href="./assets/css/redjoust.css">
+        <link rel="stylesheet" href="./assets/css/buttons.css">
         <link rel="stylesheet" href="./assets/css/themesvg.css">
         <link rel="stylesheet" href="./assets/css/OverlayScrollbars.min.css">
         <link rel="stylesheet" href="./assets/themes/default-dark/style.min.css" id="treetheme">
@@ -20,42 +21,92 @@
         <script src="./assets/js/jstree.min.js"></script>
     </head>
     <body>
-
+       <div class="lockscreen" id="working">
+           <div class="spinnerplaceholder"></div>
+           <div class="lockscreentext">test test</div>
+       </div> 
         <div class="topview boxborder">
             <div class="logo boxborder"></div>
             <div class="myinfo boxborder">
                 <table>
                     <tr>
                         <td class="bold">USER</td>
-                        <td id="username"></td>
+                        <td class="fg-1" id="username"></td>
                     </tr>
                     <tr>
                         <td class="bold">MY IP</td>
-                        <td id="myip"></td>
+                        <td class="fg-1" id="myip"></td>
                     </tr>
                     <tr>
                         <td class="bold">CPU/MEM</td>
-                        <td><span id="cpu">0</span>% / <span id="mem">0</span>GB of <span id="total-mem">0</span>GB</td>
+                        <td class="fg-1"><span id="cpu">0</span>% / <span id="mem">0</span>GB of <span id="total-mem">0</span>GB</td>
                     </tr>
                     <tr>
                         <td class="bold">MODE</td>
-                        <td id="redjoustmode">Passive</td>
+                        <td class="fg-1" id="redjoustmode"></td>
                     </tr>
                 </table>
             </div>
         </div>
         <div class="treeview boxborder">
             <div class="placeholdertree" id="tree">
-                placeholder treeview<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-            </div>
+                menu placeholder
+           </div>
         </div>
         <div class="mainview boxborder">
-            <div class="placeholdermain">mainview placeholder</div>
+            <div class="placeholdermain">
+                <!-- PAGES -->
+                <div class="pages" id="pagedefault">
+                    <div class="centerbox">
+                        <div>
+                            <span><h1>Choose your scanning mode</h1></span>
+                            <span></span>
+                            <span><button value="passive" class="setmode button button--moema button--inverted button--text-thick button--size-s">PASSIVE</button> <button value="active" class="setmode button button--moema button--inverted button--text-thick button--size-s">PASSIVE + ACTIVE</button></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="pages" id="pagetestlong">
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
+                </div>
+                <script src="./assets/js/pages/target.js"></script>
+                <div class="pages" id="pagetarget">
+                    test target page
+                </div>
+
+
+            </div>
         </div>
         <div class="bottomview boxborder">
             <table>
                 <tr>
-                    <td align="left" class="footer">statusbar placeholder</td>
+                    <td align="left" class="footer">
+                        <div class="statusbarfields" id="statusicon"></div>
+                        <div class="statusbarfields" id="statusmessage">I'm idle!</div>
+                        <div class="statusbarfields" id="message1"></div>
+                        <div class="statusbarfields" id="message2"></div>
+                    </td>
                     <td align="right" class="container">
                         <div class="btn">
                             <input type="checkbox" name="check" id="check">
