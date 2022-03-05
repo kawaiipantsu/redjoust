@@ -1,86 +1,25 @@
 // We are renderer process!
 
-
-//storage.setDataPath("./userdata"); // yodo
-
-
 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     document.getElementById("treetheme").setAttribute("href", "./assets/themes/default-dark/style.css");
-    //console.log("Dark theme loaded (startup)");
-    /* Testing out JSTree to see if its a good way to present the left sidebar/treeview
-    $(function () {
-
-        $('#tree').jstree({
-            'core' : {
-                "themes": {
-                   "name": "default-dark",
-                   "dots": true,
-                   "stripes" : true,
-                   "icons": true
-               }
-            }
-        });
-    
-    });
-    */
 } else {
     document.getElementById("treetheme").setAttribute("href", "./assets/themes/default/style.css");
-    //console.log("Light theme loaded (startup)");
-    /* Testing out JSTree to see if its a good way to present the left sidebar/treeview
-    $(function () {
-
-        $('#tree').jstree({
-            'core' : {
-                "themes": {
-                   "name": "default",
-                   "dots": true,
-                   "stripes" : true,
-                   "icons": true
-               }
-            }
-        });
-    
-    });
-    */
 }
 
 var check = document.querySelector('#check')
 
 document.getElementById("check").addEventListener('change', async () => {
-
-    //console.log("Toggle theme");
-
-    //   conditions to apply when checkbox is checked
     const isDarkMode = await window.darkMode.toggle()
-    //document.getElementById('theme-source').innerHTML = isDarkMode ? 'Dark' : 'Light'
-
-    if(this.checked == true){
-
-    }
-
-    if(this.checked == false){
-
-    }  
-
     if ( isDarkMode ) {
         document.getElementById("treetheme").setAttribute("href", "./assets/themes/default-dark/style.css");
-        //console.log("Dark theme loaded (toggle)");
     } else {
         document.getElementById("treetheme").setAttribute("href", "./assets/themes/default/style.css");
-        //console.log("Light theme loaded (toggle)");
     }
-    
-
-
 })
 
 
-
-
 $(function () {
-
     $("#username").html(window.userInfo.username);
-    //setInterval(() => $("#cpu").html( window.usage.cpu ), 800);
     $.ajax({url: "https://api.buffer.dk/myip", success: function(result){
         $("#myip").html(result.ip);
         //$("#myip").html("100.100.100.100"); // For screenshot :)
@@ -113,17 +52,26 @@ $(function () {
     $( ".setmode" ).on( "click", function() {
         let mode = $( this ).val()
         window.setMode.activate(mode)
-        console.log("My value is: "+mode);
     });
-    /* Testing out JSTree to see if its a good way to present the left sidebar/treeview
-    $('#tree').on("changed.jstree", function (e, data) {
-        console.log(data.selected);
+    $( ".prefbuttons" ).on( "click", function() {
+        let action = $( this ).val()
+        if ( action == "close" ) {
+            $("#pagepreferences").hide()
+        }
     });
-    */
+    $( ".item--click" ).on( "click", function() {
+        // First find out what mode item we are
+        var myID = $(this).attr('id');
+        var ourMode = "misconfigured";
+        if ( $(this).hasClass( "item--passive" ) ) ourMode = "passive";
+        if ( $(this).hasClass( "item--active" ) ) ourMode = "active";
+        if ( $(this).hasClass( "item--redteam" ) ) ourMode = "redteam";
+        var ourStatus = "unknown";
+        if ( $(this).hasClass( "status--disabled" ) ) ourStatus = "disabled";
+        if ( $(this).hasClass( "status--ready" ) ) ourStatus = "ready";
+        if ( $(this).hasClass( "status--working" ) ) ourStatus = "working";
+        if ( $(this).hasClass( "status--done" ) ) ourStatus = "done";
+
+        window.itemAPI.clickItem(myID,ourMode,ourStatus)
+    });
 });
-
-
-
-
-
-//console.log("Renderer loaded");

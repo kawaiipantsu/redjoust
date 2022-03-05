@@ -24,6 +24,21 @@
        <div class="lockscreen" id="working">
            <div class="spinnerplaceholder"></div>
            <div class="lockscreentext">test test</div>
+       </div>
+       <div class="pages fullwindow--trans" id="pagepreferences">
+        <div class="preferencescontent boxborder">
+            <div class="innerpage boxborder">
+                preferences placeholder
+            </div>
+            <div id="preflogo"></div>
+            <div id="prefsave">
+                <button value="save" class="prefbuttons button button--isi button--text-thick button--size-s" disabled>Apply</button>
+            </div>
+            <div id="prefclose">
+                <button value="close" class="prefbuttons button button--isi button--text-thick button--size-s">Close</button>
+                
+            </div>
+        </div>
        </div> 
         <div class="topview boxborder">
             <div class="logo boxborder"></div>
@@ -50,18 +65,90 @@
         </div>
         <div class="treeview boxborder">
             <div class="placeholdertree" id="tree">
-                menu placeholder
+              <strong>enforcer.darknet.dk</strong><br>
+              <div id="doDNS1" alt="DNS information" class="boxborder menuitem item--click item--passive status--ready">DNS Information</div>
            </div>
         </div>
         <div class="mainview boxborder">
             <div class="placeholdermain">
                 <!-- PAGES -->
-                <div class="pages" id="pagedefault">
+                <div class="pages" id="pagenotfound">
                     <div class="centerbox">
                         <div>
-                            <span><h1>Choose your scanning mode</h1></span>
-                            <span></span>
-                            <span><button value="passive" class="setmode button button--moema button--inverted button--text-thick button--size-s">PASSIVE</button> <button value="active" class="setmode button button--moema button--inverted button--text-thick button--size-s">PASSIVE + ACTIVE</button></span>
+                            <span>
+                                <h1>Information not found</h1>
+                                I'm sorry the information you are trying to view does not exist
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="pages" id="pageerror">
+                  <div class="centerbox">
+                      <div>
+                          <span>
+                              <h1>Sorry but i made a boo boo</h1>
+                              Something just went wrong, it's not you - It's me !
+                          </span>
+                      </div>
+                  </div>
+                </div>
+                <div class="pages" id="pagedefault">
+                  <div class="centerbox">
+                      <div>
+                          <span>
+                              <h1>test</h1>
+                              test test test
+                          </span>
+                      </div>
+                  </div>
+                </div>
+                <div class="pages" id="doDNS1page">
+                  <div class="border">
+                      test
+                  </div>
+                </div>
+                <div class="pages" id="pagemode">
+                    <div class="centerbox">
+                        <div>
+                          <table border="1" cellpadding="0" cellspacing="0" align="center">
+                            <tr>
+                             <td colspan="3" align="center"><h1>Choose your scanning mode</h1></td> 
+                            </tr>
+                            <tr>
+                              <td colspan="3"></td> 
+                            </tr>
+                            <tr>
+                              <td class="fill--50" align="center"><button value="passive" id="btnpassive" class="fill--fix setmode button button--moema button--inverted button--text-thick button--size-m bg-3">PASSIVE</button></td> 
+                              <td class="spacer"></td>
+                              <td class="fill--50" align="center"><button value="active" id="btnactive" class="fill--fix setmode button button--moema button--inverted button--text-thick button--size-m">ACTIVE</button></td> 
+                            </tr>
+                            <tr>
+                              <td colspan="3" align="center">
+                                <button value="redteam" id="btnredteam" class="fill--fix setmode button button--moema button--inverted button--text-thick button--size-m bg-3">RED-TEAM + ACTIVE + PASSIVE</button>
+                              </td> 
+                            </tr>
+                            <tr>
+                              <td colspan="3"></td> 
+                            </tr>
+                            <tr>
+                              <td colspan="3">
+                                <table class="pad-small fill" cellspacing="1" cellpadding="2" border="0">
+                                  <tr>
+                                    <td class="info1 icon spacer"><strong>PASSIVE</strong></td>
+                                    <td class="info1">Passive mode will never make any actual connections to your target to gather information</td>
+                                  </tr>
+                                  <tr>
+                                    <td class="info2 icon spacer"><strong>ACTIVE</strong></td>
+                                    <td class="info2">Active mode is both passive and active, here we will also connect to your target directly to gather information</td>
+                                  </tr>
+                                  <tr>
+                                    <td class="info3 icon spacer"><strong>RED-TEAM</strong></td>
+                                    <td class="info3">This includes all modes and (WARNING) will also preform tests on your target that might be seen as hostile</td>
+                                  </tr>
+                                </table>
+                              </td> 
+                            </tr>
+                          </table>
                         </div>
                     </div>
                 </div>
@@ -90,7 +177,6 @@
                     <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
                     <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
                 </div>
-                <script src="./assets/js/pages/target.js"></script>
                 <div class="pages" id="pagetarget">
                     test target page
                 </div>
@@ -103,9 +189,7 @@
                 <tr>
                     <td align="left" class="footer">
                         <div class="statusbarfields" id="statusicon"></div>
-                        <div class="statusbarfields" id="statusmessage">I'm idle!</div>
-                        <div class="statusbarfields" id="message1"></div>
-                        <div class="statusbarfields" id="message2"></div>
+                        <div class="statusbarfields" id="statusmessage"></div>
                     </td>
                     <td align="right" class="container">
                         <div class="btn">

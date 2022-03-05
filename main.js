@@ -2,8 +2,10 @@
 const { app, BrowserWindow, Tray, ipcMain, nativeTheme, globalShortcut, nativeImage, Menu, MenuItem } = require('electron')
 const os = require('os')
 const osUtils = require('os-utils')
-const storage = require('electron-json-storage')
 const path = require('path')
+const Store = require('electron-store');
+
+Store.initRenderer();
 
 //const appIcon = new Tray('') // Support for tray features in the future ???
 
@@ -21,6 +23,7 @@ app.once('window-all-closed', function () {
 });
 
 var locked = false;
+
 
 // Create RedJoust main window
 const createWindow = () => {
@@ -71,6 +74,16 @@ const createWindow = () => {
         return nativeTheme.shouldUseDarkColors
     })
 
+    ipcMain.handle('theme:light', () => {
+      nativeTheme.themeSource = 'light'
+    })
+    ipcMain.handle('theme:dark', () => {
+      nativeTheme.themeSource = 'dark'
+    })
+    ipcMain.handle('theme:system', () => {
+      nativeTheme.themeSource = 'system'
+    })
+
     ipcMain.handle('dark-mode:system', () => {
         nativeTheme.themeSource = 'system'
     })
@@ -82,26 +95,56 @@ const createWindow = () => {
         locked = false;
     })
 
+    /* System Idle features, perhaps in the future
+    ipcMain.handle('idle:state', () => {
+      mainWindow.webContents.send(powerMonitor.getSystemIdleState(4));
+    })
+    ipcMain.handle('idle:time', () => {
+      mainWindow.webContents.send(powerMonitor.getSystemIdleTime());
+    })
+    powerMonitor.on('suspend', () => {
+      console.log('The system is going to sleep');
+    });
+    powerMonitor.on('resume', () => {
+      console.log('The system is resuming');
+    });
+    powerMonitor.on('on-ac', () => {
+      console.log('The system is on AC Power (charging)');
+    });
+    powerMonitor.on('on-battery', () => {
+      console.log('The system is on Battery Power');
+    });
+    powerMonitor.on('shutdown', () => {
+      console.log('The system is Shutting Down');
+    });
+    powerMonitor.on('lock-screen', () => {
+      console.log('The system is about to be locked');
+    });
+    powerMonitor.on('unlock-screen', () => {
+      console.log('The system is unlocked');
+    });
+    */
+
     setInterval(() => {
         osUtils.cpuUsage(function (v) {
             mainWindow.webContents.send("cpu", v * 100 );
             mainWindow.webContents.send("mem", osUtils.freememPercentage() * 100);
             mainWindow.webContents.send("total-mem", osUtils.totalmem() / 1024);
         });
-      }, 1000);
+      }, 800);
 
 
       const menu = new Menu()
 menu.append(new MenuItem({
   label: 'File',
   submenu: [{
-    label: 'Set target',
+    label: 'Change target',
     icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/target.png').resize({width:16}),
     accelerator: process.platform === 'darwin' ? 'Cmd+T' : 'Ctrl+T',
     click: () => { mainWindow.webContents.send("showpagetarget"); }
   },
   {
-    label: 'Set mode',
+    label: 'Change mode',
     icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/mode.png').resize({width:16}),
     accelerator: process.platform === 'darwin' ? 'Cmd+M' : 'Ctrl+M',
     click: () => { mainWindow.webContents.send("showpagemode"); }
@@ -118,7 +161,7 @@ menu.append(new MenuItem({
   {
     label: 'Preferences',
     icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/preferences.png').resize({width:16}),
-    click: () => { mainWindow.webContents.send("showsettings"); }
+    click: () => { mainWindow.webContents.send("showpreferences"); }
   },
   {
     type: 'separator'
@@ -135,12 +178,15 @@ menu.append(new MenuItem({
         label: 'Start ',
         icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/start.png').resize({width:16}),
         accelerator: process.platform === 'darwin' ? 'F5' : 'F5',
-        click: () => { mainWindow.webContents.send("showpagedefault") }
+        click: () => { 
+          mainWindow.webContents.send("runitems")
+        }
     },
     {
-        label: 'Stop',
+        label: 'Reset',
         icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/stop.png').resize({width:16}),
-        click: () => { mainWindow.webContents.send("showpagetestlong") }
+        accelerator: process.platform === 'darwin' ? 'F6' : 'F6',
+        click: () => { mainWindow.webContents.send("resetitems") }
     }]
   }))
 menu.append(new MenuItem({
