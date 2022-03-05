@@ -183,9 +183,15 @@ menu.append(new MenuItem({
         }
     },
     {
-        label: 'Reset',
+        label: 'Kill running',
         icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/stop.png').resize({width:16}),
         accelerator: process.platform === 'darwin' ? 'F6' : 'F6',
+        click: () => { mainWindow.webContents.send("killitems") }
+    },
+    {
+        label: 'Reset Everything',
+        icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/stop.png').resize({width:16}),
+        accelerator: process.platform === 'darwin' ? 'F7' : 'F7',
         click: () => { mainWindow.webContents.send("resetitems") }
     }]
   }))
@@ -195,6 +201,11 @@ menu.append(new MenuItem({
       role: 'toggleDevTools',
       accelerator: process.platform === 'darwin' ? 'F12' : 'F12',
       click: () => { mainWindow.webContents.toggleDevTools() }
+    },
+    {
+        label: 'Show process info',
+        accelerator: process.platform === 'darwin' ? 'F11' : 'F11',
+        click: () => { mainWindow.webContents.send("showprocessinfo") }
     },
     {
         label: 'Show default page',

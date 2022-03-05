@@ -17,6 +17,9 @@ document.getElementById("check").addEventListener('change', async () => {
     }
 })
 
+function testMe1() {
+    // no content
+}
 
 $(function () {
     $("#username").html(window.userInfo.username);

@@ -126,6 +126,8 @@ window.onload = () => {
   $(".item--active").hide();
   $(".item--redteam").hide();
 
+  itemsTitleDefault(); // On load set all titles on items
+
   switch (myMode) {
     case "Passive":
       $(".item--passive").show();
@@ -198,6 +200,23 @@ function loadDefaultSettings() {
     }
   });
   if (myDebug) console.log("Loaded default settings, first time run!");
+}
+
+function itemsTitleDefault() {
+  $(".menuitem").each(function() {
+    var itemID = $(this).attr('id');
+    var itemTitle = $(this).data("title");
+    var itemPage = $(this).data("page");
+    var itemFunc = $(this).data("function");
+    if (itemTitle) $(this).attr("title",itemTitle);
+  });
+}
+function itemTitleDefault(myID) {
+    var itemID = $("#+myID").attr('id');
+    var itemTitle = $("#+myID").data("title");
+    var itemPage = $("#+myID").data("page");
+    var itemFunc = $("#+myID").data("function");
+    if (itemTitle) $("#+myID").attr("title",itemTitle);
 }
 
 function visibleItems() {
@@ -283,7 +302,7 @@ contextBridge.exposeInMainWorld('setMode', {
 
 contextBridge.exposeInMainWorld('itemAPI', {
   clickItem (id,mode,state) {
-    if ( state == "ready") showPage("runpage");
+    if ( state == "ready") showPage("pagedefault");
     if ( state == "done") showPage(id+"page");
     if ( state == "working") alert("Item '"+id+"' is working, please wait");
   }
@@ -305,6 +324,10 @@ function showPage( pagename=null ) {
  }
 }
 
+function testMe2() {
+  // no content
+  console.log("testMe2()");
+}
 
 function runAll() {
   // simulate run section (like if F5 is used or someone press "SCAN")
@@ -315,28 +338,43 @@ function runAll() {
  if (doRun) {
   $(".menuitem.status--ready").each(function() {
     if ( $(this).is(":visible") ) {
-      //console.log("Found: "+$(this).attr('id'));
-      var simTime = getRandomInt(1000,5000);
-      //console.log("Simulating work time - "+simTime);
-      $this = $(this);
-      var myID = $this.attr('id');
-      imRunning(myID)
-      setTimeout(function() {
-        imDone(myID)
-        if (myDebug) console.log("[ " + myID + " ] Simulated work time done ...");
-      }, simTime);
+      var itemID = $(this).attr('id');
+      var itemTitle = $(this).data("title");
+      var itemPage = $(this).data("page");
+      var itemFunc = $(this).data("function");
+      console.log("My ID: "+itemID);
+      console.log("My Title: "+itemTitle);
+      console.log("My page: "+itemPage);
+      console.log("Function to call: "+itemFunc);
+      console.log(typeof window[itemFunc]);
+      try {
+        window[itemFunc]();
+      } catch (err) {
+        console.log(itemFunc+"() is not a function!");
+        itemBroke(itemID,"Fatal error: Item broke, no function found.");
+      }
     }
   });
  }
 }
-function resetAll() {
-  $(".menuitem").removeClass("status--done");
-  $(".menuitem").removeClass("status--disabled");
-  $(".menuitem").removeClass("status--working");
-  $(".menuitem").addClass("status--ready");
+function killRunning() {
+  // We have things running, deal with them!
+  if ( itemsRunning.length > 0 ) {
+    console.log("I need to kill "+itemsRunning.length+" item(s)");
+  }
 }
 
-
+function resetAll() {
+  killRunning(); // First make sure nothing is running !
+  
+  $(".menuitem").removeClass("status--disabled");
+  $(".menuitem").removeClass("status--ready");
+  $(".menuitem").removeClass("status--working");
+  $(".menuitem").removeClass("status--done");
+  
+  itemsTitleDefault();
+  $(".menuitem").addClass("status--ready");
+}
 
 contextBridge.exposeInMainWorld('usage', {
   cpu: process.getCPUUsage().percentCPUUsage.toString().slice(0, 5)
@@ -363,12 +401,21 @@ ipcRenderer.on('lockscreen', (event) => {
     enableLockscreen("","lock")
   }
 });
+ipcRenderer.on('killitems', (event) => {
+  killRunning();
+});
 ipcRenderer.on('resetitems', (event) => {
   resetAll();
 });
 ipcRenderer.on('runitems', (event) => {
   runAll();
 });
+
+ipcRenderer.on('showprocessinfo', (event) => {
+  console.log("==[ PROCESS INFORMATION ]==============");
+});
+
+
 ipcRenderer.on('showpagedefault', (event) => {
   showPage("defaultpage");
 });
@@ -448,7 +495,6 @@ function getRandomInt(min, max) {
 }
 
 function statusbarMessage(msg,sec=0,icon="unknown") {
-  
   if ( icon ) {
    $.each(statusIcons,function(index, value) {
     $("#statusicon").removeClass(value);
@@ -514,8 +560,13 @@ function statusbarMessage(msg,sec=0,icon="unknown") {
   }
 }
 
+function itemBroke(myID,msg=false) {
+  itemClear(myID);
+  if ( msg ) $("#"+myID).attr("title", msg);
+  $("#"+myID).addClass("status--disabled");
+}
 function itemClear(myID) {
-  $("#"+myID).removeClass("status--disabled");imRunning
+  $("#"+myID).removeClass("status--disabled");
   $("#"+myID).removeClass("status--ready");
   $("#"+myID).removeClass("status--working");
   $("#"+myID).removeClass("status--done");
@@ -533,12 +584,29 @@ function imDone(myID) {
 }
 
 // Lets just dump all the item functions below here...
-// Make a function that has the same ID as your item div.
-// So the setup looks like this
+// -----------------------------------------------------------
+// I have tried to make some logic to it, also to make it flexible
+// in your end. So most is managed by data-string attributes.
 //
-// id=doBLABLA
-// Then you need to things
-// A div page with id=doBLABLApage
-// and a js function with the name doBLABLA()
-// when running run "imRunning(id)" in the beginning
-// and finish of with "imDone(id)" in the end.
+// Item div looks like this by default:
+// <div id="doDNS1" data-title="DNS information" data-page="dodnspage" data-function="dnsFunc1" class="boxborder menuitem item--click item--passive status--ready">DNS Information</div>
+//
+// You need to manage a few things
+// 1) Set the ID to something uniq (Try to keep 'do'+NAME+iteration)
+// 2) Change "item-passive" to one of item--(passive,active,redteam) to bind the item to a mode
+// 3) status--ready dont matter much, i will reset it on app start
+//
+// 4) Change data-title to suit your description for your menu item
+// 5) Change data-page to point to your div page with results/output
+// 6) Change data-function to the function i need to call in order to build result/output
+//
+// In your function, include:
+// - imRunning(yourID) in the beginning
+// - imDone(yourID) in the end.
+
+function dnsFunc1() {
+  var id = "doDNS1";
+  imRunning(id);
+  console.log("["+id+"] Running !");
+  imDone(id);
+}
