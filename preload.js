@@ -302,9 +302,19 @@ contextBridge.exposeInMainWorld('setMode', {
 
 contextBridge.exposeInMainWorld('itemAPI', {
   clickItem (id,mode,state) {
-    if ( state == "ready") showPage("pagedefault");
-    if ( state == "done") showPage(id+"page");
-    if ( state == "working") alert("Item '"+id+"' is working, please wait");
+    var itemID = $("#"+id).attr('id');
+    var itemTitle = $("#"+id).data("title");
+    var itemPage = $("#"+id).data("page");
+    var itemFunc = $("#"+id).data("function");
+    var itemMode = mode;
+    var itemState = state;
+
+    if ( itemState == "ready") showPage("pagedefault");
+    if ( itemState == "done") {
+      showPage(itemPage);
+    }
+    // I think this is useful but annoying :D 
+    //if ( state == "working") alert("Item '"+id+"' is working, please wait");
   }
 });
 
@@ -336,22 +346,23 @@ function runAll() {
     doRun = confirm("Please note Red-Team options are on! Want to continue ?");
   }
  if (doRun) {
-  $(".menuitem.status--ready").each(function() {
+  $(".menuitem.status--ready").each( async function() {
     if ( $(this).is(":visible") ) {
       var itemID = $(this).attr('id');
       var itemTitle = $(this).data("title");
       var itemPage = $(this).data("page");
       var itemFunc = $(this).data("function");
-      console.log("My ID: "+itemID);
-      console.log("My Title: "+itemTitle);
-      console.log("My page: "+itemPage);
-      console.log("Function to call: "+itemFunc);
-      console.log(typeof window[itemFunc]);
       try {
-        window[itemFunc]();
+        // Finally, got it to work properly and not using eval() !! Phew !
+        imRunning(itemID); // Mark it running
+        window[itemFunc]()
+        // TODO: Here is where i left of :=)
+        // Make some logic to keep checking if its still running
+        // perhaps use the itemsRunning array ?? async rubbish keeps me up late
+        imDone(itemID); // Mark it done! (Should somehow wait for the function to finish!)
       } catch (err) {
         console.log(itemFunc+"() is not a function!");
-        itemBroke(itemID,"Fatal error: Item broke, no function found.");
+        itemBroke(itemID,"Fatal error: Item broke, no function found");
       }
     }
   });
@@ -371,7 +382,7 @@ function resetAll() {
   $(".menuitem").removeClass("status--ready");
   $(".menuitem").removeClass("status--working");
   $(".menuitem").removeClass("status--done");
-  
+
   itemsTitleDefault();
   $(".menuitem").addClass("status--ready");
 }
@@ -572,15 +583,48 @@ function itemClear(myID) {
   $("#"+myID).removeClass("status--done");
 }
 function imRunning(myID) {
+  console.log("imRunning()");
   itemClear(myID);
   itemsRunning.push(myID);
   $("#"+myID).addClass("status--working");
 }
 function imDone(myID) {
+  console.log("imDone()");
   itemClear(myID);
   const index = itemsRunning.indexOf(myID);
   if (index > -1) itemsRunning.splice(index, 1);
   $("#"+myID).addClass("status--done");
+}
+
+function getFunctionByName(functionName, context) {
+  // If using Node.js, the context will be an empty object
+  if(typeof(window) == "undefined") {
+      context = context || global;
+  }else{
+      // Use the window (from browser) as context if none providen.
+      context = context || window;
+  }
+
+  // Retrieve the namespaces of the function you want to execute
+  // e.g Namespaces of "MyLib.UI.alerti" would be ["MyLib","UI"]
+  var namespaces = functionName.split(".");
+  
+  // Retrieve the real name of the function i.e alerti
+  var functionToExecute = namespaces.pop();
+  
+  // Iterate through every namespace to access the one that has the function
+  // you want to execute. For example with the alert fn "MyLib.UI.SomeSub.alert"
+  // Loop until context will be equal to SomeSub
+  for (var i = 0; i < namespaces.length; i++) {
+      context = context[namespaces[i]];
+  }
+  
+  // If the context really exists (namespaces), return the function or property
+  if(context){
+      return context[functionToExecute];
+  }else{
+      return undefined;
+  }
 }
 
 // Lets just dump all the item functions below here...
@@ -600,13 +644,70 @@ function imDone(myID) {
 // 5) Change data-page to point to your div page with results/output
 // 6) Change data-function to the function i need to call in order to build result/output
 //
+// You function must be in the "window" scope (to get around using eval!)
+// You function must return
+//
 // In your function, include:
 // - imRunning(yourID) in the beginning
 // - imDone(yourID) in the end.
+//
+// Also, you can use jQuery in your function
+// Use below template to get you going :)
 
-function dnsFunc1() {
-  var id = "doDNS1";
-  imRunning(id);
-  console.log("["+id+"] Running !");
-  imDone(id);
+window.itemTemplate = function(myID=false) {
+  if (!myID) return false; 
+  var itemID = $("#"+myID).attr('id');
+  var itemTitle = $("#"+myID).data("title");
+  var itemPage = $("#"+myID).data("page");
+  var itemFunc = $("#"+myID).data("function");
+  var ourMode = "misconfigured";
+  if ( $("#"+myID).hasClass( "item--passive" ) ) ourMode = "passive";
+  if ( $("#"+myID).hasClass( "item--active" ) ) ourMode = "active";
+  if ( $("#"+myID).hasClass( "item--redteam" ) ) ourMode = "redteam";
+  var ourStatus = "unknown";
+  if ( $("#"+myID).hasClass( "status--disabled" ) ) ourStatus = "disabled";
+  if ( $("#"+myID).hasClass( "status--ready" ) ) ourStatus = "ready";
+  if ( $("#"+myID).hasClass( "status--working" ) ) ourStatus = "working";
+  if ( $("#"+myID).hasClass( "status--done" ) ) ourStatus = "done";
+  imRunning(itemID);
+  // ------ Actual item code
+  if (myDebug) console.log("["+itemFunc+"] Item '"+itemID+"' running, result/output to page: "+itemPage);
+  
+
+
+  // ------
+  imDone(itemID);
+  return true;
 }
+
+
+
+window.dnsMain = function() {
+  if (myDebug) console.log("I'm running ....");
+  // This is crude code to pretend we are working !
+  var num = getRandomInt(1,10);
+  if (myDebug) console.log(".... before work (num="+num+")");
+  $.ajax({url: "https://enforcer.darknet.dk/sleep.php?num="+num, success: function(result){
+    if (myDebug) console.log(".. success!");
+  }});
+  if (myDebug) console.log(".... after work");
+}
+
+/*
+if (!myID) return false; 
+  var itemID = $("#"+myID).attr('id');
+  var itemTitle = $("#"+myID).data("title");
+  var itemPage = $("#"+myID).data("page");
+  var itemFunc = $("#"+myID).data("function");
+  var ourMode = "misconfigured";
+  if ( $("#"+myID).hasClass( "item--passive" ) ) ourMode = "passive";
+  if ( $("#"+myID).hasClass( "item--active" ) ) ourMode = "active";
+  if ( $("#"+myID).hasClass( "item--redteam" ) ) ourMode = "redteam";
+  var ourStatus = "unknown";
+  if ( $("#"+myID).hasClass( "status--disabled" ) ) ourStatus = "disabled";
+  if ( $("#"+myID).hasClass( "status--ready" ) ) ourStatus = "ready";
+  if ( $("#"+myID).hasClass( "status--working" ) ) ourStatus = "working";
+  if ( $("#"+myID).hasClass( "status--done" ) ) ourStatus = "done";
+  imRunning(itemID);
+  // ------ Actual item code
+  */

@@ -7,8 +7,8 @@
     <head>
         <meta charset="UTF-8">
         <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk">
-        <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk https://enforcer.darknet.dk">
+        <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk https://enforcer.darknet.dk">
 
         <link rel="stylesheet" href="./assets/css/redjoust.css">
         <link rel="stylesheet" href="./assets/css/buttons.css">
@@ -66,8 +66,10 @@
         <div class="treeview boxborder">
             <div class="placeholdertree" id="tree">
               <strong>enforcer.darknet.dk</strong><br>
-              <div id="doDNS1" data-title="DNS information" data-page="dodnspage" data-function="dnsFunc1" class="boxborder menuitem item--click item--passive status--ready">DNS Information</div>
-           </div>
+              <div id="doDNS1" data-title="DNS information" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information</div>
+              <div id="doDNS2" data-title="DNS information" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information</div>
+              <div id="doDNS3" data-title="DNS information" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information</div>
+            </div>
         </div>
         <div class="mainview boxborder">
             <div class="placeholdermain">
@@ -102,9 +104,9 @@
                       </div>
                   </div>
                 </div>
-                <div class="pages" id="doDNS1page">
+                <div class="pages" id="dodnspage">
                   <div class="border">
-                      test
+                      DNS information page ????? test :D 
                   </div>
                 </div>
                 <div class="pages" id="pagemode">
