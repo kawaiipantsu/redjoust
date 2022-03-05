@@ -16,7 +16,7 @@
 - Boiler plate layout done (How i want the app to look)
 - Support for Light / Dark OS theme
 - Styled scrollbar (Not using OS dependent functionality)
-  - Now working for menu sidebar and main window on overflow 
+  - Now working for menu sidebar and main window on overflow
 - User and system information
 - Fetching remote/public IP
 - Making sure its at least a bit secure
@@ -29,17 +29,40 @@
 - Menu/File bar with shortcuts and icons
 - About window
 - Links to github, wiki (help) and issues
+- Make logic to set "mode" ie. passive or active
+- Figure out how i want my "modules" logic
+- Make "mode" logic, modules should follow this
+- Make modules to handle recon/analysis/red-team functions (dropped)
+- Deciding on storage/settings node module
+- Initiating default settings/config
+- Reading config settings
+- Getting "theme" from config settings, only dark/light/system supported
+- Storing config states from session to session (like mode/target)
+- Honing in how i want to run items/collecting data
+- Functional statusbar (text/icon)
+- Statusbar keeps track on running items
+- Silly idle quotes in statusbar (for play and show)
+- Added debug toggle in config settings (etc hiding all console.log)
+- New Preferences window (To etc change config settings values)
+- showpage func to provide easy page logic with not found also
+- Item click logic, able to do different things depending on state (ready, working, done)
+- Simple spin animation on some of the statusbar icon presets (looks fun)
+- Cleaned up renderer.js to keep it minimal and everything in preload stage
 
 ## TODO list (what i want to get done short term)
 
-- Make logic to set "mode" ie. passive or active
+- Default item page layout/template
+- Add "safety" features as, toggle alerting if red-team mode is active
+- Preparing for more config settings
+  - default NS server to use (static or system)
+  - proxy usage
+  - tor usage
+  - specific item options
+- proxy/tor/socks logic
+- Getting PowerMonitor to work, so i can attach to System OS idle/suspend events
 - Make logic to set your target (ip, hostname or domain)
-- Make "main view" front page when no target is set (to allow setting target and mode)
-- Make "main view" front page to show a bit of target info (when target is set show this)
-- Figure out how i want my "modules" logic
+- Make default first page show easy 3 button layout - Set mode, set target, run
 - Make simple DNS lookup module (json return) to test data
-- Make "mode" logic, modules should follow this
-- Make modules to handle recon/analysis/red-team functions
 
 ## What it looks like (what i'm going for)
 
