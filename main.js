@@ -183,15 +183,9 @@ menu.append(new MenuItem({
         }
     },
     {
-        label: 'Kill running',
-        icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/stop.png').resize({width:16}),
-        accelerator: process.platform === 'darwin' ? 'F6' : 'F6',
-        click: () => { mainWindow.webContents.send("killitems") }
-    },
-    {
         label: 'Reset Everything',
         icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/stop.png').resize({width:16}),
-        accelerator: process.platform === 'darwin' ? 'F7' : 'F7',
+        accelerator: process.platform === 'darwin' ? 'F6' : 'F6',
         click: () => { mainWindow.webContents.send("resetitems") }
     }]
   }))

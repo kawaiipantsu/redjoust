@@ -48,10 +48,17 @@
 - Item click logic, able to do different things depending on state (ready, working, done)
 - Simple spin animation on some of the statusbar icon presets (looks fun)
 - Cleaned up renderer.js to keep it minimal and everything in preload stage
+- New "is done" logic, and tried to comment on how to make "items" for this
+- 3 new menu sections, target ip, target hostname, target domain name will show on target selection
+- Reset functionallity to whipe slate clean so you can rerun jobs
+- Utilizing html data attributes to store item settings for easy implementation
+- Showing the config settings in preference window but just for show
 
 ## TODO list (what i want to get done short term)
 
 - Default item page layout/template
+- Way to find childs/processes of async things running
+- Make Preferences window useful
 - Add "safety" features as, toggle alerting if red-team mode is active
 - Preparing for more config settings
   - default NS server to use (static or system)
@@ -62,7 +69,7 @@
 - Getting PowerMonitor to work, so i can attach to System OS idle/suspend events
 - Make logic to set your target (ip, hostname or domain)
 - Make default first page show easy 3 button layout - Set mode, set target, run
-- Make simple DNS lookup module (json return) to test data
+- Make simple DNS lookup module ~~(json return)~~ to test output for page
 
 ## What it looks like (what i'm going for)
 

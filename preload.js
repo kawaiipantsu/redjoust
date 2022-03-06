@@ -334,11 +334,6 @@ function showPage( pagename=null ) {
  }
 }
 
-function testMe2() {
-  // no content
-  console.log("testMe2()");
-}
-
 function runAll() {
   // simulate run section (like if F5 is used or someone press "SCAN")
   let doRun = true;
@@ -355,34 +350,32 @@ function runAll() {
       try {
         // Finally, got it to work properly and not using eval() !! Phew !
         imRunning(itemID); // Mark it running
-        window[itemFunc]()
+        window[itemFunc](itemID)
         // TODO: Here is where i left of :=)
         // Make some logic to keep checking if its still running
         // perhaps use the itemsRunning array ?? async rubbish keeps me up late
         imDone(itemID); // Mark it done! (Should somehow wait for the function to finish!)
       } catch (err) {
-        console.log(itemFunc+"() is not a function!");
+        if (myDebug) console.log(itemFunc+"() is not a function!");
         itemBroke(itemID,"Fatal error: Item broke, no function found");
       }
     }
   });
  }
 }
-function killRunning() {
-  // We have things running, deal with them!
-  if ( itemsRunning.length > 0 ) {
-    console.log("I need to kill "+itemsRunning.length+" item(s)");
-  }
-}
 
 function resetAll() {
-  killRunning(); // First make sure nothing is running !
-  
+  $('.menuitem').each(function(){
+    itemID = $(this).attr("id");
+    clearInterval($("#"+itemID).data('interval'));
+    $("#"+itemID).data("status","ready");
+    const index = itemsRunning.indexOf(itemID);
+    if (index > -1) itemsRunning.splice(index, 1);
+  });
   $(".menuitem").removeClass("status--disabled");
   $(".menuitem").removeClass("status--ready");
   $(".menuitem").removeClass("status--working");
   $(".menuitem").removeClass("status--done");
-
   itemsTitleDefault();
   $(".menuitem").addClass("status--ready");
 }
@@ -412,9 +405,6 @@ ipcRenderer.on('lockscreen', (event) => {
     enableLockscreen("","lock")
   }
 });
-ipcRenderer.on('killitems', (event) => {
-  killRunning();
-});
 ipcRenderer.on('resetitems', (event) => {
   resetAll();
 });
@@ -423,7 +413,13 @@ ipcRenderer.on('runitems', (event) => {
 });
 
 ipcRenderer.on('showprocessinfo', (event) => {
-  console.log("==[ PROCESS INFORMATION ]==============");
+  // The idea was to make a debug thing to show process info
+  // in order to see the pid's on hanging item functions that
+  // was still running when needed a "reset" ...
+  //
+  // The idea is trashed for now ... They will just have to
+  // timeout/hang until they finish ...
+  if (myDebug) console.log("==[ PROCESS INFORMATION ]==============");
 });
 
 
@@ -460,6 +456,9 @@ ipcRenderer.on('showpagetestlong', (event) => {
   showPage("pagetestlong");
 });
 ipcRenderer.on('showpreferences', (event) => {
+  $("#prefFile").text(store.path).html();
+  var pretty = JSON.stringify(store.store,null,4);
+  $("#prefSettings").val(pretty);
   showPage("pagepreferences");
 });
 
@@ -583,17 +582,21 @@ function itemClear(myID) {
   $("#"+myID).removeClass("status--done");
 }
 function imRunning(myID) {
-  console.log("imRunning()");
   itemClear(myID);
   itemsRunning.push(myID);
   $("#"+myID).addClass("status--working");
 }
 function imDone(myID) {
-  console.log("imDone()");
-  itemClear(myID);
-  const index = itemsRunning.indexOf(myID);
-  if (index > -1) itemsRunning.splice(index, 1);
-  $("#"+myID).addClass("status--done");
+  $("#"+myID).data('interval', setInterval(function(myID) {
+    var itemStatus = $("#"+myID).data('status');
+    if ( itemStatus == "done") {
+      itemClear(myID);
+      const index = itemsRunning.indexOf(myID);
+      if (index > -1) itemsRunning.splice(index, 1);
+      $("#"+myID).addClass("status--done");
+      clearInterval($("#"+myID).data('interval'));
+    }
+  }, 500,myID));
 }
 
 function getFunctionByName(functionName, context) {
@@ -645,56 +648,19 @@ function getFunctionByName(functionName, context) {
 // 6) Change data-function to the function i need to call in order to build result/output
 //
 // You function must be in the "window" scope (to get around using eval!)
-// You function must return
-//
-// In your function, include:
-// - imRunning(yourID) in the beginning
-// - imDone(yourID) in the end.
 //
 // Also, you can use jQuery in your function
 // Use below template to get you going :)
 
-window.itemTemplate = function(myID=false) {
-  if (!myID) return false; 
-  var itemID = $("#"+myID).attr('id');
-  var itemTitle = $("#"+myID).data("title");
-  var itemPage = $("#"+myID).data("page");
-  var itemFunc = $("#"+myID).data("function");
-  var ourMode = "misconfigured";
-  if ( $("#"+myID).hasClass( "item--passive" ) ) ourMode = "passive";
-  if ( $("#"+myID).hasClass( "item--active" ) ) ourMode = "active";
-  if ( $("#"+myID).hasClass( "item--redteam" ) ) ourMode = "redteam";
-  var ourStatus = "unknown";
-  if ( $("#"+myID).hasClass( "status--disabled" ) ) ourStatus = "disabled";
-  if ( $("#"+myID).hasClass( "status--ready" ) ) ourStatus = "ready";
-  if ( $("#"+myID).hasClass( "status--working" ) ) ourStatus = "working";
-  if ( $("#"+myID).hasClass( "status--done" ) ) ourStatus = "done";
-  imRunning(itemID);
+window.itemTemplate = function() {
   // ------ Actual item code
-  if (myDebug) console.log("["+itemFunc+"] Item '"+itemID+"' running, result/output to page: "+itemPage);
   
 
 
   // ------
-  imDone(itemID);
-  return true;
 }
 
-
-
-window.dnsMain = function() {
-  if (myDebug) console.log("I'm running ....");
-  // This is crude code to pretend we are working !
-  var num = getRandomInt(1,10);
-  if (myDebug) console.log(".... before work (num="+num+")");
-  $.ajax({url: "https://enforcer.darknet.dk/sleep.php?num="+num, success: function(result){
-    if (myDebug) console.log(".. success!");
-  }});
-  if (myDebug) console.log(".... after work");
-}
-
-/*
-if (!myID) return false; 
+window.dnsMain = function(myID) {
   var itemID = $("#"+myID).attr('id');
   var itemTitle = $("#"+myID).data("title");
   var itemPage = $("#"+myID).data("page");
@@ -708,6 +674,12 @@ if (!myID) return false;
   if ( $("#"+myID).hasClass( "status--ready" ) ) ourStatus = "ready";
   if ( $("#"+myID).hasClass( "status--working" ) ) ourStatus = "working";
   if ( $("#"+myID).hasClass( "status--done" ) ) ourStatus = "done";
-  imRunning(itemID);
-  // ------ Actual item code
-  */
+  $("#"+myID).data('status',"working");
+  if (myDebug) console.log("["+itemFunc+"]"+itemID+": Function running, output to: "+itemPage);
+  // This is crude code to pretend we are working !
+  var num = getRandomInt(1,10);
+  $.ajax({url: "https://enforcer.darknet.dk/sleep.php?num="+num, success: function(result) {
+    $("#dnsresult").append("<div>Hi i'm item "+itemID+" slept for "+num+"sec</div>")
+    $("#"+myID).data('status',"done");
+  }});
+}

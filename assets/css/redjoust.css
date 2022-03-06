@@ -384,8 +384,7 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
     width: 97%;
     height: 97%;
     border: 1px solid rgb(129, 129, 129);
-    margin: 10px;
-    padding: 10px;
+
     background-color: #343536;
 }
 #preflogo {
@@ -515,6 +514,29 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
 .spacer { padding-right: 10px; }
 .debug { border: 2px solid blue; }
 .debug * { border: 1px solid yellow; }
+
+fieldset { padding-top: 5px; padding-bottom: 5px; }
+legend { font-weight: bold; text-align: center; }
+
+.prefBorder { margin: 10px; width: calc(100% - 25px); height: calc(100% - 40px); }
+
+#prefFile {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    color: rgb(214, 214, 214);
+}
+#prefSettings {
+    resize: none;
+    width: 100%;
+    height: 100%;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: white;
+    color: black;
+}
+
+#haveIP { display: none; }
+#haveHostname { display: none; }
+#haveDomainname { display: none; }
 
 .menuitem {
     width: 100%;

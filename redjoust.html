@@ -28,7 +28,11 @@
        <div class="pages fullwindow--trans" id="pagepreferences">
         <div class="preferencescontent boxborder">
             <div class="innerpage boxborder">
-                preferences placeholder
+                <fieldset class="prefBorder">
+                  <legend id="prefFile"></legend>
+                  <textarea id="prefSettings" class="boxborder" disabled></textarea>
+                </fieldset> 
+                
             </div>
             <div id="preflogo"></div>
             <div id="prefsave">
@@ -65,10 +69,24 @@
         </div>
         <div class="treeview boxborder">
             <div class="placeholdertree" id="tree">
-              <strong>enforcer.darknet.dk</strong><br>
-              <div id="doDNS1" data-title="DNS information" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information</div>
-              <div id="doDNS2" data-title="DNS information" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information</div>
-              <div id="doDNS3" data-title="DNS information" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information</div>
+              <fieldset id="haveIP">
+                <legend id="targetIP">3.120.120.3</legend>
+                <div id="doDNS1" data-title="DNS information 1" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 1</div>
+                <div id="doDNS2" data-title="DNS information 2" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 2</div>
+                <div id="doDNS3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 3</div>
+              </fieldset>
+              <fieldset id="haveHostname">
+                <legend id="targetHostname">enforcer.darknet.dk</legend>
+                <div id="doDNS1" data-title="DNS information 1" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 1</div>
+                <div id="doDNS2" data-title="DNS information 2" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 2</div>
+                <div id="doDNS3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 3</div>
+              </fieldset>
+              <fieldset id="haveDomainname">
+                <legend id="targetDomainname">darknet.dk</legend>
+                <div id="doDNS1" data-title="DNS information 1" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 1</div>
+                <div id="doDNS2" data-title="DNS information 2" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 2</div>
+                <div id="doDNS3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 3</div>
+              </fieldset>
             </div>
         </div>
         <div class="mainview boxborder">
@@ -106,7 +124,10 @@
                 </div>
                 <div class="pages" id="dodnspage">
                   <div class="border">
-                      DNS information page ????? test :D 
+                      DNS information page ????? test :D<hr>
+                      <div id="dnsresult">
+
+                      </div>
                   </div>
                 </div>
                 <div class="pages" id="pagemode">
