@@ -54,7 +54,7 @@ html {
   }
 
 @media (prefers-color-scheme: dark) {
-    body { background: rgb(161,126,126);
+    body { background: rgb(167, 167, 167);
         background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%); color: rgb(179, 179, 179); }
     .fullwindow { background: #212836; color: rgb(179, 179, 179); }
     .box { background-color: #161a20; }
@@ -273,7 +273,7 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
 }
 .myinfo {
     height: 90%;
-    width: 300px;
+    width: 380px;
     float: right;
     text-align: right;
     padding-top: 10px;
@@ -284,6 +284,7 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
     border-radius: 10px;
 
 }
+.myinfolen { width: 90px; }
 .bold { font-weight: bold; }
 .logo {
     float: left;

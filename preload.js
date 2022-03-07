@@ -144,11 +144,15 @@ window.onload = () => {
   ipcRenderer.invoke('theme:'+myTheme)
 
   window.$ = window.jQuery = require('jquery');
+
+  // Set default mode stuff
   if ( !myMode ) $("#redjoustmode").html("No mode set")
   else $("#redjoustmode").html(myMode)
 
+  // Set default target stuff ....
+  if ( !myTarget ) $("#redjousttarget").html("No target set")
+  else $("#redjousttarget").html(myTarget)
   setTarget();
-
   if ( myTarget ) $("#inputTarget").val(myTarget);
 
   showPage("pagedefault");
@@ -415,6 +419,29 @@ function showPage( pagename=null ) {
           if ( itemsRunning.length > 0 ) $("#btngotorun").addClass("enabled");
           else $("#btngotorun").removeClass("enabled");
         }
+        // We need to prep pagemode a bit ....
+        if ( pagename == "pagemode" ) {
+          $("#btnpassive").removeClass("enabled");
+          $("#btnactive").removeClass("enabled");
+          $("#btnredteam").removeClass("enabled");
+          $(".info1").removeClass("highlight");
+          $(".info2").removeClass("highlight");
+          $(".info3").removeClass("highlight");
+          switch (myMode) {
+            case "Passive":
+              $("#btnpassive").addClass("enabled");
+              $(".info1").addClass("highlight");
+              break;
+            case "Active+Passive":
+              $("#btnactive").addClass("enabled");
+              $(".info2").addClass("highlight");
+              break;
+            case "Red-Team+Active+Passive":
+              $("#btnredteam").addClass("enabled");
+              $(".info3").addClass("highlight");
+              break;
+          } 
+        }
         $("#"+pagename).show()
     } else {
         $(".pages").hide();
@@ -550,32 +577,13 @@ ipcRenderer.on('showpageclear', (event) => {
   store.set("info.target", null);
   resetAll();
   $("#redjoustmode").html("No mode set")
+  $("#redjousttarget").html("No target set")
   showPage("pagedefault");
 });
 ipcRenderer.on('showpagetarget', (event) => {
   showPage("pagetarget");
 });
-ipcRenderer.on('showpagemode', (event) => {
-  $("#btnpassive").removeClass("enabled");
-  $("#btnactive").removeClass("enabled");
-  $("#btnredteam").removeClass("enabled");
-  $(".info1").removeClass("highlight");
-  $(".info2").removeClass("highlight");
-  $(".info3").removeClass("highlight");
-  switch (myMode) {
-    case "Passive":
-      $("#btnpassive").addClass("enabled");
-      $(".info1").addClass("highlight");
-      break;
-    case "Active+Passive":
-      $("#btnactive").addClass("enabled");
-      $(".info2").addClass("highlight");
-      break;
-    case "Red-Team+Active+Passive":
-      $("#btnredteam").addClass("enabled");
-      $(".info3").addClass("highlight");
-      break;
-  }    
+ipcRenderer.on('showpagemode', (event) => {   
   showPage("pagemode");
 });
 ipcRenderer.on('showpagetestlong', (event) => {
