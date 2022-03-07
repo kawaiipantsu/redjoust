@@ -599,30 +599,36 @@ function imDone(myID) {
   }, 500,myID));
 }
 
+function setTarget(newTarget) {
+  /* So what should this function do?
+      - Update global "myTarget"
+      - Update conf settings "store.set target"
+      - Detect if its hostname or ip
+      - Parse domain name form hostname
+      - Show hide menu segments for all items
+      - Be able to run via onload (sanity checks etc)
+      - 
+  */
+  myTarget = newTarget; // Setting global
+  store.set('info.target', myTarget); // Setting conf storage
+
+  
+
+}
+
+
+
 function getFunctionByName(functionName, context) {
-  // If using Node.js, the context will be an empty object
   if(typeof(window) == "undefined") {
       context = context || global;
   }else{
-      // Use the window (from browser) as context if none providen.
       context = context || window;
   }
-
-  // Retrieve the namespaces of the function you want to execute
-  // e.g Namespaces of "MyLib.UI.alerti" would be ["MyLib","UI"]
   var namespaces = functionName.split(".");
-  
-  // Retrieve the real name of the function i.e alerti
   var functionToExecute = namespaces.pop();
-  
-  // Iterate through every namespace to access the one that has the function
-  // you want to execute. For example with the alert fn "MyLib.UI.SomeSub.alert"
-  // Loop until context will be equal to SomeSub
   for (var i = 0; i < namespaces.length; i++) {
       context = context[namespaces[i]];
   }
-  
-  // If the context really exists (namespaces), return the function or property
   if(context){
       return context[functionToExecute];
   }else{
