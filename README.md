@@ -74,6 +74,7 @@ More to come soon ! I hope :)
     - Should be able to be run onload as well
     - update global vars
     - update conf settings storage
+- Target page, history autocomplete
 
 ## TODO list (what i want to get done short term)
 
