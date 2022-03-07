@@ -30,7 +30,7 @@
             <div class="innerpage boxborder">
                 <fieldset class="prefBorder">
                   <legend id="prefFile"></legend>
-                  <textarea id="prefSettings" class="boxborder" disabled></textarea>
+                  <textarea id="prefSettings" class="boxborder" spellcheck="false" autocomplete="false" disabled></textarea>
                 </fieldset> 
                 
             </div>
@@ -69,23 +69,27 @@
         </div>
         <div class="treeview boxborder">
             <div class="placeholdertree" id="tree">
-              <fieldset id="haveIP">
-                <legend id="targetIP">3.120.120.3</legend>
+              <fieldset id="haveIP" class="menusegment">
+                <legend id="targetIP" class="menusegmentinfo">3.120.120.3</legend>
                 <div id="doDNS1" data-title="DNS information 1" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 1</div>
                 <div id="doDNS2" data-title="DNS information 2" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 2</div>
                 <div id="doDNS3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 3</div>
               </fieldset>
-              <fieldset id="haveHostname">
-                <legend id="targetHostname">enforcer.darknet.dk</legend>
+              <fieldset id="haveHostname" class="menusegment">
+                <legend id="targetHostname" class="menusegmentinfo">enforcer.darknet.dk</legend>
                 <div id="doDNS1" data-title="DNS information 1" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 1</div>
                 <div id="doDNS2" data-title="DNS information 2" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 2</div>
                 <div id="doDNS3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 3</div>
               </fieldset>
-              <fieldset id="haveDomainname">
-                <legend id="targetDomainname">darknet.dk</legend>
+              <fieldset id="haveDomainname" class="menusegment">
+                <legend id="targetDomainname" class="menusegmentinfo">darknet.dk</legend>
                 <div id="doDNS1" data-title="DNS information 1" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 1</div>
                 <div id="doDNS2" data-title="DNS information 2" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 2</div>
                 <div id="doDNS3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 3</div>
+              </fieldset>
+              <fieldset id="haveExternal" class="menusegment">
+                <legend id="targetExternal" class="menusegmentinfo">External tools</legend>
+                <div id="exLink1" data-title="External link" data-page="externalLink1" data-function="null" class="boxborder menuitem item--click item--external status--info">Test link 1</div>
               </fieldset>
             </div>
         </div>
@@ -115,10 +119,24 @@
                 <div class="pages" id="pagedefault">
                   <div class="centerbox">
                       <div>
-                          <span>
-                              <h1>test</h1>
-                              test test test
-                          </span>
+                        <table border="1" cellpadding="0" cellspacing="0" align="center">
+                          <tr>
+                           <td colspan="3" align="center"><h1>Set target, set mode then gather intel!</h1></td> 
+                          </tr>
+                          <tr>
+                            <td colspan="3"></td> 
+                          </tr>
+                          <tr>
+                            <td class="fill--50" align="center"><button id="btngototarget" class="fill--fix goto button button--moema button--inverted button--text-thick button--size-m bg-3">SET TARGET</button></td> 
+                            <td class="spacer"></td>
+                            <td class="fill--50" align="center"><button id="btngotomode" class="fill--fix goto button button--moema button--inverted button--text-thick button--size-m">SET MODE</button></td> 
+                          </tr>
+                          <tr>
+                            <td colspan="3" align="center">
+                              <button value="redteam" id="btngotorun" class="fill--fix goto button button--moema button--inverted button--text-thick button--size-m bg-3">Gather intel!</button>
+                            </td> 
+                          </tr>
+                        </table>
                       </div>
                   </div>
                 </div>
@@ -133,7 +151,7 @@
                 <div class="pages" id="pagemode">
                     <div class="centerbox">
                         <div>
-                          <table border="1" cellpadding="0" cellspacing="0" align="center">
+                          <table border="0" cellpadding="0" cellspacing="0" align="center">
                             <tr>
                              <td colspan="3" align="center"><h1>Choose your scanning mode</h1></td> 
                             </tr>
@@ -171,6 +189,14 @@
                                 </table>
                               </td> 
                             </tr>
+                            <tr>
+                              <td colspan="3"></td> 
+                            </tr>
+                            <tr>
+                              <td colspan="3" align="center">
+                                <button id="btngotonext" class="goto button button--isi button--text-thick button--size-s">Continue</button>
+                              </td> 
+                            </tr>
                           </table>
                         </div>
                     </div>
@@ -201,10 +227,47 @@
                     <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
                 </div>
                 <div class="pages" id="pagetarget">
-                    test target page
+                  <div class="centerbox">
+                    <div>
+                      <table border="0" cellpadding="0" cellspacing="0" align="center">
+                        <tr>
+                        <td colspan="3" align="center"><h1>Enter hostname or IP address</h1></td> 
+                        </tr>
+                        <tr>
+                          <td colspan="3">&nbsp;</td> 
+                        </tr>
+                        <tr>
+                          <td colspan="3"><input id="inputTarget" type="text" value="" spellcheck="false" autofocus="true" autocomplete="false"></td>
+                        </tr>
+                        <tr>
+                          <td colspan="3">&nbsp;</td> 
+                        </tr>
+                        <tr>
+                          <td colspan="3" class="targetlistcontainer">
+                            <p>
+                              <strong>Use any valid hostname or ip address as target</strong>
+                            </p>
+                            <p>
+                              <ul class="targetlist">
+                                <li>If IP, we will also reverse lookup and use hostname for target</li>
+                                <li>If hostname we will use first A record for IP target</li>
+                                <li>If hostname consist of host+domain we also target domain name</li>
+                              </ul> 
+                            </p>
+                          </td> 
+                        </tr>
+                        <tr>
+                          <td colspan="3"></td> 
+                        </tr>
+                        <tr>
+                          <td colspan="3" align="center">
+                            <button id="btngotonext" class="goto button button--isi button--text-thick button--size-s">Continue</button>
+                          </td> 
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
                 </div>
-
-
             </div>
         </div>
         <div class="bottomview boxborder">

@@ -79,6 +79,9 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
     .highlight { color: rgb(141, 93, 255); }
     .highlight.icon { color: #006400 }
     .menuitem { color:rgb(36, 32, 32); }
+    .menusegment { background-color: #212836; }
+    .menusegmentinfo { background-color: #212836; }
+    .status--info { background-color: #212836; color:rgb(230, 230, 230) }
   }
   
   @media (prefers-color-scheme: light) {
@@ -99,6 +102,9 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
     .highlight { color: rgb(251, 249, 255); }
     .highlight.icon { color: #006400; }
     .menuitem { color:rgb(36, 32, 32); }
+    .menusegment { background-color: #b3b4b4; }
+    .menusegmentinfo { background-color: #b3b4b4; }
+    .status--info { background-color: #b3b4b4; color:rgb(36, 32, 32) }
   }
 
 #username {
@@ -534,9 +540,8 @@ legend { font-weight: bold; text-align: center; }
     color: black;
 }
 
-#haveIP { display: none; }
-#haveHostname { display: none; }
-#haveDomainname { display: none; }
+.menusegment { display: none; margin-top: 5px; }
+.menusegmentinfo { padding-left: 10px; padding-right: 10px; padding-top: 4px; border-radius: 15px; }
 
 .menuitem {
     width: 100%;
@@ -550,6 +555,7 @@ legend { font-weight: bold; text-align: center; }
 }
 
 .menuitem.status--done:hover { color: white; }
+.menuitem.status--info:hover { color: white; }
 
 @keyframes backgroundColorPalette {
     0% {
@@ -586,6 +592,13 @@ legend { font-weight: bold; text-align: center; }
 0%   {transform: rotateX(0deg); transform-origin: 0% 50% 0;}  
 100% {transform: rotateX(360deg); transform-origin: 0% 50% 0;}  
 }
+.item--external {
+    background-image: url("./../icons/menu/set1/link.png");
+    background-position: left;
+    background-repeat: no-repeat;
+    background-size: 18px;
+    background-blend-mode: multiply;
+}
 .item--passive {
     background-image: url("./../icons/menu/set1/mode.png");
     background-position: left;
@@ -609,6 +622,7 @@ legend { font-weight: bold; text-align: center; }
 }
 
 .status--disabled { filter: opacity(30%); }
+
 .status--ready {
     background-color: rgb(255, 255, 97);
 }
@@ -620,3 +634,22 @@ legend { font-weight: bold; text-align: center; }
 .status--done {
     background-color: rgb(32, 122, 32);
 }
+#inputTarget {
+    border-radius: 25px;
+    padding-left: 20px;
+    padding-right: 20px;
+    width: 100%;
+    height: 50px;
+    font-size: 35px;
+}
+
+.targetlistcontainer {
+    padding-left: 50px;
+}
+.targetlistcontainer p {
+    padding-bottom: 5px;
+}
+.targetlist {
+    list-style-type: square;
+    list-style-position: inside;
+  }

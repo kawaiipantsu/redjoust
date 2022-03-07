@@ -56,6 +56,10 @@ $(function () {
         let mode = $( this ).val()
         window.setMode.activate(mode)
     });
+    $( ".goto" ).on( "click", function() {
+        let goto = $( this ).attr("id")
+        window.actionHandler.goto(goto)
+    });
     $( ".prefbuttons" ).on( "click", function() {
         let action = $( this ).val()
         if ( action == "close" ) {
@@ -66,11 +70,13 @@ $(function () {
         // First find out what mode item we are
         var myID = $(this).attr('id');
         var ourMode = "misconfigured";
+        if ( $(this).hasClass( "item--external" ) ) ourMode = "external";
         if ( $(this).hasClass( "item--passive" ) ) ourMode = "passive";
         if ( $(this).hasClass( "item--active" ) ) ourMode = "active";
         if ( $(this).hasClass( "item--redteam" ) ) ourMode = "redteam";
         var ourStatus = "unknown";
         if ( $(this).hasClass( "status--disabled" ) ) ourStatus = "disabled";
+        if ( $(this).hasClass( "status--info" ) ) ourStatus = "info";
         if ( $(this).hasClass( "status--ready" ) ) ourStatus = "ready";
         if ( $(this).hasClass( "status--working" ) ) ourStatus = "working";
         if ( $(this).hasClass( "status--done" ) ) ourStatus = "done";

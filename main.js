@@ -151,6 +151,13 @@ menu.append(new MenuItem({
   },
   {
     type: 'separator'
+  },
+  {
+    label: 'Clear target + mode',
+    click: () => { mainWindow.webContents.send("showpageclear"); }
+  },
+  {
+    type: 'separator'
  },
   {
     label: 'Lock screen',

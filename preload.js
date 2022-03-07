@@ -3,34 +3,54 @@ const { contextBridge, ipcRenderer, powerMonitor } = require('electron')
 const electron = require('electron');
 const Store = require('electron-store');
 const os = require('os')
+const net = require('net');
+const { isNull } = require('util');
+const { exit } = require('process');
 
-// This is not used yet, but i want to sanitize it so we cant destroy how i
-// expect the settings to look like. So this is the future :)
+// We are now using the scheme to set the overall template of the config file.
+// This is super as even if the user has an old config file any new "settings"
+// will apply based on the schemes default values when using the "store.get".
 const defaultSettingsSchema = {
-	settings: {
-    exist: { type: 'boolean', default: true },
-    theme: { type: 'string', default: 'system' },
-    debug: { type: 'boolean', default: false }
+  settings: {
+    exist: true,
+    theme: 'system',
+    debug: false
+  },
+  menuitems: {
+    passive: {
+      allow: true,
+      runwarning: false
+    },
+    active: {
+      allow: true,
+      runwarning: false
+    },
+    redteam: {
+      allow: true,
+      runwarning: true
+    },
+    externaltools: {
+      show: true,
+      terminal: true
+    }
   },
   info: {
-    target: { type: 'string', default: null },
-    mode: { type: 'string', default: null },
+    target: null,
+    mode: null,
     itemDefaults: {
-      username: { type: 'string', default: 'admin' },
-      password: { type: 'string', default: 'admin' },
-      timeout: {
-        type: 'number',
-        maximum: 30,
-        minimum: 1,
-        default: 5
-      }
+      username: 'admin',
+      password: 'admin',
+      timeout: 5
     }
+  },
+  targetHistory: {
+    maxtargets: 50,
+    targets: []
   }
 };
 
-const store = new Store(defaultSettingsSchema);
-const settingsExist = store.has('settings.exist');
-if ( !settingsExist ) loadDefaultSettings();
+
+const store = new Store({defaults: defaultSettingsSchema});
 
 // Not sure if i want to use this yet, trying settings out for now
 //const storage = require('electron-json-storage')
@@ -103,6 +123,16 @@ var randomQuotes = [
   "Traceroutes are IP packets way of cyber-stalking",
 ]
 
+// Cleanup config target history if needed ...
+if ( store.get('targetHistory.targets').length > store.get('targetHistory.maxtargets') ) {
+  maxtargets = store.get('targetHistory.maxtargets');
+  curtargets = store.get('targetHistory.targets').length;
+  targetlist = store.get('targetHistory.targets');
+  removenum = curtargets-maxtargets;
+  targetlist.splice(curtargets-removenum,removenum);
+  store.set('targetHistory.targets',targetlist);
+}
+
 // For future idle/os suspension/ lock events
 
 
@@ -117,11 +147,18 @@ window.onload = () => {
   if ( !myMode ) $("#redjoustmode").html("No mode set")
   else $("#redjoustmode").html(myMode)
 
+  setTarget();
+
+  if ( myTarget ) $("#inputTarget").val(myTarget);
+
   showPage("pagedefault");
 
   // Only hide all if we need to
   // If mode is set from last time, show those !
-  //$(".item--external").hide();
+  
+  if ( store.get('menuitems.externaltools.show') ) $("#haveExternal").show();
+  else $("#haveExternal").hide();
+  
   $(".item--passive").hide();
   $(".item--active").hide();
   $(".item--redteam").hide();
@@ -155,11 +192,13 @@ window.onload = () => {
   var dottss;
   var timeSinceLastUpdate = 0;
   setInterval(() => {
-    state = 'test'
-    idle = 123
+    // System OS power saving/monitor options not functional
+    state = 'normal' // Was supposed to be state from the OS powermonitr part (ie idle/suspension event)
+    idle = 0; // Was supposed to be numbers from the OS powermonitr part (ie idle/suspension event)
     //if (myDebug) console.log("System state: "+state+" (Idle time: "+idle+")");
     // We always prioritize showing if anything is running ...
     if ( itemsRunning.length > 0) {
+      if ( !$("#btngotorun").hasClass("enabled") ) $("#btngotorun").addClass("enabled");
       if ( !dottss || dottss.length >= 5 ) dottss = ".";
       statusbarMessage(itemsRunning.length+" of "+visibleItems()+" items running "+dottss,0,"busy")
       if ( dottss.length < 5 ) dottss = dottss+".";
@@ -167,13 +206,23 @@ window.onload = () => {
     } else {
       // Now lets make up more rules for statusbar shinannigans :)
       timeSinceLastUpdate = timeSinceLastUpdate+0.5; // We count in seconds .. sort of :D
-      if ( timeSinceLastUpdate == updateQuoteFrequency) {
-        doUpdate = true;
-        timeSinceLastUpdate = 0;
-      }
-      if ( doUpdate ) {
-        statusbarMessage(randomQuotes[Math.floor(Math.random() * randomQuotes.length)],0,"pizza");
-        doUpdate = false;
+      // OS idle handler (just show something else if no user input ie. idle timer grows)
+      if ( idle > 0 ) {
+        if ( doUpdate ) {
+          statusbarMessage("I'm idle...",0,"idle");
+          doUpdate = false;
+        }
+      } else {
+        // Normal operations
+        if ( timeSinceLastUpdate == updateQuoteFrequency) {
+          doUpdate = true;
+          timeSinceLastUpdate = 0;
+        }
+        if ( doUpdate ) {
+          if ( $("#btngotorun").hasClass("enabled") ) $("#btngotorun").removeClass("enabled");
+          statusbarMessage(randomQuotes[Math.floor(Math.random() * randomQuotes.length)],0,"pizza");
+          doUpdate = false;
+        }
       }
     }
   }, 500);
@@ -300,6 +349,34 @@ contextBridge.exposeInMainWorld('setMode', {
     }
 });
 
+contextBridge.exposeInMainWorld('actionHandler', {
+  goto (key) {
+    switch (key) {
+      case "btngotonext":
+        if ( !myTarget && !myMode ) showPage("pagetarget");
+        if ( myTarget && !myMode ) showPage("pagemode");
+        if ( myMode && !myTarget ) showPage("pagetarget");
+        if (myMode && myTarget ) showPage("pagedefault");
+        break;
+      case "btngototarget":
+        showPage("pagetarget");
+        break;
+      case "btngotomode":
+        showPage("pagemode");
+        break;
+      case "btngotorun":
+        if ( myTarget && myMode ) {
+          // We are good to go, RUN!
+          runAll();
+        }
+        break;
+      default:
+        showPage("pagedefault"); // Show our self ?! Atleast its some time of error handling ....
+        break;
+    }
+  }
+});
+
 contextBridge.exposeInMainWorld('itemAPI', {
   clickItem (id,mode,state) {
     var itemID = $("#"+id).attr('id');
@@ -313,7 +390,9 @@ contextBridge.exposeInMainWorld('itemAPI', {
     if ( itemState == "done") {
       showPage(itemPage);
     }
-    // I think this is useful but annoying :D 
+    if ( itemState == "info") {
+      showPage(itemPage);
+    }    // I think this is useful but annoying :D 
     //if ( state == "working") alert("Item '"+id+"' is working, please wait");
   }
 });
@@ -323,6 +402,15 @@ function showPage( pagename=null ) {
  if ( pagename ) {
     if ( $("#"+pagename ).length ) {
         if (pagename != "pagepreferences") $(".pages").hide();
+        // We need to prep defaultpage a bit ...
+        if ( pagename == "pagedefault") {
+          if ( myTarget ) $("#btngototarget").addClass("enabled");
+          else $("#btngototarget").removeClass("enabled");
+          if ( myMode ) $("#btngotomode").addClass("enabled");
+          else $("#btngotomode").removeClass("enabled");
+          if ( itemsRunning.length > 0 ) $("#btngotorun").addClass("enabled");
+          else $("#btngotorun").removeClass("enabled");
+        }
         $("#"+pagename).show()
     } else {
         $(".pages").hide();
@@ -335,12 +423,27 @@ function showPage( pagename=null ) {
 }
 
 function runAll() {
-  // simulate run section (like if F5 is used or someone press "SCAN")
-  let doRun = true;
-  if ( myMode == "Red-Team+Active+Passive" ) {
-    doRun = confirm("Please note Red-Team options are on! Want to continue ?");
+
+  if ( $(".menuitem.status--ready").is(":visible") ) {
+    if ( store.get("menuitems.passive.runwarning") && myMode == "Passive") {
+      doRun = confirm("Please note PASSIVE MODE options are on! Want to continue ?");
+      if (doRun === false) return;
+    }
+    if ( store.get("menuitems.active.runwarning") && myMode == "Active+Passive" ) {
+      doRun = confirm("Please note ACTIVE MODE options are on! Want to continue ?");
+      if (doRun === false) return;
+    }
+    if ( store.get("menuitems.redteam.runwarning") && myMode == "Red-Team+Active+Passive" ) {
+      doRun = confirm("Please note RED-TEAM MODE options are on! Want to continue ?");
+      if (doRun === false) return;
+    }
+  } else {
+    alert("No items are ready to collect, perhaps reset? (Hit: F6)");
+    return;
   }
- if (doRun) {
+
+  
+
   $(".menuitem.status--ready").each( async function() {
     if ( $(this).is(":visible") ) {
       var itemID = $(this).attr('id');
@@ -361,23 +464,30 @@ function runAll() {
       }
     }
   });
- }
 }
 
 function resetAll() {
+  itemsTitleDefault();
+  $("#btngotorun").removeClass("enabled");
   $('.menuitem').each(function(){
     itemID = $(this).attr("id");
     clearInterval($("#"+itemID).data('interval'));
-    $("#"+itemID).data("status","ready");
+    $("#"+itemID).data("status","nan");
     const index = itemsRunning.indexOf(itemID);
     if (index > -1) itemsRunning.splice(index, 1);
+    if ( !$("#"+itemID).hasClass("item--external") ) {
+      $("#"+itemID).removeClass("status--disabled");
+      $("#"+itemID).removeClass("status--ready");
+      $("#"+itemID).removeClass("status--working");
+      $("#"+itemID).removeClass("status--done");
+      if ( myTarget && myMode ) {
+        $("#"+itemID).addClass("status--ready");
+      } else {
+        $("#"+itemID).addClass("status--disabled");
+        itemBroke(itemID,"Missing either target or mode");
+      }
+    }
   });
-  $(".menuitem").removeClass("status--disabled");
-  $(".menuitem").removeClass("status--ready");
-  $(".menuitem").removeClass("status--working");
-  $(".menuitem").removeClass("status--done");
-  itemsTitleDefault();
-  $(".menuitem").addClass("status--ready");
 }
 
 contextBridge.exposeInMainWorld('usage', {
@@ -424,7 +534,16 @@ ipcRenderer.on('showprocessinfo', (event) => {
 
 
 ipcRenderer.on('showpagedefault', (event) => {
-  showPage("defaultpage");
+  showPage("pagedefault");
+});
+ipcRenderer.on('showpageclear', (event) => {
+  myTarget = null;
+  myMode = null;
+  store.set("info.mode",null);
+  store.set("info.target", null);
+  resetAll();
+  $("#redjoustmode").html("No mode set")
+  showPage("pagedefault");
 });
 ipcRenderer.on('showpagetarget', (event) => {
   showPage("pagetarget");
@@ -599,7 +718,7 @@ function imDone(myID) {
   }, 500,myID));
 }
 
-function setTarget(newTarget) {
+function setTarget(newTarget=false) {
   /* So what should this function do?
       - Update global "myTarget"
       - Update conf settings "store.set target"
@@ -609,11 +728,27 @@ function setTarget(newTarget) {
       - Be able to run via onload (sanity checks etc)
       - 
   */
+ $("#haveExternal").show(); // Always show external tools
+ if ( newTarget ) {
   myTarget = newTarget; // Setting global
   store.set('info.target', myTarget); // Setting conf storage
+  targetlist = store.get('targetHistory.targets'); // Get out target history
+  targetlist.push(myTarget); // Add our new target to the list (the list has a max, see conf)
+  store.set('targetHistory.targets',targetlist); // Store it back into the config file
+ } else {
+   if ( myTarget ) { // Only continue if target is set to something default
+    if ( net.isIP(myTarget) ) {
+      // TARGET IS IP ADDRESS
+      $("#haveHostname").hide();
+      $("#havedomainname").hide();
+      $("#haveIP").show();
 
+    } else {
+      // TARGET IS HOSTNAME
   
-
+    }
+   } 
+ }
 }
 
 

@@ -53,13 +53,24 @@
 - Reset functionallity to whipe slate clean so you can rerun jobs
 - Utilizing html data attributes to store item settings for easy implementation
 - Showing the config settings in preference window but just for show
+- New defaults scheme, no need for cutom defualtsettings writer function
+- Next page (goto next) continue logic, will itterate though mode, target and run if they are not set
+- Make default first page show easy 3 button layout - Set mode, set target, run
+- Added target history, save last 50 targets for future options like autocomplete
+- Target history cleanup logic
+- Default item page layout/template
+- Add "safety" features as, toggle alerting if red-team mode is active
+- Make logic to set your target (ip, hostname or domain)
+  - setTarget()
+    - Show/hide the propper menu sections
+    - Should be able to be run onload as well
+    - update global vars
+    - update conf settings storage
 
 ## TODO list (what i want to get done short term)
 
-- Default item page layout/template
 - Way to find childs/processes of async things running
 - Make Preferences window useful
-- Add "safety" features as, toggle alerting if red-team mode is active
 - Preparing for more config settings
   - default NS server to use (static or system)
   - proxy usage
@@ -72,14 +83,9 @@
     - Needs to parse/detect if its hostname or ip
     - Enable to find domain name from hostname
     - if ip generate ip subnet info
-    - Show/hide the propper menu sections
-    - Should be able to be run onload as well
-    - update global vars
-    - update conf settings storage
     - Read from pagetarget
-- Make default first page show easy 3 button layout - Set mode, set target, run
 - Make simple DNS lookup module ~~(json return)~~ to test output for page
-
+  
 ## What it looks like (what i'm going for)
 
 This is still just a boilerplate on what layout i'm trying to go for, this might change in the near future i have no idea. But so far this is what it's going to look like. Also not functionality at all and placeholders. Only thing really working is the small user/sys info box top right and the toggle switch bottom right for dark/light theme.
