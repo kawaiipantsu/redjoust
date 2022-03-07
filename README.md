@@ -68,6 +68,15 @@
 - proxy/tor/socks logic
 - Getting PowerMonitor to work, so i can attach to System OS idle/suspend events
 - Make logic to set your target (ip, hostname or domain)
+  - setTarget()
+    - Needs to parse/detect if its hostname or ip
+    - Enable to find domain name from hostname
+    - if ip generate ip subnet info
+    - Show/hide the propper menu sections
+    - Should be able to be run onload as well
+    - update global vars
+    - update conf settings storage
+    - Read from pagetarget
 - Make default first page show easy 3 button layout - Set mode, set target, run
 - Make simple DNS lookup module ~~(json return)~~ to test output for page
 
