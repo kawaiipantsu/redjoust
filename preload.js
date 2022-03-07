@@ -368,6 +368,10 @@ contextBridge.exposeInMainWorld('actionHandler', {
         if ( myTarget && myMode ) {
           // We are good to go, RUN!
           runAll();
+        } else {
+          if ( !myTarget && !myMode ) alert('Please choose both a TARGET and MODE!');
+          if ( !myTarget && myMode ) alert('Please choose a TARGET!');
+          if ( myTarget && !myMode ) alert('Please choose a MODE!');
         }
         break;
       default:
@@ -514,6 +518,9 @@ ipcRenderer.on('lockscreen', (event) => {
     if (myDebug) console.log("Enable lockscreen")
     enableLockscreen("","lock")
   }
+});
+ipcRenderer.on('escpressed', (event) => {
+  showPage("pagedefault");
 });
 ipcRenderer.on('resetitems', (event) => {
   resetAll();

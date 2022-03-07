@@ -4,6 +4,7 @@ const os = require('os')
 const osUtils = require('os-utils')
 const path = require('path')
 const Store = require('electron-store');
+let myWindow = null
 
 Store.initRenderer();
 
@@ -273,30 +274,55 @@ Menu.setApplicationMenu(menu)
 
     // Open the DevTools.
     //mainWindow.webContents.openDevTools()
+
+    return mainWindow;
 }
+
+/* 
+// This is a small code block that can serve to make sure only 1 instance of your
+// app is running at a time, if someone tried to start it up again, simply restore
+// the other app and focus it.
+const additionalData = { myKey: 'myValue' }
+const gotTheLock = app.requestSingleInstanceLock(additionalData)
+if (!gotTheLock) {
+  app.quit()
+} else {
+ app.on('second-instance', (event, commandLine, workingDirectory, additionalData) => {
+  if (myWindow) {
+    if (myWindow.isMinimized()) myWindow.restore()
+    myWindow.focus()
+  }
+ })
+
+ // ... WHEN READY BLOCK
+
+}
+*/
 
 // Make sure we only create the windows when we are actually ready
 // Many NodeJS api's can only be called/utilized after this is true
-
-
-
 app.whenReady().then(() => {
-    createWindow()
+    myWindow = createWindow()
     
     app.on('app-command', (e, cmd) => {
         // Navigate the window back when the user hits their mouse back button
-        if (cmd === 'browser-backward' && win.webContents.canGoBack()) {
-            win.webContents.goBack()
+        if (cmd === 'browser-backward' && myWindow.webContents.canGoBack()) {
+          myWindow.webContents.goBack()
         }
     })
     app.on('activate', () => {
         // MacOS open window handling
-        if (win.getAllWindows().length === 0) createWindow()
+        if (myWindow.getAllWindows().length === 0) createWindow()
     })
     // Lets make this so that if any windows are open, close them...
     globalShortcut.register('Esc', () => {
-        if ( locked ) console.log("WONT QUIT, SCREEN LOCKED!");
-        else app.quit();
+        if ( locked ) {
+          // Need to do something while locked and ESC ??
+        } else {
+          // Escape was hit, now do something !!
+          // We use it for showing default front page where you can set target, mode and run!
+          myWindow.webContents.send("escpressed")
+        }
     });
 })
 

@@ -52,6 +52,11 @@ $(function () {
             touchSupport     : true
         }
     });
+
+    $('#inputTarget').on('input',function(e){
+        alert('Changed!')
+    });
+
     $( ".setmode" ).on( "click", function() {
         let mode = $( this ).val()
         window.setMode.activate(mode)
