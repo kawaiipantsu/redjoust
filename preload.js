@@ -230,9 +230,6 @@ window.onload = () => {
       }
     }
   }, 500);
-
-  
-  
 }
 
 function loadDefaultSettings() {
@@ -353,7 +350,16 @@ contextBridge.exposeInMainWorld('setMode', {
     }
 });
 
+var currentTargetHistory = store.get('targetHistory.targets');
 contextBridge.exposeInMainWorld('actionHandler', {
+  targethistoryarray () {
+    return currentTargetHistory;
+  },
+  targethistory (lookup) {
+    if ( currentTargetHistory.length > 0 ) {
+      return "["+currentTargetHistory.length+"] Lookup: "+lookup;
+    }
+  },
   goto (key) {
     switch (key) {
       case "btngotonext":
@@ -443,6 +449,8 @@ function showPage( pagename=null ) {
           } 
         }
         $("#"+pagename).show()
+        // A bit of focus handling ...
+        if ( pagename == "pagetarget" ) $("#inputTarget").trigger('focus');
     } else {
         $(".pages").hide();
         $("#pagenotfound").show()

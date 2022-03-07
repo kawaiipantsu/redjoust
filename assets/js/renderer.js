@@ -53,9 +53,24 @@ $(function () {
         }
     });
 
-    $('#inputTarget').on('input',function(e){
-        alert('Changed!')
+    // For future use (autocomplete etc)
+    $( "#inputTarget" ).autocomplete({
+        source: window.actionHandler.targethistoryarray()
     });
+
+    /* My first blab attempt to play with something ...
+    $('#inputTarget').on('input',function(e){
+        curValue = $(this).val();
+        curLen = curValue.length;
+        if ( curLen > 2) {
+            // We have 2+ chars to match on ...
+            // Lets play, this is not a full fledge autocomplete,
+            // just me playing around .... (it's all handled in preload, away from user)
+            var result = window.actionHandler.targethistory(curValue);
+            console.log(result);
+        }
+    });
+    */
 
     $( ".setmode" ).on( "click", function() {
         let mode = $( this ).val()
