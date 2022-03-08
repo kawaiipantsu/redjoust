@@ -1,5 +1,5 @@
 // Modules
-const { app, BrowserWindow, Tray, ipcMain, nativeTheme, globalShortcut, nativeImage, Menu, MenuItem } = require('electron')
+const { app, BrowserWindow, BrowserView, Tray, ipcMain, nativeTheme, globalShortcut, nativeImage, Menu, MenuItem } = require('electron')
 const os = require('os')
 const osUtils = require('os-utils')
 const path = require('path')
@@ -38,8 +38,8 @@ const createWindow = () => {
         darkTheme: true,
         autoHideMenuBar: false,
         icon: nativeImage.createFromPath(__dirname + '/assets/redjoust-icon.png').resize({width:64}),
-        width: 1280,
-        minWidth: 900,
+        width: 1400, // Good size, i will try to keep this at all times
+        minWidth: 1280, // I like this safe min resolution
         minHeight: 700,
         webPreferences: {
             devTools: true,
@@ -198,38 +198,29 @@ menu.append(new MenuItem({
     }]
   }))
 menu.append(new MenuItem({
-    label: 'Testing',
+    label: 'View',
     submenu: [{
+      label: 'Toggle Streamer-mode',
+      accelerator: process.platform === 'darwin' ? 'F10' : 'F10',
+      click: () => { mainWindow.webContents.send("togglestreamermode") }
+    },
+    { role: 'togglefullscreen' },
+    {
       role: 'toggleDevTools',
       accelerator: process.platform === 'darwin' ? 'F12' : 'F12',
       click: () => { mainWindow.webContents.toggleDevTools() }
     },
+    { type: 'separator' },
     {
-        label: 'Show process info',
-        accelerator: process.platform === 'darwin' ? 'F11' : 'F11',
-        click: () => { mainWindow.webContents.send("showprocessinfo") }
-    },
-    {
-        label: 'Show default page',
-        click: () => { mainWindow.webContents.send("showpagedefault") }
-    },
-    {
-        label: 'Show long test page',
-        click: () => { mainWindow.webContents.send("showpagetestlong") }
-    },
-    {
-        type: 'separator'
-     },
-    {
-        role: 'resetzoom'
-     },
-     {
-        role: 'zoomin',
-
-     },
-     {
-        role: 'zoomout'
-     }]
+      label: 'Appearance',
+        submenu: [
+          { role: 'zoomin' },
+          { role: 'zoomout' },
+          { type: 'separator' },
+          { role: 'resetzoom' }
+        ],
+     }
+     ]
   }))
   menu.append(new MenuItem({
     label: 'Help',

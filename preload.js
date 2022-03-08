@@ -7,48 +7,11 @@ const net = require('net');
 const { isNull } = require('util');
 const { exit } = require('process');
 
+
+const defaultSettingsSchema = require('./assets/js/config-scheme.js')
 // We are now using the scheme to set the overall template of the config file.
 // This is super as even if the user has an old config file any new "settings"
 // will apply based on the schemes default values when using the "store.get".
-const defaultSettingsSchema = {
-  settings: {
-    exist: true,
-    theme: 'system',
-    debug: false
-  },
-  menuitems: {
-    passive: {
-      allow: true,
-      runwarning: false
-    },
-    active: {
-      allow: true,
-      runwarning: false
-    },
-    redteam: {
-      allow: true,
-      runwarning: true
-    },
-    externaltools: {
-      show: true,
-      terminal: true
-    }
-  },
-  info: {
-    target: null,
-    mode: null,
-    itemDefaults: {
-      username: 'admin',
-      password: 'admin',
-      timeout: 5
-    }
-  },
-  targetHistory: {
-    maxtargets: 50,
-    targets: []
-  }
-};
-
 
 const store = new Store({defaults: defaultSettingsSchema});
 

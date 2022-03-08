@@ -82,6 +82,11 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
     .menusegment { background-color: #212836; }
     .menusegmentinfo { background-color: #212836; }
     .status--info { background-color: #212836; color:rgb(230, 230, 230) }
+    #redjoustmode { color: rgb(255, 255, 255); }
+    #redjousttarget { color: rgb(255, 255, 255); }
+    .defaulttext h1 { color: rgb(190, 190, 190); }
+    .defaulttext h3 { color: rgb(139, 139, 139); }
+    .defaulttext h3 strong { color:#ffffff; }
   }
   
   @media (prefers-color-scheme: light) {
@@ -105,6 +110,11 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
     .menusegment { background-color: #b3b4b4; }
     .menusegmentinfo { background-color: #b3b4b4; }
     .status--info { background-color: #b3b4b4; color:rgb(36, 32, 32) }
+    #redjoustmode { color: rgb(255, 255, 255); }
+    #redjousttarget { color: rgb(255, 255, 255); }
+    .defaulttext h1 { color: rgb(61, 61, 61); }
+    .defaulttext h3 { color: rgb(41, 41, 41); }
+    .defaulttext h3 strong { color:#ffffff; }
   }
 
 #username {
@@ -496,9 +506,12 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
     }
 }
 .fill { width: 100%; }
+.fill--fancy { width: calc(100% - 40px); }
 .fill--fix { width: calc(100% - 25px); }
 .fill--90 { width: 90%; }
+.fill--60 { width: 50%; }
 .fill--50 { width: 50%; }
+.fill--size1 { width: 600px; }
 .centerbox {
     display: flex;
     align-items: center;
@@ -506,6 +519,28 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
     height: 99%;
     overflow-y: hidden; /* Hide vertical scrollbar */
     overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+.defaulttext {
+    align-items: center;
+    justify-content: center;
+    overflow-y: hidden; /* Hide vertical scrollbar */
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+
+.defaulttext .imgmiddle {
+    display: inline-block;
+    padding-bottom: 14px;
+    padding-right: 10px;
+    vertical-align: bottom;
+}
+
+.defaulttext h1 {
+    display: inline-block;
+    vertical-align:top;
+}
+.defaulttext h3 {
+    display: block;
+    vertical-align:top;
 }
 
 .pages {

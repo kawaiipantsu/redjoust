@@ -532,6 +532,10 @@ button--moema:active {
     background: #006400;
 	color: rgb(218, 208, 208);
 }
+.enabled::after {
+    content:" ✓ ";
+	font-weight: bold;
+}
 @-webkit-keyframes anim-moema-1 {
 	60% {
 		-webkit-transform: scale3d(0.8, 0.8, 1);

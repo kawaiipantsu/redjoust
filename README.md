@@ -64,6 +64,7 @@ More to come soon ! I hope :)
 - New defaults scheme, no need for cutom defualtsettings writer function
 - Next page (goto next) continue logic, will itterate though mode, target and run if they are not set
 - Make default first page show easy 3 button layout - Set mode, set target, run
+- Default page done
 - Added target history, save last 50 targets for future options like autocomplete
 - Target history cleanup logic
 - Default item page layout/template
