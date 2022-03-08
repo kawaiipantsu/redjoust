@@ -75,25 +75,33 @@ More to come soon ! I hope :)
     - Should be able to be run onload as well
     - update global vars
     - update conf settings storage
+    - Needs to parse/detect if its hostname or ip
+    - Enable to find domain name from hostname
+    - if ip generate ip subnet info
+    - Read from pagetarget
 - Target page, history autocomplete
 - Added toggle for external tools menu
 - Added toggle for streamer-mode (just removes obvious things like public ip)
+- Preparing for more config settings
+  - default NS server to use (static or system)
+- Target logic done
+- updateItem visibility logic done
+- updateItem states logic done
+- Now able to set target via "enter" or "continue" on target page
+- Custom DNS NS server for resolver supported
+  - Supports system (use system default ns servers)
+  - Multiple custom via array
+  - Single custom via string
+- Make simple DNS lookup module ~~(json return)~~ to test output for page
 
 ## TODO list (what i want to get done short term)
 
 - Way to find childs/processes of async things running
 - Make Preferences window useful
 - Preparing for more config settings
-  - default NS server to use (static or system)
   - proxy usage
   - tor usage
   - specific item options
 - proxy/tor/socks logic
 - Getting PowerMonitor to work, so i can attach to System OS idle/suspend events
-- Make logic to set your target (ip, hostname or domain)
-  - setTarget()
-    - Needs to parse/detect if its hostname or ip
-    - Enable to find domain name from hostname
-    - if ip generate ip subnet info
-    - Read from pagetarget
-- Make simple DNS lookup module ~~(json return)~~ to test output for page
+

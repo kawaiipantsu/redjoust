@@ -4,6 +4,7 @@ const electron = require('electron');
 const Store = require('electron-store');
 const os = require('os')
 const net = require('net');
+const { Resolver } = require('dns');
 const { isNull } = require('util');
 const { exit } = require('process');
 
@@ -23,6 +24,9 @@ const store = new Store({defaults: defaultSettingsSchema});
 
 const sysUserInfo = os.userInfo();
 
+// Our DNS resolver
+const resolver = new Resolver();
+
 // Redjoust vars
 var myDebug = store.get('settings.debug')
 var myTheme = store.get('settings.theme')
@@ -32,6 +36,7 @@ var streamerMode = store.get('settings.streamermode')
 var showExternals = store.get('menuitems.externaltools.show')
 var myStatusbarMessage = "";
 var myStatusbarIcon = "";
+var dnsServer = store.get('info.itemDefaults.dnsresolver')
 var statusIcons = ['statusicon--idle','statusicon--busy','statusicon--error','statusicon--warning','statusicon--done','statusicon--pizza','statusicon--info']
 var itemsRunning = []
 
@@ -138,23 +143,11 @@ window.onload = () => {
 
   itemsTitleDefault(); // On load set all titles on items
 
-  switch (myMode) {
-    case "Passive":
-      $(".item--passive").show();
-      break;
-    case "Active+Passive":
-      $(".item--passive").show();
-      $(".item--active").show();
-      break;
-    case "Red-Team+Active+Passive":
-      $(".item--passive").show();
-      $(".item--active").show();
-      $(".item--redteam").show();
-      break;
-  }
+  updateItemVisibility();
 
-
-
+  // Since this is first load, reset everything !
+  // So we are in the right state of mind all around :)
+  resetAll();
 
   // Statusbar handler section
   // Set default statusbar text for now
@@ -221,6 +214,87 @@ function loadDefaultSettings() {
   if (myDebug) console.log("Loaded default settings, first time run!");
 }
 
+function updateItemVisibility() {
+  switch (myMode) {
+    case "Passive":
+      $(".item--passive").show();
+      break;
+    case "Active+Passive":
+      $(".item--passive").show();
+      $(".item--active").show();
+      break;
+    case "Red-Team+Active+Passive":
+      $(".item--passive").show();
+      $(".item--active").show();
+      $(".item--redteam").show();
+      break;
+    default:
+      $(".item--passive").hide();
+      $(".item--active").hide();
+      $(".item--redteam").hide();
+      break;
+  }
+}
+function updateItemState(itemID=false) {
+  if ( itemID ) {
+    if ( myTarget && myMode ) {
+      $("#"+itemID).removeClass("status--disabled");
+      $("#"+itemID).removeClass("status--ready");
+      $("#"+itemID).removeClass("status--working");
+      $("#"+itemID).removeClass("status--done");
+      $("#"+itemID).addClass("status--ready");
+      itemTitleDefault(itemID)
+    } else {
+      $("#"+itemID).removeClass("status--disabled");
+      $("#"+itemID).removeClass("status--ready");
+      $("#"+itemID).removeClass("status--working");
+      $("#"+itemID).removeClass("status--done");
+      if ( myTarget && !myMode ) {
+        $("#"+itemID).addClass("status--disabled");
+        itemBroke(itemID,"Please also set mode");
+      } else if ( !myTarget && myMode ) {
+        $("#"+itemID).addClass("status--disabled");
+        itemBroke(itemID,"Please also set target");
+      } else {
+        $("#"+itemID).addClass("status--disabled");
+        itemBroke(itemID,"Please set target and mode");
+      }
+    }
+  } else {
+    // We do em all :D
+    $('.menuitem').each(function(){
+      itemID = $(this).attr("id");
+      if ( !$("#"+itemID).hasClass("item--external") ) {
+        if ( myTarget && myMode ) {
+          $("#"+itemID).removeClass("status--disabled");
+          $("#"+itemID).removeClass("status--ready");
+          $("#"+itemID).removeClass("status--working");
+          $("#"+itemID).removeClass("status--done");
+          $("#"+itemID).addClass("status--ready");
+          itemTitleDefault(itemID)
+        } else {
+          $("#"+itemID).removeClass("status--disabled");
+          $("#"+itemID).removeClass("status--ready");
+          $("#"+itemID).removeClass("status--working");
+          $("#"+itemID).removeClass("status--done");
+          if ( myTarget && !myMode ) {
+            $("#"+itemID).addClass("status--disabled");
+            itemBroke(itemID,"Please also set mode");
+          } else if ( !myTarget && myMode ) {
+            $("#"+itemID).addClass("status--disabled");
+            itemBroke(itemID,"Please also set target");
+          } else {
+            $("#"+itemID).addClass("status--disabled");
+            itemBroke(itemID,"Please set target and mode");
+          }
+        }
+      }
+    });
+  }
+  updateItemVisibility();
+}
+
+
 function itemsTitleDefault() {
   $(".menuitem").each(function() {
     var itemID = $(this).attr('id');
@@ -231,11 +305,11 @@ function itemsTitleDefault() {
   });
 }
 function itemTitleDefault(myID) {
-    var itemID = $("#+myID").attr('id');
-    var itemTitle = $("#+myID").data("title");
-    var itemPage = $("#+myID").data("page");
-    var itemFunc = $("#+myID").data("function");
-    if (itemTitle) $("#+myID").attr("title",itemTitle);
+    var itemID = $("#"+myID).attr('id');
+    var itemTitle = $("#"+myID).data("title");
+    var itemPage = $("#"+myID).data("page");
+    var itemFunc = $("#"+myID).data("function");
+    if (itemTitle) $("#"+myID).attr("title",itemTitle);
 }
 
 function visibleItems() {
@@ -316,13 +390,16 @@ contextBridge.exposeInMainWorld('setMode', {
       }
       store.set('info.mode', myMode);
       $("#redjoustmode").html(myMode)
+      updateItemState();
     }
 });
 
-var currentTargetHistory = store.get('targetHistory.targets');
 contextBridge.exposeInMainWorld('actionHandler', {
+  updateTarget (newTarget) {
+    setTarget(newTarget);
+  },
   targethistoryarray () {
-    return currentTargetHistory;
+    return store.get('targetHistory.targets');
   },
   targethistory (lookup) {
     if ( currentTargetHistory.length > 0 ) {
@@ -435,7 +512,10 @@ function showPage( pagename=null ) {
         }
         $("#"+pagename).show()
         // A bit of focus handling ...
-        if ( pagename == "pagetarget" ) $("#inputTarget").trigger('focus');
+        if ( pagename == "pagetarget" ) {
+          if ( myTarget ) $("#inputTarget").val(myTarget);
+          $("#inputTarget").trigger('focus');
+        }
     } else {
         $(".pages").hide();
         $("#pagenotfound").show()
@@ -474,18 +554,21 @@ function runAll() {
       var itemTitle = $(this).data("title");
       var itemPage = $(this).data("page");
       var itemFunc = $(this).data("function");
+      if (myDebug) console.log("Starting ["+itemID+"] calling '"+itemFunc+"' output to: "+itemPage);
+      imRunning(itemID); // Mark it running
       try {
         // Finally, got it to work properly and not using eval() !! Phew !
-        imRunning(itemID); // Mark it running
         window[itemFunc](itemID)
         // TODO: Here is where i left of :=)
         // Make some logic to keep checking if its still running
         // perhaps use the itemsRunning array ?? async rubbish keeps me up late
-        imDone(itemID); // Mark it done! (Should somehow wait for the function to finish!)
+        
       } catch (err) {
         if (myDebug) console.log(itemFunc+"() is not a function!");
+        $("#"+itemID).data('status',"done");
         itemBroke(itemID,"Fatal error: Item broke, no function found");
       }
+      imDone(itemID); // Mark it done! (Should somehow wait for the function to finish!)
     }
   });
 }
@@ -504,12 +587,7 @@ function resetAll() {
       $("#"+itemID).removeClass("status--ready");
       $("#"+itemID).removeClass("status--working");
       $("#"+itemID).removeClass("status--done");
-      if ( myTarget && myMode ) {
-        $("#"+itemID).addClass("status--ready");
-      } else {
-        $("#"+itemID).addClass("status--disabled");
-        itemBroke(itemID,"Missing either target or mode");
-      }
+      updateItemState(itemID);
     }
   });
 }
@@ -588,7 +666,6 @@ ipcRenderer.on('showprocessinfo', (event) => {
   if (myDebug) console.log("==[ PROCESS INFORMATION ]==============");
 });
 
-
 ipcRenderer.on('showpagedefault', (event) => {
   showPage("pagedefault");
 });
@@ -598,8 +675,15 @@ ipcRenderer.on('showpageclear', (event) => {
   store.set("info.mode",null);
   store.set("info.target", null);
   resetAll();
+  $(".menuitems.item--passive").hide();
+  $(".menuitems.item--active").hide();
+  $(".menuitems.item--redteam").hide();
+  $("#haveIP").hide();
+  $("#haveHostname").hide();
+  $("#haveDomainname").hide();
   $("#redjoustmode").html("No mode set")
   $("#redjousttarget").html("No target set")
+  $("#inputTarget").val(null);
   showPage("pagedefault");
 });
 ipcRenderer.on('showpagetarget', (event) => {
@@ -765,30 +849,90 @@ function setTarget(newTarget=false) {
       - Be able to run via onload (sanity checks etc)
       - 
   */
- $("#haveExternal").show(); // Always show external tools
  if ( newTarget ) {
   myTarget = newTarget; // Setting global
   store.set('info.target', myTarget); // Setting conf storage
   targetlist = store.get('targetHistory.targets'); // Get out target history
-  targetlist.push(myTarget); // Add our new target to the list (the list has a max, see conf)
-  store.set('targetHistory.targets',targetlist); // Store it back into the config file
+  if ( targetlist.indexOf(myTarget) !== -1 ) {
+    if (myDebug) console.log("Not saving target to history, already there!");
+  } else {
+    targetlist.push(myTarget); // Add our new target to the list (the list has a max, see conf)
+    store.set('targetHistory.targets',targetlist); // Store it back into the config file
+    if (myDebug) console.log("New target stored in history");
+  }
+  $("#redjousttarget").text(myTarget).html()
+  parseTarget(myTarget)
  } else {
    if ( myTarget ) { // Only continue if target is set to something default
-    if ( net.isIP(myTarget) ) {
-      // TARGET IS IP ADDRESS
-      $("#haveHostname").hide();
-      $("#havedomainname").hide();
-      $("#haveIP").show();
-
-    } else {
-      // TARGET IS HOSTNAME
-  
-    }
+    parseTarget(myTarget)
    } 
  }
+ updateItemState();
 }
 
+function parseTarget(target) {
+  $("#haveHostname").hide();
+  $("#havedomainname").hide();
+  $("#haveIP").hide();
 
+  // Handle custom NS server for our resolver !!
+  // We support
+  // - System (default)
+  // - Multiple NS (as array)
+  // - Single NS (as string)
+  var nsresolver = store.get('info.itemDefaults.dnsresolver');
+  if ( nsresolver ) {
+    if ( nsresolver == "system" ) resolver.setServers(resolver.getServers()); // Yes set get blooper! But config might change on fly
+    else if ( Array.isArray(nsresolver) ) resolver.setServers(nsresolver);
+    else resolver.setServers([nsresolver]);
+  }
+
+  if ( net.isIP(target) ) {
+    // TARGET IS IP ADDRESS
+    $("#haveIP").show();
+    $("#targetIP").text(target).html();
+    // Lets reverse DNS lookup the IP :)
+    // If we get something, populate the hostname menu as well!
+    resolver.reverse(String(target), (err, hostnames) => {
+      if (err) {
+        if (myDebug) console.log(err)
+      } else {
+        const hostname = hostnames[0]
+        $("#haveHostname").show();
+        $("#targetHostname").text(hostname).html();
+
+        var parts = hostname.split('.').reverse();
+        if (parts != null && parts.length > 1) {
+          domain = parts[1] + '.' + parts[0];
+          $("#haveDomainname").show();
+          $("#targetDomainname").text(domain).html();
+        }
+      }
+    });
+  } else {
+    // TARGET IS HOSTNAME
+    $("#haveHostname").show();
+    $("#targetHostname").text(target).html();
+    // Parse for domain name
+    var parts = target.split('.').reverse();
+    if (parts != null && parts.length > 1) {
+      domain = parts[1] + '.' + parts[0];
+      $("#haveDomainname").show();
+      $("#targetDomainname").text(domain).html();
+    }
+    // Lets reverse DNS lookup the IP :)
+    // If we get something, populate the hostname menu as well!
+    resolver.resolve(String(target), (err, ipaddresses) => {
+      if (err) {
+        if (myDebug) console.log(err)
+      } else {
+        const ipaddress = ipaddresses[0]
+        $("#haveIP").show();
+        $("#targetIP").text(ipaddress).html();
+      }
+    });
+  }
+}
 
 function getFunctionByName(functionName, context) {
   if(typeof(window) == "undefined") {

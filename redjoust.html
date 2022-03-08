@@ -35,9 +35,6 @@
                 
             </div>
             <div id="preflogo"></div>
-            <div id="prefsave">
-                <button value="save" class="prefbuttons button button--isi button--text-thick button--size-s" disabled>Apply</button>
-            </div>
             <div id="prefclose">
                 <button value="close" class="prefbuttons button button--isi button--text-thick button--size-s">Close</button>
                 
@@ -69,23 +66,23 @@
         </div>
         <div class="treeview boxborder">
             <div class="placeholdertree" id="tree">
-              <fieldset id="haveIP" class="menusegment">
-                <legend id="targetIP" class="menusegmentinfo">3.120.120.3</legend>
-                <div id="doDNS1" data-title="DNS information 1" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 1</div>
-                <div id="doDNS2" data-title="DNS information 2" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 2</div>
-                <div id="doDNS3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 3</div>
-              </fieldset>
               <fieldset id="haveHostname" class="menusegment">
-                <legend id="targetHostname" class="menusegmentinfo">enforcer.darknet.dk</legend>
-                <div id="doDNS1" data-title="DNS information 1" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 1</div>
-                <div id="doDNS2" data-title="DNS information 2" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 2</div>
-                <div id="doDNS3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 3</div>
+                <legend id="targetHostname" class="menusegmentinfo">???</legend>
+                <div id="doDNShost1" data-title="DNS information 1" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--disabled">DNS Information 1</div>
+                <div id="doDNShost2" data-title="DNS information 2" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--active status--disabled">DNS Information 2</div>
+                <div id="doDNShost3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--redteam status--disabled">DNS Information 3</div>
               </fieldset>
               <fieldset id="haveDomainname" class="menusegment">
-                <legend id="targetDomainname" class="menusegmentinfo">darknet.dk</legend>
-                <div id="doDNS1" data-title="DNS information 1" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 1</div>
-                <div id="doDNS2" data-title="DNS information 2" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 2</div>
-                <div id="doDNS3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--ready">DNS Information 3</div>
+                <legend id="targetDomainname" class="menusegmentinfo">???</legend>
+                <div id="doDNSdom1" data-title="DNS information 1" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--disabled">DNS Information 1</div>
+                <div id="doDNSdom2" data-title="DNS information 2" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--active status--disabled">DNS Information 2</div>
+                <div id="doDNSdom3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--redteam status--disabled">DNS Information 3</div>
+              </fieldset>
+              <fieldset id="haveIP" class="menusegment">
+                <legend id="targetIP" class="menusegmentinfo">???</legend>
+                <div id="doDNSip1" data-title="DNS information 1" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--disabled">DNS Information 1</div>
+                <div id="doDNSip2" data-title="DNS information 2" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--active status--disabled">DNS Information 2</div>
+                <div id="doDNSip3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--redteam status--disabled">DNS Information 3</div>
               </fieldset>
               <fieldset id="haveExternal" class="menusegment">
                 <legend id="targetExternal" class="menusegmentinfo">External tools</legend>
@@ -135,7 +132,7 @@
                           </tr>
                           <tr>
                             <td colspan="2" align="center">
-                              <button value="redteam" id="btngotorun" class="fill--fix goto button button--moema button--inverted button--text-thick button--size-m bg-3">GATHER INTEL!</button>
+                              <button id="btngotorun" class="fill--fix goto button button--moema button--inverted button--text-thick button--size-m bg-3">GATHER INTEL!</button>
                             </td> 
                           </tr>
                         </table>
@@ -163,7 +160,7 @@
                             <tr>
                               <td class="fill--50" align="center"><button value="passive" id="btnpassive" class="fill--fix setmode button button--moema button--inverted button--text-thick button--size-m bg-3">PASSIVE</button></td> 
                               <td class="spacer"></td>
-                              <td class="fill--50" align="center"><button value="active" id="btnactive" class="fill--fix setmode button button--moema button--inverted button--text-thick button--size-m">ACTIVE</button></td> 
+                              <td class="fill--50" align="center"><button value="active" id="btnactive" class="fill--fix setmode button button--moema button--inverted button--text-thick button--size-m bg-3">ACTIVE</button></td> 
                             </tr>
                             <tr>
                               <td colspan="3" align="center">
@@ -203,31 +200,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="pages" id="pagetestlong">
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at consectetur erat. Etiam leo massa, vulputate ac augue vestibulum, suscipit condimentum nulla. Integer tempor, metus non tincidunt iaculis, lectus odio laoreet quam, quis finibus arcu tellus eget ante. Maecenas a ultrices massa. Mauris pharetra massa at rhoncus rutrum. Donec at ex id lorem scelerisque lacinia. Duis non ultricies nisl. </div>
-                </div>
                 <div class="pages" id="pagetarget">
                   <div class="centerbox">
                     <div>
@@ -263,7 +235,7 @@
                         </tr>
                         <tr>
                           <td colspan="3" align="center">
-                            <button id="btngotonext" class="goto button button--isi button--text-thick button--size-s">Continue</button>
+                            <button value="updatetarget" id="btngotonext" class="goto button button--isi button--text-thick button--size-s">Continue</button>
                           </td> 
                         </tr>
                       </table>

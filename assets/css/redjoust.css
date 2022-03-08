@@ -417,8 +417,8 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
 }
 #prefclose {
     position: absolute;
-    bottom: -6px;
-    right: -7px;
+    bottom: 3px;
+    right: 3px;
 
 }
 #prefsave {
@@ -636,6 +636,7 @@ legend { font-weight: bold; text-align: center; }
     background-blend-mode: multiply;
 }
 .item--passive {
+    display: none;
     background-image: url("./../icons/menu/set1/mode.png");
     background-position: left;
     background-repeat: no-repeat;
@@ -643,6 +644,7 @@ legend { font-weight: bold; text-align: center; }
     background-blend-mode: multiply;
 }
 .item--active {
+    display: none;
     background-image: url("./../icons/menu/set1/connect.png");
     background-position: left;
     background-repeat: no-repeat;
@@ -650,6 +652,7 @@ legend { font-weight: bold; text-align: center; }
     background-blend-mode: multiply;
 }
 .item--redteam {
+    display: none;
     background-image: url("./../icons/menu/set1/error.png");
     background-position: left;
     background-repeat: no-repeat;
@@ -739,7 +742,7 @@ legend { font-weight: bold; text-align: center; }
     font-weight: bold;
 	cursor: pointer;
 	/* support: IE10, see #8844 */
-	list-style-image: url("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7");
+	list-style-image: url("./../images/blank.gif");
 }
 .ui-menu .ui-menu-item-wrapper {
 	position: relative;
