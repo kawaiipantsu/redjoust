@@ -76,6 +76,8 @@ More to come soon ! I hope :)
     - update global vars
     - update conf settings storage
 - Target page, history autocomplete
+- Added toggle for external tools menu
+- Added toggle for streamer-mode (just removes obvious things like public ip)
 
 ## TODO list (what i want to get done short term)
 

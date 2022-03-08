@@ -23,10 +23,7 @@ function testMe1() {
 
 $(function () {
     $("#username").html(window.userInfo.username);
-    $.ajax({url: "https://api.buffer.dk/myip", success: function(result){
-        $("#myip").html(result.ip);
-        //$("#myip").html("100.100.100.100"); // For screenshot :)
-      }});
+    
     $("#tree").overlayScrollbars({
         className       : "os-theme-dark",
         resize          : "none",

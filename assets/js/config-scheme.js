@@ -14,6 +14,7 @@
     
     settings: {
         theme: 'system',
+        streamermode: false,
         debug: false
     },
     menuitems: {
@@ -30,7 +31,7 @@
             runwarning: true
         },
         externaltools: {
-            show: true,
+            show: false,
             terminal: false
         }
     },

@@ -201,9 +201,15 @@ menu.append(new MenuItem({
     label: 'View',
     submenu: [{
       label: 'Toggle Streamer-mode',
-      accelerator: process.platform === 'darwin' ? 'F10' : 'F10',
+      accelerator: process.platform === 'darwin' ? 'F9' : 'F9',
       click: () => { mainWindow.webContents.send("togglestreamermode") }
     },
+    {
+      label: 'Toggle External tools',
+      accelerator: process.platform === 'darwin' ? 'F10' : 'F10',
+      click: () => { mainWindow.webContents.send("toggleexternaltools") }
+    },
+    { type: 'separator' },
     { role: 'togglefullscreen' },
     {
       role: 'toggleDevTools',

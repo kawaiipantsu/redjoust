@@ -28,6 +28,8 @@ var myDebug = store.get('settings.debug')
 var myTheme = store.get('settings.theme')
 var myTarget = store.get('info.target')
 var myMode = store.get('info.mode')
+var streamerMode = store.get('settings.streamermode')
+var showExternals = store.get('menuitems.externaltools.show')
 var myStatusbarMessage = "";
 var myStatusbarIcon = "";
 var statusIcons = ['statusicon--idle','statusicon--busy','statusicon--error','statusicon--warning','statusicon--done','statusicon--pizza','statusicon--info']
@@ -118,12 +120,16 @@ window.onload = () => {
   setTarget();
   if ( myTarget ) $("#inputTarget").val(myTarget);
 
+  // Update public IP
+  reloadPublicIP();
+
+  // Show default front page
   showPage("pagedefault");
 
   // Only hide all if we need to
   // If mode is set from last time, show those !
   
-  if ( store.get('menuitems.externaltools.show') ) $("#haveExternal").show();
+  if ( showExternals ) $("#haveExternal").show();
   else $("#haveExternal").hide();
   
   $(".item--passive").hide();
@@ -374,6 +380,22 @@ contextBridge.exposeInMainWorld('itemAPI', {
   }
 });
 
+function reloadPublicIP() {
+  $.ajax({
+    dataType: 'json',
+    url: "https://api.buffer.dk/myip",
+    success: function(result){
+      if ( streamerMode ) {
+        $("#myip").html("Privacy mode");
+      } else {
+        $("#myip").html(result.ip);
+      }
+    },
+    fail: function(xhr, textStatus, errorThrown){
+      $("#myip").html("Unknown?");
+    }
+  });
+}
 
 function showPage( pagename=null ) {
  if ( pagename ) {
@@ -520,6 +542,35 @@ ipcRenderer.on('lockscreen', (event) => {
 ipcRenderer.on('escpressed', (event) => {
   showPage("pagedefault");
 });
+
+ipcRenderer.on('togglestreamermode', (event) => {
+  if ( streamerMode ) {
+    // Streamer mode enabled - toggle to disabled!
+    streamerMode = false;
+    store.set('settings.streamermode', false);
+  } else {
+    // Streamer mode disabled - toggle to enabled!
+    streamerMode = true;
+    store.set('settings.streamermode', true);
+  }
+  reloadPublicIP();
+});
+
+
+ipcRenderer.on('toggleexternaltools', (event) => {
+  if ( showExternals ) {
+    // External tools enabled - toggle to disabled!
+    showExternals = false;
+    store.set('menuitems.externaltools.show', false);
+    $("#haveExternal").hide();
+  } else {
+    // External tools disabled - toggle to enabled!
+    showExternals = true;
+    store.set('menuitems.externaltools.show', true);
+    $("#haveExternal").show();
+  }
+});
+
 ipcRenderer.on('resetitems', (event) => {
   resetAll();
 });
