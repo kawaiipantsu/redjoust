@@ -96,6 +96,10 @@ I have included 2 screenshots, i will update them regularly :)
   - Multiple custom via array
   - Single custom via string
 - Make simple DNS lookup module ~~(json return)~~ to test output for page
+- Complete toolbox tool: Base64 convertion
+- Complete toolbox tool: Hashes (Live hashing)
+- External URL link in toolbox logic (Used for CyberChef etc)
+- Toolbox can be toggled show/hide via View menu
 
 ## TODO list (what i want to get done short term)
 
@@ -107,4 +111,3 @@ I have included 2 screenshots, i will update them regularly :)
   - specific item options
 - proxy/tor/socks logic
 - Getting PowerMonitor to work, so i can attach to System OS idle/suspend events
-

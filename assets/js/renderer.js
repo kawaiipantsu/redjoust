@@ -52,7 +52,19 @@ $(function () {
     });
 
     // Enable the "Fancy" scroll bars aka styled scrollbars for our page container!
-    $(".pages").overlayScrollbars({
+    $(".toolcontainter").overlayScrollbars({
+        className       : "os-theme-dark",
+        resize          : "none",
+        sizeAutoCapable : true,
+        paddingAbsolute : true,
+        scrollbars : {
+            visibility       : "visible",
+            autoHide         : "never",
+            dragScrolling    : true,
+            touchSupport     : true
+        }
+    });
+    $(".itemcontainter").overlayScrollbars({
         className       : "os-theme-dark",
         resize          : "none",
         sizeAutoCapable : true,
@@ -184,5 +196,18 @@ $(function () {
                 $("#b64--base64").val("");
                 break;
         }
+    });
+
+    $('#hashinput').on('click focusin', function() {
+        this.value = '';
+    });
+    $('#hashinput').on('input', function() {
+        var value = $(this).val();
+        window.toolAPI.doHashing(value);
+    });
+    $('.hashresult').on('click', function() {
+        $(this).trigger("select");
+        document.execCommand("copy");
+        window.toolAPI.statusbarNotify('Hash copied to clipboard!');
     });
 });

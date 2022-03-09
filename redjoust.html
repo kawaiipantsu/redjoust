@@ -143,23 +143,77 @@
                       </div>
                   </div>
                 </div>
+                <div class="pages" id="pagetooltemplate">
+                  <div class="toolcontainter">
+                    <table class="fill boxborder">
+                      <tr class="tooltop">
+                        <td class="fill--50 tooltext boxborder">
+                          Top text field
+                        </td>
+                      </tr>
+                      <tr class="toolbottom">
+                        <td class="toolmainarea boxborder">Main tool text area</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
                 <div class="pages" id="pagetoolhashes">
                   <div class="toolcontainter">
-                      Hi i'm hashes!
+                    <table class="fill--wide boxborder tooltable">
+                      <tr class="tooltop">
+                        <td colspan="3" class="tooltext boxborder">
+                          <input id="hashinput" class="boxborder" type="text" value="Input text here ....">
+                        </td>
+                      </tr>
+                      <tr class="toolbottom"><td class="boxborder inmiddle hashnames">CRC-32</td>
+                        <td class="boxborder inmiddle hashicons"><strong>&#8605;</strong></td>
+                        <td class="boxborder inmiddle hashresults"><input id="hash--crc32" class="hashresult boxborder" type="text" value=""></td>
+                      </tr>
+                      <tr class="toolbottom"><td class="boxborder inmiddle hashnames">MD4</td>
+                        <td class="boxborder inmiddle hashicons"><strong>&#8605;</strong></td>
+                        <td class="boxborder inmiddle hashresults"><input id="hash--md4" class="hashresult boxborder" type="text" value=""></td>
+                      </tr>
+                      <tr class="toolbottom"><td class="boxborder inmiddle hashnames">MD5</td>
+                        <td class="boxborder inmiddle hashicons"><strong>&#8605;</strong></td>
+                        <td class="boxborder inmiddle hashresults"><input id="hash--md5" class="hashresult boxborder" type="text" value=""></td>
+                      </tr>
+                      <tr class="toolbottom"><td class="boxborder inmiddle hashnames">RIPE-MD160</td>
+                        <td class="boxborder inmiddle hashicons"><strong>&#8605;</strong></td>
+                        <td class="boxborder inmiddle hashresults"><input id="hash--ripemd160" class="hashresult boxborder" type="text" value=""></td>
+                      </tr>
+                      <tr class="toolbottom"><td class="boxborder inmiddle hashnames">SHA-1</td>
+                        <td class="boxborder inmiddle hashicons"><strong>&#8605;</strong></td>
+                        <td class="boxborder inmiddle hashresults"><input id="hash--sha1" class="hashresult boxborder" type="text" value=""></td>
+                      </tr>
+                      <tr class="toolbottom"><td class="boxborder inmiddle hashnames">SHA-224</td>
+                        <td class="boxborder inmiddle hashicons"><strong>&#8605;</strong></td>
+                        <td class="boxborder inmiddle hashresults"><input id="hash--sha224" class="hashresult boxborder" type="text" value=""></td>
+                      </tr>
+                      <tr class="toolbottom"><td class="boxborder inmiddle hashnames">SHA-256</td>
+                        <td class="boxborder inmiddle hashicons"><strong>&#8605;</strong></td>
+                        <td class="boxborder inmiddle hashresults"><input id="hash--sha256" class="hashresult boxborder" type="text" value=""></td>
+                      </tr>
+                      <tr class="toolbottom"><td class="boxborder inmiddle hashnames">SHA-384</td>
+                        <td class="boxborder inmiddle hashicons"><strong>&#8605;</strong></td>
+                        <td class="boxborder inmiddle hashresults"><input id="hash--sha384" class="hashresult boxborder" type="text" value=""></td>
+                      </tr>
+                      <tr class="toolbottom"><td class="boxborder inmiddle hashnames">SHA-512</td>
+                        <td class="boxborder inmiddle hashicons"><strong>&#8605;</strong></td>
+                        <td class="boxborder inmiddle hashresults"><input id="hash--sha512" class="hashresult boxborder" type="text" value=""></td>
+                      </tr>
+                    </table>
                   </div>
                 </div>
                 <div class="pages" id="pagetoolbase64">
                   <div class="toolcontainter">
-                      
                     <table class="fill boxborder">
                       <tr class="base64top">
                         <td class="fill--50 base64text boxborder">
-                          <button data-action="b64encode" data-input="b64--ascii" data-output="b64--base64" class="base64--click button button--moema-slim button--inverted">Base64 encode <strong>&#8605; 	</strong></button>
+                          <button data-action="b64encode" data-input="b64--ascii" data-output="b64--base64" class="base64--click button button--moema-slim button--inverted">Base64 encode <strong>&#8605;</strong></button>
                         </td>
                         <td colspan="2" class="base64text boxborder">
                           <button id="b64clear" data-action="b64clear" data-input="null" data-output="null" class="base64--click button button--moema-slim button--inverted">CLEAR</button>
                         </td>
-                        
                         <td class="fill--50 base64text boxborder">
                           <button data-action="b64decode" data-input="b64--base64" data-output="b64--ascii" class="base64--click button button--moema-slim button--inverted"><strong>&#8604;</strong> Base64 decode</button>
                         </td>
@@ -171,7 +225,6 @@
                         <td class="fill--50 base64container boxborder"><textarea id="b64--base64" class="base64area"></textarea></td>
                       </tr>
                     </table>
-
                   </div>
                 </div>
                 <div class="pages" id="dodnspage">
