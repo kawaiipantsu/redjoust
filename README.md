@@ -7,17 +7,20 @@
 
 ---
 
-> Heavily under development
+> Its beginning to take shape !! I now have almost all internal logic in place, so i can now begin to develop a bit more on the actual intel gathering items.
 >
 > Come back later :)
 
 ## What it looks like (what i'm going for)
 
-This is still just a boilerplate on what layout i'm trying to go for, this might change in the near future i have no idea. But so far this is what it's going to look like. Also not functionality at all and placeholders.
+I have included 2 screenshots, i will update them regularly :)
 
-More to come soon ! I hope :)
+- First is just the main webapp default page where you can see i have set TARGEt and MODE and then relevent gather info items are shown and also target is parses and split out into other menu sections with each their own relevent gather info items!
+- Second is just other cases i wanted to show off, this is etc the Toolbox view of Base64
 
 ![Main view](assets/screenshot-main-view.png)
+
+![Toolbox Base64 view](assets/screenshot-base64-view.png)
 
 ## Status on whats done
 
