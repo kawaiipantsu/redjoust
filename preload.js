@@ -153,10 +153,12 @@ window.onload = () => {
   // Set default statusbar text for now
   updateQuoteFrequency = 120;
   const startQuote = randomQuotes[Math.floor(Math.random() * randomQuotes.length)];
-  statusbarMessage(startQuote,0,"pizza");
+  var randomQuotesIcons = ['pizza','donut','coffee','shades'];
+  statusbarMessage(startQuote,0,randomQuotesIcons[Math.floor(Math.random() * randomQuotesIcons.length)]);
   var doUpdate = false;
   var dottss;
   var timeSinceLastUpdate = 0;
+  
   setInterval(() => {
     // System OS power saving/monitor options not functional
     state = 'normal' // Was supposed to be state from the OS powermonitr part (ie idle/suspension event)
@@ -186,7 +188,7 @@ window.onload = () => {
         }
         if ( doUpdate ) {
           if ( $("#btngotorun").hasClass("enabled") ) $("#btngotorun").removeClass("enabled");
-          statusbarMessage(randomQuotes[Math.floor(Math.random() * randomQuotes.length)],0,"pizza");
+          statusbarMessage(randomQuotes[Math.floor(Math.random() * randomQuotes.length)],0,randomQuotesIcons[Math.floor(Math.random() * randomQuotesIcons.length)]);
           doUpdate = false;
         }
       }
@@ -463,6 +465,16 @@ contextBridge.exposeInMainWorld('toolAPI', {
     var pattern = /^((http|https|ftp):\/\/)/i;
     if (pattern.test(myPage)) require('electron').shell.openExternal(myPage);
     else showPage(myPage);    
+  },
+  base64Encode(data) {
+    let buff = new Buffer.from(String(data));
+    let base64data = buff.toString('base64');
+    return base64data;
+   },
+  base64Decode(data) { 
+    let buff = new Buffer.from(String(data), 'base64');
+    let asciidata = buff.toString('ascii');
+    return asciidata;
   }
 });
 
@@ -784,6 +796,14 @@ function statusbarMessage(msg,sec=0,icon="unknown") {
       case "pizza":
       $("#statusicon").addClass("statusicon--pizza");
       myStatusbarIcon = "pizza";
+      break;
+      case "shades":
+      $("#statusicon").addClass("statusicon--shades");
+      myStatusbarIcon = "shades";
+      break;
+      case "coffee":
+      $("#statusicon").addClass("statusicon--coffee");
+      myStatusbarIcon = "coffee";
       break;
       case "donut":
       $("#statusicon").addClass("statusicon--donut");

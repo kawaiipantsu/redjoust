@@ -32,7 +32,7 @@ $(function () {
             $(this).css('background-image','url("icons/menu/set1/openlink.png")');
         } else {
             // We normal internal tool!
-            $(this).css('background-image','url("icons/menu/set1/wizard.png")');
+            $(this).css('background-image','url("icons/menu/set1/app.png")');
         }
     });
     
@@ -158,5 +158,31 @@ $(function () {
         var myID = $(this).attr('id');
         var myPage = $(this).data("page");
         window.toolAPI.clickItem(myID,myPage);
+    });
+
+    $( ".base64--click" ).on( "click", function() {
+        var dataAction = $(this).data('action');
+        var dataInput = $(this).data("input");
+        var dataOutput = $(this).data("output");
+        var dataValue = $("#"+dataInput).val();
+        var result = "";
+        switch (dataAction) {
+            case "b64encode":
+                if ( dataValue ) {
+                    result = window.toolAPI.base64Encode(dataValue);
+                    $("#"+dataOutput).val(result);
+                }
+                break;
+            case "b64decode":
+                if ( dataValue ) {
+                    result = window.toolAPI.base64Decode(dataValue);
+                    $("#"+dataOutput).val(result);
+                }
+                break;
+            case "b64clear":
+                $("#b64--ascii").val("");
+                $("#b64--base64").val("");
+                break;
+        }
     });
 });

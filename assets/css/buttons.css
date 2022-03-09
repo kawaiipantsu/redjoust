@@ -490,7 +490,19 @@
 	-webkit-transition: background-color 0.3s, color 0.3s;
 	transition: background-color 0.3s, color 0.3s;
 }
+.button--moema-slim {
+	padding: 0.5em 1em;
+	border-radius: 30px;
+	background: #7986cb;
+	color: #fff;
+	-webkit-transition: background-color 0.3s, color 0.3s;
+	transition: background-color 0.3s, color 0.3s;
+}
 .button--moema.button--inverted {
+	background: #ECEFF1;
+	color: #37474f;
+}
+.button--moema-slim.button--inverted {
 	background: #ECEFF1;
 	color: #37474f;
 }
@@ -521,6 +533,36 @@
 	background-color: #7986cb;
 }
 .button--moema:hover::before {
+	-webkit-animation: anim-moema-2 0.3s 0.3s forwards;
+	animation: anim-moema-2 0.3s 0.3s forwards;
+}
+.button--moema-slim::before {
+	content: '';
+	position: absolute;
+	top: -20px;
+	left: -20px;
+	bottom: -20px;
+	right: -20px;
+
+	border-radius: 50px;
+	z-index: -1;
+	opacity: 0.4;
+	-webkit-transform: scale3d(0.8,	background: inherit; 0.5, 1);
+	transform: scale3d(0.8, 0.5, 1);
+}
+.button--moema-slim:hover {
+	-webkit-transition: background-color 0.1s 0.3s, color 0.1s 0.3s;
+	transition: background-color 0.1s 0.3s, color 0.1s 0.3s;
+	color: #ECEFF1;
+	background-color: #3f51b5;
+	-webkit-animation: anim-moema-1 0.3s forwards;
+	animation: anim-moema-1 0.3s forwards;
+}
+.button--moema-slim.button--inverted:hover {
+	color: #ECEFF1;
+	background-color: #7986cb;
+}
+.button--moema-slim:hover::before {
 	-webkit-animation: anim-moema-2 0.3s 0.3s forwards;
 	animation: anim-moema-2 0.3s 0.3s forwards;
 }

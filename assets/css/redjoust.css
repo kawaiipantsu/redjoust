@@ -183,6 +183,20 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
     background-size: contain;
     animation: spin 3s linear infinite;
 }
+.statusicon--shades {
+    background-image: url("../icons/menu/set1/shades.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    animation: spin 3s linear infinite;
+}
+.statusicon--coffee {
+    background-image: url("../icons/menu/set1/coffee.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    animation: spin 3s linear infinite;
+}
 .statusicon--donut {
     background-image: url("../icons/menu/set1/donut.png");
     background-repeat: no-repeat;
@@ -505,12 +519,13 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
         transform: rotate(360deg);
     }
 }
-.fill { width: 100%; }
+.fill { width: 100%; height: 100%; }
 .fill--fancy { width: calc(100% - 40px); }
 .fill--fix { width: calc(100% - 25px); }
 .fill--90 { width: 90%; }
-.fill--60 { width: 50%; }
+.fill--60 { width: 60%; }
 .fill--50 { width: 50%; }
+.fill--40 { width: 40%; }
 .fill--size1 { width: 600px; }
 .centerbox {
     display: flex;
@@ -797,3 +812,43 @@ legend { font-weight: bold; text-align: center; }
     color: rgb(218, 218, 218);
     padding: 5px;
 }
+
+.base64top { 
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+}
+.base64text {
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    height: 90px;
+}
+.base64text button {
+    font-size: 25px;
+    color:rgb(97, 97, 97)
+}
+.base64text button strong {
+    font-size: 25px;
+    color: rgb(207, 207, 207);
+}
+.base64text button:active {
+    transform: scale(1.8);
+    box-shadow: 0 2px 25px rgba(187, 181, 184, 0.438);
+}
+.base64text strong {
+    font-size: 30px;
+    color: white;
+}
+.base64container { height: 100%; padding: 10px; box-sizing: border-box; }
+.base64area { 
+    width: 100%; 
+    height: 100%; 
+    box-sizing: border-box; 
+    resize: none;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: rgba(0, 0, 0, 0.233);
+    color: rgb(255, 255, 255);
+}
+#b64clear { font-size: 15px; }
