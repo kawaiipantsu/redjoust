@@ -68,24 +68,29 @@
         </div>
         <div class="treeview boxborder">
             <div class="placeholdertree" id="tree">
+
               <fieldset id="haveHostname" class="menusegment">
                 <legend id="targetHostname" class="menusegmentinfo">???</legend>
-                <div id="doDNShost1" data-title="DNS information 1" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--disabled">I'm an passive item 1</div>
-                <div id="doDNShost2" data-title="DNS information 2" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--active status--disabled">I'm an active item 2</div>
-                <div id="doDNShost3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--redteam status--disabled">I'm an redteam item 3</div>
+
+                <div id="doDNShost1" data-title="Generel DNS information" data-page="pageDNShostname" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--disabled">Generel DNS information</div>
+              
               </fieldset>
               <fieldset id="haveDomainname" class="menusegment">
                 <legend id="targetDomainname" class="menusegmentinfo">???</legend>
-                <div id="doDNSdom1" data-title="DNS information 1" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--disabled">I'm an passive item 4</div>
-                <div id="doDNSdom2" data-title="DNS information 2" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--active status--disabled">I'm an active item 5</div>
-                <div id="doDNSdom3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--redteam status--disabled">I'm an redteam item 6</div>
+
+                <div id="doDNSdom1" data-title="Generel DNS information" data-page="pageDNSdomainname" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--disabled">Generel DNS information</div>
+                <div id="doCT1" data-title="Certificate Transparency Logs" data-page="pageCTdomainname" data-function="lookupCT" class="boxborder menuitem item--click item--passive status--disabled">Certificate Transparency Logs</div>
+              
               </fieldset>
               <fieldset id="haveIP" class="menusegment">
                 <legend id="targetIP" class="menusegmentinfo">???</legend>
-                <div id="doDNSip1" data-title="DNS information 1" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--disabled">I'm an passive item 7</div>
-                <div id="doDNSip2" data-title="DNS information 2" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--active status--disabled">I'm an active item 8</div>
-                <div id="doDNSip3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--redteam status--disabled">I'm an redteam item 9</div>
+
+                <div id="doDNSip1" data-title="IP Whois" data-page="pageIPwhois" data-function="dnsWhois" class="boxborder menuitem item--click item--passive status--disabled">IP Whois</div>
+             
               </fieldset>
+
+
+
               <fieldset id="haveExternal" class="menusegment">
                 <legend id="targetExternal" class="menusegmentinfo">Toolbox</legend>
                 <div id="toolBase64" data-title="Base64 converter" data-page="pagetoolbase64" data-function="null" class="boxborder menuitem tool--click item--external status--info">BASE64 Converter</div>
@@ -141,6 +146,77 @@
                           </tr>
                         </table>
                       </div>
+                  </div>
+                </div>
+                <div class="pages" id="pageDNShostname">
+                  <div class="itemcontainter">
+                    <table class="fill boxborder">
+                      <tr class="itemtop">
+                        <td class="itemtitle boxborder">Item title</td>
+                      </tr>
+                      <tr class="itembottom">
+                        <td class="itemmainarea boxborder">
+                          DNS information for host name
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="pages" id="pageDNSdomainname">
+                  <div class="itemcontainter">
+                    <table class="fill boxborder">
+                      <tr class="itemtop">
+                        <td class="itemtitle boxborder">Item title</td>
+                      </tr>
+                      <tr class="itembottom">
+                        <td class="itemmainarea boxborder">
+                          DNS information for domain name
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="pages" id="pageCTdomainname">
+                  <div class="itemcontainter">
+                    <table class="fill boxborder">
+                      <tr class="itemtop">
+                        <td class="itemtitle boxborder">Item title</td>
+                      </tr>
+                      <tr class="itembottom">
+                        <td class="itemmainarea boxborder">
+                          Certificate transparency logs lookup ....
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="pages" id="pageIPwhois">
+                  <div class="itemcontainter">
+                    <table class="fill boxborder">
+                      <tr class="itemtop">
+                        <td class="itemtitle boxborder">Item title</td>
+                      </tr>
+                      <tr class="itembottom">
+                        <td class="itemmainarea boxborder">
+                          IP WHOIS information ...
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="pages" id="pageitemtemplate">
+                  <div class="itemcontainter">
+                    <table class="fill boxborder">
+                      <tr class="itemtop">
+                        <td class="itemtitle boxborder">Item title</td>
+                      </tr>
+                      <tr class="itembottom">
+                        <td class="itemmainarea boxborder">
+                          blablabla bla bla bla<br>
+                          blaa asd asd qwer wet ewrt sdf ...
+                        </td>
+                      </tr>
+                    </table>
                   </div>
                 </div>
                 <div class="pages" id="pagetooltemplate">

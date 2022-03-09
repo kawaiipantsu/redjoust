@@ -819,7 +819,18 @@ legend { font-weight: bold; text-align: center; }
     color: rgb(218, 218, 218);
     padding: 5px;
 }
-
+.itemtop { 
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    height: 20px;
+}
+.itemtext {
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+}
 .tooltable {
     border-spacing: 10px;
     border-collapse: separate;

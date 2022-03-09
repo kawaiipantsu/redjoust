@@ -454,6 +454,9 @@ contextBridge.exposeInMainWorld('itemAPI', {
 
     if ( itemState == "ready") showPage("pagedefault");
     if ( itemState == "done") {
+      if ( $("#"+itemPage).find(".itemtitle").length ) {
+        $("#"+itemPage).find(".itemtitle").text(itemTitle).html();
+      }
       showPage(itemPage);
     }
     if ( itemState == "info") {
