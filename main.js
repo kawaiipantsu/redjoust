@@ -205,7 +205,7 @@ menu.append(new MenuItem({
       click: () => { mainWindow.webContents.send("togglestreamermode") }
     },
     {
-      label: 'Toggle External tools',
+      label: 'Toggle Toolbox',
       accelerator: process.platform === 'darwin' ? 'F10' : 'F10',
       click: () => { mainWindow.webContents.send("toggleexternaltools") }
     },
@@ -253,8 +253,8 @@ menu.append(new MenuItem({
         role: 'about',
         icon: nativeImage.createFromPath(__dirname + '/assets/icons/menu/set1/about.png').resize({width:16}),
         click: () => openAboutWindow({
-            icon_path: path.join(__dirname, './assets/redjoust-icon.png'),
-            css_path: path.join(__dirname, './assets/css/about.css'),
+            icon_path: path.join(__dirname, '/assets/redjoust-icon.png'),
+            css_path: path.join(__dirname, '/assets/css/about.css'),
             copyright: 'Copyright (c) 2022 KawaiiPantsu / Dave',
             package_json_dir: __dirname,
             adjust_window_size: true,

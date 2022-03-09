@@ -28,10 +28,10 @@
         },
         redteam: {
             allow: true,
-            runwarning: true
+            runwarning: false
         },
         externaltools: {
-            show: false,
+            show: true,
             terminal: false
         }
     },

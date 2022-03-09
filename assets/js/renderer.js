@@ -1,9 +1,9 @@
 // We are renderer process!
 
 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    document.getElementById("treetheme").setAttribute("href", "./assets/themes/default-dark/style.css");
+    document.getElementById("treetheme").setAttribute("href", "themes/default-dark/style.css");
 } else {
-    document.getElementById("treetheme").setAttribute("href", "./assets/themes/default/style.css");
+    document.getElementById("treetheme").setAttribute("href", "themes/default/style.css");
 }
 
 var check = document.querySelector('#check')
@@ -11,19 +11,33 @@ var check = document.querySelector('#check')
 document.getElementById("check").addEventListener('change', async () => {
     const isDarkMode = await window.darkMode.toggle()
     if ( isDarkMode ) {
-        document.getElementById("treetheme").setAttribute("href", "./assets/themes/default-dark/style.css");
+        document.getElementById("treetheme").setAttribute("href", "themes/default-dark/style.css");
     } else {
-        document.getElementById("treetheme").setAttribute("href", "./assets/themes/default/style.css");
+        document.getElementById("treetheme").setAttribute("href", "themes/default/style.css");
     }
 })
 
-function testMe1() {
-    // no content
-}
-
 $(function () {
-    $("#username").html(window.userInfo.username);
+    // Not used anymore, but we can see the OS username of the logged in user
+    // $("#username").html(window.userInfo.username);
     
+    // Quick check the toolbox for internal vs external (urls) and change the
+    // icon so it looks cooler and more informative! If this fails there is always
+    // shown a default icon.
+    var pattern = /^((http|https|ftp):\/\/)/i;
+    $(".item--external").each(function() {
+        var toolPage = $(this).data("page");
+        if (pattern.test(toolPage)) {
+            // We external link!
+            $(this).css('background-image','url("icons/menu/set1/openlink.png")');
+        } else {
+            // We normal internal tool!
+            $(this).css('background-image','url("icons/menu/set1/wizard.png")');
+        }
+    });
+    
+
+    // Enable the "Fancy" scroll bars aka styled scrollbars for our menu!
     $("#tree").overlayScrollbars({
         className       : "os-theme-dark",
         resize          : "none",
@@ -37,6 +51,7 @@ $(function () {
         }
     });
 
+    // Enable the "Fancy" scroll bars aka styled scrollbars for our page container!
     $(".pages").overlayScrollbars({
         className       : "os-theme-dark",
         resize          : "none",
@@ -136,5 +151,12 @@ $(function () {
         if ( $(this).hasClass( "status--done" ) ) ourStatus = "done";
 
         window.itemAPI.clickItem(myID,ourMode,ourStatus)
+    });
+
+    $( ".tool--click" ).on( "click", function() {
+        // Who are we ?
+        var myID = $(this).attr('id');
+        var myPage = $(this).data("page");
+        window.toolAPI.clickItem(myID,myPage);
     });
 });

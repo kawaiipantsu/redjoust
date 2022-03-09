@@ -147,51 +147,51 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
 }
 
 .statusicon--idle {
-    background-image: url("./../icons/menu/set1/idle.png");
+    background-image: url("../icons/menu/set1/idle.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
 }
 .statusicon--busy {
-    background-image: url("./../icons/menu/set1/working.png");
+    background-image: url("../icons/menu/set1/working.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
 }
 .statusicon--error {
-    background-image: url("./../icons/menu/set1/error.png");
+    background-image: url("../icons/menu/set1/error.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
 }
 .statusicon--warning {
-    background-image: url("./../icons/menu/set1/warning.png");
+    background-image: url("../icons/menu/set1/warning.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
 }
 .statusicon--done {
-    background-image: url("./../icons/menu/set1/done.png");
+    background-image: url("../icons/menu/set1/done.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
 }
 .statusicon--pizza {
-    background-image: url("./../icons/menu/set1/pizza.png");
+    background-image: url("../icons/menu/set1/pizza.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
     animation: spin 3s linear infinite;
 }
 .statusicon--donut {
-    background-image: url("./../icons/menu/set1/donut.png");
+    background-image: url("../icons/menu/set1/donut.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
     animation: spin 3s linear infinite;
 }
 .statusicon--info {
-    background-image: url("./../icons/menu/set1/info.png");
+    background-image: url("../icons/menu/set1/info.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
@@ -233,7 +233,7 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
     padding-right: 40px;
     padding-top: 100px;
     padding-left: 295px;
-    padding-bottom: 80px;
+    padding-bottom: 68px;
 }
 .placeholdertree {
     background-color: #a3a3a30c;
@@ -249,7 +249,7 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
     width: 100%;
     height: 100%;
     margin: 10px;
-    padding: 10px;
+    padding: 4px;
 }
 .bottomview {
     clear:both;
@@ -301,7 +301,7 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
     margin-left: -5px;
     height: 100%;
     width: 500px;
-    background-image: url("./../redjoust-banner.png");
+    background-image: url("../redjoust-banner.png");
     background-repeat: no-repeat;
     background-position: left;
     background-size: 45%;
@@ -410,7 +410,7 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
     right: 32px;
     height: 100px;
     width: 100px;
-    background-image: url("./../redjoust-icon.png");
+    background-image: url("../redjoust-icon.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
@@ -453,7 +453,7 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
 .icondefault {
     width: 140px;
     height: 140px;
-    background-image: url("./../icons/web/favicon-32x32.png");
+    background-image: url("../icons/web/favicon-32x32.png");
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
@@ -461,7 +461,7 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
 .iconlock {
     width: 140px;
     height: 140px;
-    background-image: url("./../images/privacyicon.webp");
+    background-image: url("../images/privacyicon.webp");
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
@@ -540,7 +540,6 @@ background: linear-gradient(175deg, rgba(161,126,126,1) 0%, rgba(29,35,46,1) 70%
 }
 .defaulttext h3 {
     display: block;
-    vertical-align:top;
 }
 
 .pages {
@@ -629,7 +628,7 @@ legend { font-weight: bold; text-align: center; }
 100% {transform: rotateX(360deg); transform-origin: 0% 50% 0;}  
 }
 .item--external {
-    background-image: url("./../icons/menu/set1/link.png");
+    background-image: url("../icons/menu/set1/link.png");
     background-position: left;
     background-repeat: no-repeat;
     background-size: 18px;
@@ -637,7 +636,7 @@ legend { font-weight: bold; text-align: center; }
 }
 .item--passive {
     display: none;
-    background-image: url("./../icons/menu/set1/mode.png");
+    background-image: url("../icons/menu/set1/mode.png");
     background-position: left;
     background-repeat: no-repeat;
     background-size: 18px;
@@ -645,7 +644,7 @@ legend { font-weight: bold; text-align: center; }
 }
 .item--active {
     display: none;
-    background-image: url("./../icons/menu/set1/connect.png");
+    background-image: url("../icons/menu/set1/connect.png");
     background-position: left;
     background-repeat: no-repeat;
     background-size: 18px;
@@ -653,7 +652,7 @@ legend { font-weight: bold; text-align: center; }
 }
 .item--redteam {
     display: none;
-    background-image: url("./../icons/menu/set1/error.png");
+    background-image: url("../icons/menu/set1/error.png");
     background-position: left;
     background-repeat: no-repeat;
     background-size: 18px;
@@ -742,7 +741,7 @@ legend { font-weight: bold; text-align: center; }
     font-weight: bold;
 	cursor: pointer;
 	/* support: IE10, see #8844 */
-	list-style-image: url("./../images/blank.gif");
+	list-style-image: url("../images/blank.gif");
 }
 .ui-menu .ui-menu-item-wrapper {
 	position: relative;
@@ -773,4 +772,28 @@ legend { font-weight: bold; text-align: center; }
 	overflow: auto;
 	overflow-x: hidden;
 	padding-bottom: 1px;
+}
+
+.toolcontainter {
+    background-color: #3d3f42;
+    height: 100%;
+    width: 100%;
+    border: 1px solid rgb(85, 85, 85);
+    overflow-y: hidden;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    color: rgb(218, 218, 218);
+    padding: 5px;
+}
+
+.itemcontainter {
+    background-color: #3d3f42;
+    height: 100%;
+    width: 100%;
+    border: 1px solid rgb(85, 85, 85);
+    overflow-y: hidden;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    color: rgb(218, 218, 218);
+    padding: 5px;
 }

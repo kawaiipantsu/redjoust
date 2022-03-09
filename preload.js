@@ -457,6 +457,15 @@ contextBridge.exposeInMainWorld('itemAPI', {
   }
 });
 
+contextBridge.exposeInMainWorld('toolAPI', {
+  clickItem (myID,myPage) {
+    if (myDebug) console.log("Clicked '"+myID+"' -> goto: "+myPage);
+    var pattern = /^((http|https|ftp):\/\/)/i;
+    if (pattern.test(myPage)) require('electron').shell.openExternal(myPage);
+    else showPage(myPage);    
+  }
+});
+
 function reloadPublicIP() {
   $.ajax({
     dataType: 'json',

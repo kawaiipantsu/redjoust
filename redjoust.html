@@ -10,15 +10,17 @@
         <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk https://enforcer.darknet.dk">
         <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk https://enforcer.darknet.dk">
 
-        <link rel="stylesheet" href="./assets/css/redjoust.css">
-        <link rel="stylesheet" href="./assets/css/buttons.css">
-        <link rel="stylesheet" href="./assets/css/themesvg.css">
-        <link rel="stylesheet" href="./assets/css/OverlayScrollbars.min.css">
-        <link rel="stylesheet" href="./assets/themes/default-dark/style.min.css" id="treetheme">
+        <base href="./assets/">
 
-        <script src="./assets/js/jquery-3.6.0.min.js"></script>
-        <script src="./assets/js/jquery-ui.js"></script>
-        <script src="./assets/js/jquery.overlayScrollbars.min.js"></script>
+        <link rel="stylesheet" href="css/redjoust.css">
+        <link rel="stylesheet" href="css/buttons.css">
+        <link rel="stylesheet" href="css/themesvg.css">
+        <link rel="stylesheet" href="css/OverlayScrollbars.min.css">
+        <link rel="stylesheet" href="themes/default-dark/style.min.css" id="treetheme">
+
+        <script src="js/jquery-3.6.0.min.js"></script>
+        <script src="js/jquery-ui.js"></script>
+        <script src="js/jquery.overlayScrollbars.min.js"></script>
     </head>
     <body>
        <div class="lockscreen" id="working">
@@ -85,8 +87,10 @@
                 <div id="doDNSip3" data-title="DNS information 3" data-page="dodnspage" data-function="dnsMain" class="boxborder menuitem item--click item--redteam status--disabled">I'm an redteam item 9</div>
               </fieldset>
               <fieldset id="haveExternal" class="menusegment">
-                <legend id="targetExternal" class="menusegmentinfo">External tools</legend>
-                <div id="exLink1" data-title="External link" data-page="externalLink1" data-function="null" class="boxborder menuitem item--click item--external status--info">Test link 1</div>
+                <legend id="targetExternal" class="menusegmentinfo">Toolbox</legend>
+                <div id="toolBase64" data-title="Base64 converter" data-page="pagetoolbase64" data-function="null" class="boxborder menuitem tool--click item--external status--info">BASE64 Converter</div>
+                <div id="toolHashes" data-title="Easy way to work with hashes" data-page="pagetoolhashes" data-function="null" class="boxborder menuitem tool--click item--external status--info">Hashes</div>
+                <div id="toolCyberChef" data-title="The Cyber Swiss Army Knife" data-page="https://gchq.github.io/CyberChef/" data-function="null" class="boxborder menuitem tool--click item--external status--info">CyberChef</div>
               </fieldset>
             </div>
         </div>
@@ -119,7 +123,7 @@
                         <table border="1" cellpadding="0" cellspacing="0" align="center" class="fill">
                           <tr>
                            <td colspan="2" align="center" class="defaulttext">
-                              <img src="./assets/redjoust-icon.png" alt="" border="0" height="50" width="50" class="imgmiddle"> <h1>Welcome to Redjoust</h1>
+                              <img src="redjoust-icon.png" alt="" border="0" height="50" width="50" class="imgmiddle"> <h1>Welcome to Redjoust</h1>
                               <h3><strong>↝</strong>&nbsp;&nbsp; Set target &nbsp;&nbsp;<strong>↠</strong>&nbsp;&nbsp; Set mode &nbsp;&nbsp;<strong>⇉</strong>&nbsp;&nbsp; Gather intel!</h3>
                            </td> 
                           </tr>
@@ -139,12 +143,14 @@
                       </div>
                   </div>
                 </div>
+                <div class="pages" id="pagetoolhashes">
+                  <div class="toolcontainter">
+                      test
+                  </div>
+                </div>
                 <div class="pages" id="dodnspage">
-                  <div class="border">
-                      DNS information page ????? test :D<hr>
-                      <div id="dnsresult">
-
-                      </div>
+                  <div class="itemcontainter">
+                    test
                   </div>
                 </div>
                 <div class="pages" id="pagemode">
@@ -334,6 +340,6 @@
         
         
         <!-- You can also require other files to run in this process -->
-        <script src="./assets/js/renderer.js"></script>
+        <script src="js/renderer.js"></script>
     </body>
 </html>
