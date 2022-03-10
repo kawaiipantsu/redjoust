@@ -1,20 +1,9 @@
 // We are renderer process!
 
-if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    document.getElementById("treetheme").setAttribute("href", "themes/default-dark/style.css");
-} else {
-    document.getElementById("treetheme").setAttribute("href", "themes/default/style.css");
-}
-
 var check = document.querySelector('#check')
 
 document.getElementById("check").addEventListener('change', async () => {
     const isDarkMode = await window.darkMode.toggle()
-    if ( isDarkMode ) {
-        document.getElementById("treetheme").setAttribute("href", "themes/default-dark/style.css");
-    } else {
-        document.getElementById("treetheme").setAttribute("href", "themes/default/style.css");
-    }
 })
 
 $(function () {
@@ -76,6 +65,18 @@ $(function () {
             touchSupport     : true
         }
     });
+    $(".terminal").overlayScrollbars({
+        className       : "os-theme-dark",
+        resize          : "none",
+        sizeAutoCapable : true,
+        paddingAbsolute : true,
+        scrollbars : {
+            visibility       : "visible",
+            autoHide         : "never",
+            dragScrolling    : true,
+            touchSupport     : true
+        }
+    });
 
     // For future use (autocomplete etc)
     $( "#inputTarget" ).autocomplete({
@@ -95,6 +96,11 @@ $(function () {
         }
     });
     */
+    
+    // Do some prettifying (textareas mainly, that might have been filled and are not at the top)
+    //$( ".terminal" ).on( "click", function() {
+    //    $(this).scrollTop();
+    //});
 
     $( ".setmode" ).on( "click", function() {
         let mode = $( this ).val()

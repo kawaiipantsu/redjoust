@@ -831,6 +831,10 @@ legend { font-weight: bold; text-align: center; }
     justify-content: center;
     vertical-align: middle;
 }
+.itemtitle {
+    font-size: 20px;
+    font-weight: bold;
+}
 .tooltable {
     border-spacing: 10px;
     border-collapse: separate;
@@ -950,4 +954,19 @@ legend { font-weight: bold; text-align: center; }
     color: rgb(180, 180, 180);
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
+}
+
+.terminal {
+    background-color: rgb(37, 37, 37);
+    resize: none;
+    color: rgb(180, 180, 180);
+    font-family: 'Courier New', Courier, monospace;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 5px;
+    white-space: pre;
+    display: block;
+    unicode-bidi: embed;
+    cursor: pointer;
+    user-select: text;
 }

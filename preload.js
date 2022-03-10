@@ -1,11 +1,13 @@
 // Preload JS
 const { contextBridge, ipcRenderer, powerMonitor } = require('electron')
 const electron = require('electron');
+const { exec } = require("child_process");
 const Store = require('electron-store');
 const os = require('os')
 const net = require('net');
 const crypto = require('crypto')
 const { Resolver } = require('dns');
+const punycode = require('punycode/');
 const { isNull } = require('util');
 const { exit } = require('process');
 
@@ -113,6 +115,16 @@ if ( store.get('targetHistory.targets').length > store.get('targetHistory.maxtar
 // Initialize default things
 window.onload = () => {
   
+  // Special debug block
+  // Just easy to have this and to throw stuff here i want to debug...
+  // DEBUG BLOCK BEGIN
+  if (myDebug) {
+  
+  }
+  // DEBUG BLOCK END
+
+
+
   if (myDebug) console.log("loading theme: "+myTheme)
   ipcRenderer.invoke('theme:'+myTheme)
 
@@ -563,7 +575,9 @@ function showPage( pagename=null ) {
               break;
           } 
         }
-        $("#"+pagename).show()
+
+        $("#"+pagename).show() // The main "magic" - Show the page :D
+        
         // A bit of focus handling ...
         if ( pagename == "pagetarget" ) {
           if ( myTarget ) $("#inputTarget").val(myTarget);
@@ -617,7 +631,8 @@ function runAll() {
         // perhaps use the itemsRunning array ?? async rubbish keeps me up late
         
       } catch (err) {
-        if (myDebug) console.log(itemFunc+"() is not a function!");
+        if (myDebug) console.log(itemFunc+"() - There a problem encountered trying to run this function!");
+        if (myDebug) console.log(err)
         $("#"+itemID).data('status',"done");
         itemBroke(itemID,"Fatal error: Item broke, no function found");
       }
@@ -1084,6 +1099,103 @@ var crc32tab = [
   0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 ];
 
+// Make a whois client ?! - Windows lack propper one, linux ownz ...
+function whoisLookup ( useTarget=false ) {
+  var target = useTarget;
+  if ( !target ) return false;
+
+  // Load our Whois server list
+  const whoisServers = require("./assets/json/whois-servers.json");
+
+  // Detech what we are dealing with, easiest is to match if IP!
+  // If not, then it's a domain :)
+  if ( net.isIP(target) ) var targetType = "ip"
+  else var targetType = "tld";
+
+  // A switch statement to determine what our whois server should be!
+  var whoisServer = false;
+  switch (targetType) {
+    case "ip":
+      whoisServer = whoisServers['_']['ip']
+      break;
+    case "tld":
+      var parts = target.split('.').reverse();
+      var tld_single = false;
+      var tld_multi = false;
+      if (parts != null && target.length > 0 ) tld_single = parts[0];
+      if (parts != null && target.length > 1 ) tld_multi = parts[1] + '.' + parts[0];
+      var tld_single_translated = null;
+      var tld_multi_translated = null;
+      if ( tld_single ) tld_single_translated = punycode.toASCII(tld_single);
+      if ( tld_multi ) tld_multi_translated = punycode.toASCII(tld_multi);
+
+      var whoisServer1 = whoisServers[tld_multi_translated]
+      var whoisServer2 = whoisServers[tld_single_translated]
+
+      if ( whoisServer1 ) whoisServer = whoisServer1
+      else if ( whoisServer2 ) whoisServer = whoisServer2
+      else whoisServer = whoisServers[''] // Set to default (it's RIPE lookup, properly fail ...)
+      break;
+    default:
+      whoisServer = whoisServers[''] // Set to default (it's RIPE lookup, properly fail ...)
+      break;
+  }
+
+  // Now explicitly, check if we have a string or object, if object then
+  // use the change both host + query else only set host from string and
+  // use default query!
+  
+  var query = "%ADDR%\r\n"; // DEFAULT QUERY
+  var port = 43 // DEFAULT QUERY PORT (We dont parse host whois servers for this yet!!)
+
+  if ( typeof whoisServer === 'object' && whoisServer !== null ) {
+    // Whois server has requirements (host + specific query)
+    var finalWhoisServer = whoisServer['host']
+    var finalWhoisPort = port
+    var finalWhoisQuery = whoisServer['query'].replace('%ADDR%',target);
+  } else {
+    // Whois server use default query string
+    var finalWhoisServer = whoisServer
+    var finalWhoisPort = port
+    var finalWhoisQuery = query.replace('%ADDR%',target);
+  }
+
+  var client = new net.Socket();
+  // I have opend a issue for electron-store questioning the default value return on store.get,
+  // Why do i have to staticly add it when i have included defauls for the "Store" module ...
+  // Until i know more, just skip setting a timeout :D
+  //var setTimeout = store.get('info.itemDefaults.whoistimeout',60000);
+  //client.setTimeout( setTimeout );
+  client.connect({ port: finalWhoisPort, host: finalWhoisServer }, function() {
+    client.write(finalWhoisQuery)
+  });
+  
+  client.on('timeout', function() {
+    client.end();
+  });
+
+  return new Promise((resolve, reject) => {
+    var dataResult = '';
+
+    client.on('data', function(chunk) {
+      dataResult += chunk
+    });
+
+    client.on('end', function() {
+      resolve(dataResult);
+    });
+  
+    client.on('error', function(err) {
+      reject(err)
+    });
+  
+   });
+
+
+
+}
+
+
 // Lets just dump all the item functions below here...
 // -----------------------------------------------------------
 // I have tried to make some logic to it, also to make it flexible
@@ -1114,7 +1226,7 @@ window.itemTemplate = function() {
   // ------
 }
 
-window.dnsMain = function(myID) {
+window.dnsMain = function(myID=false) {
   var itemID = $("#"+myID).attr('id');
   var itemTitle = $("#"+myID).data("title");
   var itemPage = $("#"+myID).data("page");
@@ -1130,10 +1242,70 @@ window.dnsMain = function(myID) {
   if ( $("#"+myID).hasClass( "status--done" ) ) ourStatus = "done";
   $("#"+myID).data('status',"working");
   if (myDebug) console.log("["+itemFunc+"]"+itemID+": Function running, output to: "+itemPage);
+
   // This is crude code to pretend we are working !
   var num = getRandomInt(1,10);
   $.ajax({url: "https://enforcer.darknet.dk/sleep.php?num="+num, success: function(result) {
     $("#dnsresult").append("<div>Hi i'm item "+itemID+" slept for "+num+"sec</div>")
     $("#"+myID).data('status',"done");
   }});
+
+}
+
+window.dnsWhois = function(myID=false) {
+  
+  // Item internal details
+  var itemID = $("#"+myID).attr('id');
+  var itemTitle = $("#"+myID).data("title");
+  var itemPage = $("#"+myID).data("page");
+  var itemFunc = $("#"+myID).data("function");
+  if (myDebug) console.log("["+itemFunc+"]"+itemID+": Function running, output to: "+itemPage);
+  
+  // Fetching my target (taken from what i am), this is not
+  // the overall target set in Redjoust. I need to look at
+  // my parrent fieldset's legend that has the target i need
+  // to look at!!
+  var useTarget = $("#targetDomainname").text();
+
+  // Just setting tsome stuff to be nice
+  $("#"+itemID).data('status',"working");
+
+  whoisLookup(useTarget).then((data) => { 
+    $("#domwhoisresult").text(data).html()
+    $("#"+itemID).data('status',"done"); // Mark us as done! ( Or you will see working-spin-of-death :D )
+  }).catch((err) => {
+    if (myDebug) console.log(err)
+    $("#"+itemID).data('status',"done"); // Mark us as done! ( Or you will see working-spin-of-death :D )
+    itemBroke(itemID,'Whois lookup failed!')
+  })
+
+}
+
+window.ipWhois = function(myID=false) {
+  
+  // Item internal details
+  var itemID = $("#"+myID).attr('id');
+  var itemTitle = $("#"+myID).data("title");
+  var itemPage = $("#"+myID).data("page");
+  var itemFunc = $("#"+myID).data("function");
+  if (myDebug) console.log("["+itemFunc+"]"+itemID+": Function running, output to: "+itemPage);
+  
+  // Fetching my target (taken from what i am), this is not
+  // the overall target set in Redjoust. I need to look at
+  // my parrent fieldset's legend that has the target i need
+  // to look at!!
+  var useTarget = $("#targetIP").text();
+
+  // Just setting tsome stuff to be nice
+  $("#"+itemID).data('status',"working");
+
+  whoisLookup(useTarget).then((data) => { 
+    $("#ipwhoisresult").text(data).html()
+    $("#"+itemID).data('status',"done"); // Mark us as done! ( Or you will see working-spin-of-death :D )
+  }).catch((err) => {
+    if (myDebug) console.log(err)
+    $("#"+itemID).data('status',"done"); // Mark us as done! ( Or you will see working-spin-of-death :D )
+    itemBroke(itemID,'Whois lookup failed!')
+  })
+  
 }

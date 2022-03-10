@@ -39,6 +39,8 @@
         target: null,
         mode: null,
         itemDefaults: {
+            whoistimeout: '60000',
+            whoisfollow: '2',
             dnsresolver: 'system',
             username: 'admin',
             password: 'admin',
@@ -49,5 +51,4 @@
         maxtargets: 50,
         targets: []
     }
-
 };

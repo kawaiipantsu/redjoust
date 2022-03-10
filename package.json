@@ -34,6 +34,7 @@
     "electron-store": "^8.0.1",
     "jquery": "^3.6.0",
     "os-utils": "^0.0.14",
+    "punycode": "^2.1.1",
     "shell": "^0.9.1"
   },
   "config": {

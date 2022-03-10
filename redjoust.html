@@ -79,13 +79,14 @@
                 <legend id="targetDomainname" class="menusegmentinfo">???</legend>
 
                 <div id="doDNSdom1" data-title="Generel DNS information" data-page="pageDNSdomainname" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--disabled">Generel DNS information</div>
+                <div id="doDNSdom2" data-title="Domain Whois" data-page="pageWhoisdomainname" data-function="dnsWhois" class="boxborder menuitem item--click item--passive status--disabled">Whois Domain lookup</div>
                 <div id="doCT1" data-title="Certificate Transparency Logs" data-page="pageCTdomainname" data-function="lookupCT" class="boxborder menuitem item--click item--passive status--disabled">Certificate Transparency Logs</div>
               
               </fieldset>
               <fieldset id="haveIP" class="menusegment">
                 <legend id="targetIP" class="menusegmentinfo">???</legend>
 
-                <div id="doDNSip1" data-title="IP Whois" data-page="pageIPwhois" data-function="dnsWhois" class="boxborder menuitem item--click item--passive status--disabled">IP Whois</div>
+                <div id="doIPwhois" data-title="IP Whois" data-page="pageIPwhois" data-function="ipWhois" class="boxborder menuitem item--click item--passive status--disabled">Whois IP lookup</div>
              
               </fieldset>
 
@@ -198,7 +199,21 @@
                       </tr>
                       <tr class="itembottom">
                         <td class="itemmainarea boxborder">
-                          IP WHOIS information ...
+                          <div id="ipwhoisresult" class="boxborder fill terminal"></div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="pages" id="pageWhoisdomainname">
+                  <div class="itemcontainter">
+                    <table class="fill boxborder">
+                      <tr class="itemtop">
+                        <td class="itemtitle boxborder">Item title</td>
+                      </tr>
+                      <tr class="itembottom">
+                        <td class="itemmainarea boxborder">
+                          <div id="domwhoisresult" class="boxborder fill terminal"></div>
                         </td>
                       </tr>
                     </table>
