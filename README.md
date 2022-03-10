@@ -100,6 +100,9 @@ I have included 2 screenshots, i will update them regularly :)
 - Complete toolbox tool: Hashes (Live hashing)
 - External URL link in toolbox logic (Used for CyberChef etc)
 - Toolbox can be toggled show/hide via View menu
+- WHOIS function done, using proper sockets and talk to whois query services (OS independent)
+- Domain name WHOIS item done
+- IP address WHOIS item done
 
 ## TODO list (what i want to get done short term)
 
