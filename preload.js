@@ -112,7 +112,6 @@ if ( store.get('targetHistory.targets').length > store.get('targetHistory.maxtar
 // For future idle/os suspension/ lock events
 
 
-
 // Initialize default things
 window.onload = () => {
   
@@ -211,6 +210,7 @@ window.onload = () => {
       }
     }
   }, 500);
+
 }
 
 function loadDefaultSettings() {
@@ -999,7 +999,18 @@ function parseTarget(target) {
       $("#haveDomainname").show();
       $("#targetDomainname").text(domain).html();
     }
-    // Lets reverse DNS lookup the IP :)
+
+    // A bit backwards !! BUT
+    // If tld == target - Then we are not really a hostname but only a domain name as target !
+    // So lets go backwards and remove hostname again!
+    var hostOK = true
+    if ( domain == target ) {
+      hostOK = false;
+      $("#targetHostname").text('').html();
+      $("#haveHostname").hide();
+    }
+    
+    // Lets DNS lookup the domain name for a IP! :)
     // If we get something, populate the hostname menu as well!
     resolver.resolve(String(target), (err, ipaddresses) => {
       if (err) {
@@ -1008,9 +1019,50 @@ function parseTarget(target) {
         const ipaddress = ipaddresses[0]
         $("#haveIP").show();
         $("#targetIP").text(ipaddress).html();
+
+        // AND now do a reverse lookup on our new found IP :D
+        // And fill in the hostname if we dont already have one :D
+        // Totally host-name-ception !!
+        if ( !hostOK ) {
+          resolver.reverse(String(ipaddress), (err, hostnames) => {
+            if (err) {
+              if (myDebug) console.log(err)
+            } else {
+              const hostname = hostnames[0]
+              $("#haveHostname").show();
+              $("#targetHostname").text(hostname).html();
+              resizeFontToFit("#targetHostname");
+            }
+          });
+        }
       }
     });
   }
+}
+
+function resizeFontToFit( myElement ) {
+  var me = $(myElement)
+  if ( me ) {
+    var resizeMore = true;
+    var resizeMin = 8;
+    var resizeMax = 20;
+    var widthMax = me.width()-20; // The extra 20 is to also allow padding
+    while (resizeMore) {
+      var cssSize = parseInt(me.css('font-size'))
+      var curWidth = me.prop('scrollWidth');
+      if ( curWidth > widthMax ) {
+        // We are to large, let's skrink by 1px!!
+        if (cssSize >= resizeMin) cssSize--;
+        me.css("fontSize", cssSize);
+      } else {
+        // Should we do something when we are not default 16px ?!?!
+        // IE. Make us self larger :D (Every mans secret dream...)
+
+        // We are just the right size, let's stop this crazynesss!!!
+        resizeMore = false;
+      }
+    }
+  }           
 }
 
 function getFunctionByName(functionName, context) {

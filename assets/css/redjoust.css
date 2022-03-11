@@ -598,7 +598,7 @@ legend { font-weight: bold; text-align: center; }
 }
 
 .menusegment { display: none; margin-top: 5px; }
-.menusegmentinfo { padding-left: 10px; padding-right: 10px; padding-top: 4px; border-radius: 15px; }
+.menusegmentinfo { text-align: center; white-space: nowrap; padding-left: 10px; padding-right: 10px; padding-top: 4px; border-radius: 15px; }
 
 .menuitem {
     width: 100%;
