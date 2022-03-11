@@ -2208,6 +2208,7 @@
       "125.128.0.0/11": "whois.nic.or.kr",
       "120.0.0.0/6": "whois.apnic.net",
       "124.0.0.0/7": "whois.apnic.net",
+      "125.0.0.0/8": "whois.nic.or.kr",
       "126.0.0.0/8": "whois.apnic.net",
       "133.0.0.0/8": "whois.nic.ad.jp",
       "139.20.0.0/14": "whois.ripe.net",

@@ -103,6 +103,9 @@ I have included 2 screenshots, i will update them regularly :)
 - WHOIS function done, using proper sockets and talk to whois query services (OS independent)
 - Domain name WHOIS item done
 - IP address WHOIS item done
+- IP address WHOIS now supports own specific whois server based on ip-net
+- Fixed FQDN bug where etc www.amazon.co.uk would think the domain was co.uk :) (classic!)
+- Up to date whois server list in json format (updated via a php script by me so semi auto)
 
 ## TODO list (what i want to get done short term)
 

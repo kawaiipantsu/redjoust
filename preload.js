@@ -12,7 +12,8 @@ const { isNull } = require('util');
 const { exit } = require('process');
 
 
-const defaultSettingsSchema = require('./assets/js/config-scheme.js')
+const defaultSettingsSchema = require('./assets/js/config-scheme.js');
+const { resolve } = require('path');
 // We are now using the scheme to set the overall template of the config file.
 // This is super as even if the user has an old config file any new "settings"
 // will apply based on the schemes default values when using the "store.get".
@@ -944,7 +945,7 @@ function setTarget(newTarget=false) {
 
 function parseTarget(target) {
   $("#haveHostname").hide();
-  $("#havedomainname").hide();
+  $("#haveDomainname").hide();
   $("#haveIP").hide();
 
   // Handle custom NS server for our resolver !!
@@ -1106,7 +1107,7 @@ var crc32tab = [
 ];
 
 // Make a whois client ?! - Windows lack propper one, linux ownz ...
-function whoisLookup ( useTarget=false ) {
+function whoisLookup ( useTarget=false, netLookupOnly=false) {
   var target = useTarget;
   if ( !target ) return false;
 
@@ -1126,14 +1127,20 @@ function whoisLookup ( useTarget=false ) {
       // Lets check if we have specific whois server
       // This will trigger if we are called with etc: 59.0.0.0
       var iplist = whoisServers['_']['ranges']
+      var foundNet = false
       for (const [key, value] of Object.entries(iplist)) {
         var ipnet = key.split('/');
         var iprange = ipnet[0]
         if ( iprange == target) {
           // We now support more interesting lookups :) (Almost a real whois client!)
           whoisServer = value;
+          foundNet = true;
         }
       };
+      if ( netLookupOnly && foundNet === false ) {
+        //resolve(); // Not sure we need this, but .then fails !!
+        return;
+      }
       break;
     case "tld":
       var parts = target.split('.').reverse();
@@ -1184,7 +1191,7 @@ function whoisLookup ( useTarget=false ) {
   //var setTimeout = store.get('info.itemDefaults.whoistimeout',60000);
   //client.setTimeout( setTimeout );
   client.connect({ port: finalWhoisPort, host: finalWhoisServer }, function() {
-    console.log("[WHOIS] Looking up '"+target+"' at '"+finalWhoisServer+"' via query: "+finalWhoisQuery);
+    if (myDebug) console.log("[WHOIS] Looking up '"+target+"' at '"+finalWhoisServer+"' via query: "+finalWhoisQuery);
     client.write(finalWhoisQuery+'\r\n')
   });
   
@@ -1324,13 +1331,13 @@ window.ipWhois = function(myID=false) {
     var regexp = /^CIDR:[ ]+(?<ipnet>[0-9\.]*)[\/]/im
     var ipres = data1.match(regexp)
     var ipnet = ipres[1]
-    whoisLookup(ipnet).then((data2) => { 
+    whoisLookup(ipnet,true).then((data2) => { 
       $("#ipwhoisresult").append(data2)
       $("#"+itemID).data('status',"done"); // Mark us as done! ( Or you will see working-spin-of-death :D )
     }).catch((err2) => {
       if (myDebug) console.log(err2)
       $("#"+itemID).data('status',"done"); // Mark us as done! ( Or you will see working-spin-of-death :D )
-      itemBroke(itemID,'Whois lookup failed!')
+      //itemBroke(itemID,'Whois lookup failed!') // Not really failed! Second run, looking for IP Net whois to lookup ...
     })
   }).catch((err1) => {
     if (myDebug) console.log(err1)
