@@ -14,7 +14,7 @@ const { exit } = require('process');
 
 const defaultSettingsSchema = require('./assets/js/config-scheme.js');
 const { resolve } = require('path');
-const { get } = require('http');
+
 // We are now using the scheme to set the overall template of the config file.
 // This is super as even if the user has an old config file any new "settings"
 // will apply based on the schemes default values when using the "store.get".
@@ -667,7 +667,7 @@ ipcRenderer.on('idleState', (event, state) => {
   }
   
   // Testing out (idle lock screen)
-  if ( get.store('settings.idlelock',false) ) {
+  if ( store.get('settings.idlelock',false) ) {
     if ( lockscreenVisible() && state == "active" ) {
       ipcRenderer.invoke('locked:unlock')
       disableLockscreen()
