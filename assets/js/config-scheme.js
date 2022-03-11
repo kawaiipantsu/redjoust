@@ -15,6 +15,8 @@
     settings: {
         theme: 'system',
         streamermode: false,
+        idle: 300,
+        idlelock: false,
         debug: false
     },
     menuitems: {

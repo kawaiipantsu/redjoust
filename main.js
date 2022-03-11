@@ -1,5 +1,5 @@
 // Modules
-const { app, BrowserWindow, BrowserView, Tray, ipcMain, nativeTheme, globalShortcut, nativeImage, Menu, MenuItem } = require('electron')
+const { app, powerMonitor, BrowserWindow, BrowserView, Tray, ipcMain, nativeTheme, globalShortcut, nativeImage, Menu, MenuItem } = require('electron')
 const os = require('os')
 const osUtils = require('os-utils')
 const path = require('path')
@@ -7,6 +7,8 @@ const Store = require('electron-store');
 let myWindow = null
 
 Store.initRenderer();
+const defaultSettingsSchema = require('./assets/js/config-scheme.js');
+const store = new Store({defaults: defaultSettingsSchema});
 
 //const appIcon = new Tray('') // Support for tray features in the future ???
 
@@ -135,6 +137,11 @@ const createWindow = () => {
         });
       }, 800);
 
+      // Power monitoring, default idle time threshold is 300sec (5min)
+      setInterval(() => {
+        idleThres = store.get('settings.idle',300)
+        mainWindow.webContents.send("idleState", powerMonitor.getSystemIdleState(idleThres) );
+      }, 1000);
 
       const menu = new Menu()
 menu.append(new MenuItem({

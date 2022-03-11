@@ -115,6 +115,8 @@ I have included 2 screenshots, i will update them regularly :)
   - if TARGET = IP ( Set IP + Reverse IP and set Hostname + Parse Hostname for Domainname and set )
   - if TARGET = HOSTNAME ( Set Hostname + Parse Hostname for Domainname and set + Resolve IP for Hostname and set )
   - if TARGET = DOMAINNAME ( Set Domainname + Resolve IP for Domainname and set + Reverse IP for Hostname and set )
+- Getting PowerMonitor to work, so i can attach to System OS idle/suspend events
+- Supports new "idle" mode, lockscreen for privacy when idle time is hit, unlocks when active again
 
 ## TODO list (what i want to get done short term)
 
@@ -125,4 +127,3 @@ I have included 2 screenshots, i will update them regularly :)
   - tor usage
   - specific item options
 - proxy/tor/socks logic
-- Getting PowerMonitor to work, so i can attach to System OS idle/suspend events

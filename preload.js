@@ -14,6 +14,7 @@ const { exit } = require('process');
 
 const defaultSettingsSchema = require('./assets/js/config-scheme.js');
 const { resolve } = require('path');
+const { get } = require('http');
 // We are now using the scheme to set the overall template of the config file.
 // This is super as even if the user has an old config file any new "settings"
 // will apply based on the schemes default values when using the "store.get".
@@ -108,9 +109,6 @@ if ( store.get('targetHistory.targets').length > store.get('targetHistory.maxtar
   targetlist.splice(curtargets-removenum,removenum);
   store.set('targetHistory.targets',targetlist);
 }
-
-// For future idle/os suspension/ lock events
-
 
 // Initialize default things
 window.onload = () => {
@@ -661,10 +659,29 @@ function resetAll() {
   });
 }
 
+// Power monitor handler
+// For future idle/os suspension/ lock events etc
+ipcRenderer.on('idleState', (event, state) => {
+  if ( state == "idle") {
+    if (myDebug) console.log("Did you leave your computer ? Your OS is idle!");
+  }
+  
+  // Testing out (idle lock screen)
+  if ( get.store('settings.idlelock',false) ) {
+    if ( lockscreenVisible() && state == "active" ) {
+      ipcRenderer.invoke('locked:unlock')
+      disableLockscreen()
+    } else if ( state == "idle" ) {
+      ipcRenderer.invoke('locked:lock')
+      enableLockscreen("","lock")
+    }
+  }
+});
+
+// OS Usage handler
 contextBridge.exposeInMainWorld('usage', {
   cpu: process.getCPUUsage().percentCPUUsage.toString().slice(0, 5)
 });
-
 ipcRenderer.on('cpu', (event, data) => {
   document.getElementById('cpu').innerHTML = Math.round(data.toFixed(2));
 });
