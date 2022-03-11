@@ -106,6 +106,11 @@ I have included 2 screenshots, i will update them regularly :)
 - IP address WHOIS now supports own specific whois server based on ip-net
 - Fixed FQDN bug where etc www.amazon.co.uk would think the domain was co.uk :) (classic!)
 - Up to date whois server list in json format (updated via a php script by me so semi auto)
+- hostname / domainname / ip menu font-size now autoscales to fit!
+- New target logic
+  - if TARGET = IP ( Set IP + Reverse IP and set Hostname + Parse Hostname for Domainname and set )
+  - if TARGET = HOSTNAME ( Set Hostname + Parse Hostname for Domainname and set + Resolve IP for Hostname and set )
+  - if TARGET = DOMAINNAME ( Set Domainname + Resolve IP for Domainname and set + Reverse IP for Hostname and set )
 
 ## TODO list (what i want to get done short term)
 

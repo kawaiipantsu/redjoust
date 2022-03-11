@@ -973,6 +973,7 @@ function parseTarget(target) {
         const hostname = hostnames[0]
         $("#haveHostname").show();
         $("#targetHostname").text(hostname).html();
+        resizeFontToFit("#targetHostname");
 
         var parts = hostname.split('.').reverse();
         if (parts != null && parts.length > 1) {
@@ -982,6 +983,7 @@ function parseTarget(target) {
           if ( tld ) domain = parts[2] + '.' + parts[1] + '.' + parts[0];
           $("#haveDomainname").show();
           $("#targetDomainname").text(domain).html();
+          resizeFontToFit("#targetDomainname");
         }
       }
     });
@@ -989,6 +991,8 @@ function parseTarget(target) {
     // TARGET IS HOSTNAME
     $("#haveHostname").show();
     $("#targetHostname").text(target).html();
+    resizeFontToFit("#targetHostname");
+
     // Parse for domain name
     var parts = target.split('.').reverse();
     if (parts != null && parts.length > 1) {
@@ -998,6 +1002,7 @@ function parseTarget(target) {
       if ( tld ) domain = parts[2] + '.' + parts[1] + '.' + parts[0];
       $("#haveDomainname").show();
       $("#targetDomainname").text(domain).html();
+      resizeFontToFit("#targetDomainname");
     }
 
     // A bit backwards !! BUT
@@ -1043,16 +1048,21 @@ function parseTarget(target) {
 function resizeFontToFit( myElement ) {
   var me = $(myElement)
   if ( me ) {
+
+    // Set default
+    me.css("fontSize", 16); // Sooo static :()
+
     var resizeMore = true;
-    var resizeMin = 8;
+    var resizeMin = 6;
     var resizeMax = 20;
-    var widthMax = me.width()-20; // The extra 20 is to also allow padding
+    //var widthMax = me.width()-20; // The extra 20 is to also allow padding
+    var widthMax = 280; // Uhmm, dont know this works! Above, seems cooler ...
     while (resizeMore) {
       var cssSize = parseInt(me.css('font-size'))
       var curWidth = me.prop('scrollWidth');
       if ( curWidth > widthMax ) {
         // We are to large, let's skrink by 1px!!
-        if (cssSize >= resizeMin) cssSize--;
+        cssSize--;
         me.css("fontSize", cssSize);
       } else {
         // Should we do something when we are not default 16px ?!?!
