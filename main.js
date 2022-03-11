@@ -42,6 +42,7 @@ const createWindow = () => {
         minWidth: 1280, // I like this safe min resolution
         minHeight: 700,
         webPreferences: {
+            defaultEncoding: 'UTF-8',
             devTools: true,
             webSecurity: true,
             nodeIntegration : true,

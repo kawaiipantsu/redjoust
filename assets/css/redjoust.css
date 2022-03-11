@@ -823,7 +823,8 @@ legend { font-weight: bold; text-align: center; }
     align-items: center;
     justify-content: center;
     vertical-align: middle;
-    height: 20px;
+    height: 30px;
+    padding: 5px;
 }
 .itemtext {
     text-align: center;
@@ -965,7 +966,7 @@ legend { font-weight: bold; text-align: center; }
     overflow-x: hidden;
     padding: 5px;
     white-space: pre;
-    display: block;
+    overflow-wrap: break-word;
     unicode-bidi: embed;
     cursor: pointer;
     user-select: text;

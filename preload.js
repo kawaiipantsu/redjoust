@@ -958,7 +958,7 @@ function parseTarget(target) {
     else if ( Array.isArray(nsresolver) ) resolver.setServers(nsresolver);
     else resolver.setServers([nsresolver]);
   }
-
+  const whoisServers = require("./assets/json/whois-servers.json");
   if ( net.isIP(target) ) {
     // TARGET IS IP ADDRESS
     $("#haveIP").show();
@@ -975,7 +975,10 @@ function parseTarget(target) {
 
         var parts = hostname.split('.').reverse();
         if (parts != null && parts.length > 1) {
-          domain = parts[1] + '.' + parts[0];
+          var domain = parts[1] + '.' + parts[0];
+          // Quick little hack to check if we only got the tld, if so add more to domain name :9
+          var tld = whoisServers[domain]
+          if ( tld ) domain = parts[2] + '.' + parts[1] + '.' + parts[0];
           $("#haveDomainname").show();
           $("#targetDomainname").text(domain).html();
         }
@@ -988,7 +991,10 @@ function parseTarget(target) {
     // Parse for domain name
     var parts = target.split('.').reverse();
     if (parts != null && parts.length > 1) {
-      domain = parts[1] + '.' + parts[0];
+      var domain = parts[1] + '.' + parts[0];
+      // Quick little hack to check if we only got the tld, if so add more to domain name :9
+      var tld = whoisServers[domain]
+      if ( tld ) domain = parts[2] + '.' + parts[1] + '.' + parts[0];
       $("#haveDomainname").show();
       $("#targetDomainname").text(domain).html();
     }
@@ -1117,6 +1123,17 @@ function whoisLookup ( useTarget=false ) {
   switch (targetType) {
     case "ip":
       whoisServer = whoisServers['_']['ip']
+      // Lets check if we have specific whois server
+      // This will trigger if we are called with etc: 59.0.0.0
+      var iplist = whoisServers['_']['ranges']
+      for (const [key, value] of Object.entries(iplist)) {
+        var ipnet = key.split('/');
+        var iprange = ipnet[0]
+        if ( iprange == target) {
+          // We now support more interesting lookups :) (Almost a real whois client!)
+          whoisServer = value;
+        }
+      };
       break;
     case "tld":
       var parts = target.split('.').reverse();
@@ -1145,7 +1162,7 @@ function whoisLookup ( useTarget=false ) {
   // use the change both host + query else only set host from string and
   // use default query!
   
-  var query = "%ADDR%\r\n"; // DEFAULT QUERY
+  var query = "%ADDR%"; // DEFAULT QUERY
   var port = 43 // DEFAULT QUERY PORT (We dont parse host whois servers for this yet!!)
 
   if ( typeof whoisServer === 'object' && whoisServer !== null ) {
@@ -1167,7 +1184,8 @@ function whoisLookup ( useTarget=false ) {
   //var setTimeout = store.get('info.itemDefaults.whoistimeout',60000);
   //client.setTimeout( setTimeout );
   client.connect({ port: finalWhoisPort, host: finalWhoisServer }, function() {
-    client.write(finalWhoisQuery)
+    console.log("[WHOIS] Looking up '"+target+"' at '"+finalWhoisServer+"' via query: "+finalWhoisQuery);
+    client.write(finalWhoisQuery+'\r\n')
   });
   
   client.on('timeout', function() {
@@ -1299,11 +1317,23 @@ window.ipWhois = function(myID=false) {
   // Just setting tsome stuff to be nice
   $("#"+itemID).data('status',"working");
 
-  whoisLookup(useTarget).then((data) => { 
-    $("#ipwhoisresult").text(data).html()
-    $("#"+itemID).data('status',"done"); // Mark us as done! ( Or you will see working-spin-of-death :D )
-  }).catch((err) => {
-    if (myDebug) console.log(err)
+  whoisLookup(useTarget).then((data1) => { 
+    $("#ipwhoisresult").text('=[ FIRST QUERY  ]======================================\n').html()
+    $("#ipwhoisresult").append(data1)
+    $("#ipwhoisresult").append('=[ SECOND QUERY ]======================================\n\n')
+    var regexp = /^CIDR:[ ]+(?<ipnet>[0-9\.]*)[\/]/im
+    var ipres = data1.match(regexp)
+    var ipnet = ipres[1]
+    whoisLookup(ipnet).then((data2) => { 
+      $("#ipwhoisresult").append(data2)
+      $("#"+itemID).data('status',"done"); // Mark us as done! ( Or you will see working-spin-of-death :D )
+    }).catch((err2) => {
+      if (myDebug) console.log(err2)
+      $("#"+itemID).data('status',"done"); // Mark us as done! ( Or you will see working-spin-of-death :D )
+      itemBroke(itemID,'Whois lookup failed!')
+    })
+  }).catch((err1) => {
+    if (myDebug) console.log(err1)
     $("#"+itemID).data('status',"done"); // Mark us as done! ( Or you will see working-spin-of-death :D )
     itemBroke(itemID,'Whois lookup failed!')
   })
