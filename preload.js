@@ -106,7 +106,7 @@ if ( store.get('targetHistory.targets').length > store.get('targetHistory.maxtar
   curtargets = store.get('targetHistory.targets').length;
   targetlist = store.get('targetHistory.targets');
   removenum = curtargets-maxtargets;
-  targetlist.splice(curtargets-removenum,removenum);
+  targetlist.splice(0,removenum);
   store.set('targetHistory.targets',targetlist);
 }
 
