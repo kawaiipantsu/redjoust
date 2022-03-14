@@ -19,7 +19,7 @@
         <link rel="stylesheet" href="themes/default-dark/style.min.css" id="treetheme">
 
         <script src="js/jquery-3.6.0.min.js"></script>
-        <script src="js/jquery-ui.js"></script>
+        <script src="js/autocomplete.js"></script>
         <script src="js/jquery.overlayScrollbars.min.js"></script>
     </head>
     <body>
@@ -388,7 +388,10 @@
                           <td colspan="3">&nbsp;</td> 
                         </tr>
                         <tr>
-                          <td colspan="3"><input id="inputTarget" type="text" value="" spellcheck="false" autofocus="true" autocomplete="false"></td>
+                          <td colspan="3">
+                            <input id="inputTarget" class="autocompleteNavigate" type="text" value="" spellcheck="false" autofocus="true" autocomplete="false">
+                            <div id="autocompleteResult" class="autocompleteNavigate"></div>
+                          </td>
                         </tr>
                         <tr>
                           <td colspan="3">&nbsp;</td> 

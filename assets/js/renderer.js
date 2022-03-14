@@ -79,23 +79,27 @@ $(function () {
     });
 
     // For future use (autocomplete etc)
-    $( "#inputTarget" ).autocomplete({
-        source: window.actionHandler.targethistoryarray()
-    });
+    // Autocomplete test 2 (Never really worked ?)
+    //autocomplete(document.getElementById("inputTarget"), window.actionHandler.targethistoryarray());
+
+    // Autocomplete via Jquery-UI (The js file is so bloated and big ...)
+    //$( "#inputTarget" ).autocomplete({
+    //    source: window.actionHandler.targethistoryarray()
+    //});
     
-    /* My first blab attempt to play with something ...
-    $('#inputTarget').on('input',function(e){
+    // My last attempt to create some auto complete feature for target!
+    // Tired of huge modules, convoluted solutions and almost megabytes of code...
+    // I just need a simple regexp / filter search lol !!
+    $('#inputTarget').on('keyup',function(e){
         curValue = $(this).val();
         curLen = curValue.length;
-        if ( curLen > 2) {
-            // We have 2+ chars to match on ...
-            // Lets play, this is not a full fledge autocomplete,
-            // just me playing around .... (it's all handled in preload, away from user)
-            var result = window.actionHandler.targethistory(curValue);
-            console.log(result);
+        e.preventDefault();
+        if ( e.key != "Enter" && e.key != "ArrowUp" && e.key != "ArrowDown" && e.key != "ArrowLeft" && e.key != "ArrowRight" ) {
+            targetAutocomplete(curValue);
         }
     });
-    */
+    
+    
     
     // Do some prettifying (textareas mainly, that might have been filled and are not at the top)
     //$( ".terminal" ).on( "click", function() {
@@ -106,21 +110,39 @@ $(function () {
         let mode = $( this ).val()
         window.setMode.activate(mode)
     });
+
+    // Global keypress handler (We use this mostly for autocomplete)
+    // But also this is to make things easier, like chekcing for Enter key in input fields
     $(window).on( "keypress", function(event) {
         // ENTER KEY HANDLER!!
         if (event.key == "Enter") {
             // Enter key handler for Set target page !
             if ( $('#inputTarget').is(":visible") ) {
-                var target = $("#inputTarget").val();
-                if ( target && target.length > 0 ) {
-                    window.actionHandler.updateTarget(target);
+                if ( $("#autocompleteResult li.autocompletedSelected").index() === -1 ) {
+                    var target = $("#inputTarget").val();
+                    if ( target && target.length > 0 ) {
+                        if ( target.match(/[\/\\]+/) ) {
+                            alert("For now, only hostnames or IP addresses please :)");
+                            $("#inputTarget").trigger('focus');
+                        } else {
+                            window.actionHandler.updateTarget(target);
+                            // Also update autocomplete
+                            targetHistory = window.actionHandler.targethistoryarray()
+                            // We still continue !
+                            window.actionHandler.goto('inputTarget')
+                        }
+                    } else {
+                        alert("Please set something as target!");
+                        $("#inputTarget").trigger('focus');
+                    }
+                } else if ( $("#autocompleteResult li.autocompletedSelected").index() !== -1 ) {
+                    var sel = $("#autocompleteResult li.autocompletedSelected").text();
+                    window.actionHandler.updateTarget(sel);
                     // Also update autocomplete
-                    $("#inputTarget").autocomplete("option", { source: window.actionHandler.targethistoryarray() });
+                    targetHistory = window.actionHandler.targethistoryarray()
                     // We still continue !
                     window.actionHandler.goto('inputTarget')
-                } else {
-                    alert("Please set something as target!");
-                    $("#inputTarget").trigger('focus');
+                    $('.autocompleteClickTarget').removeClass("autocompletedSelected");
                 }
             }
         }
@@ -134,7 +156,7 @@ $(function () {
                 if ( target && target.length > 0 ) {
                     window.actionHandler.updateTarget(target);
                     // Also update autocomplete
-                    $("#inputTarget").autocomplete("option", { source: window.actionHandler.targethistoryarray() });
+                    targetHistory = window.actionHandler.targethistoryarray()
                     // We still continue !
                     window.actionHandler.goto(goto)
                 } else {
