@@ -713,6 +713,46 @@ legend { font-weight: bold; text-align: center; }
     list-style-type: square;
     list-style-position: inside;
 }
+#autocompleteResult {
+    display: none;
+    position: absolute;
+	cursor: default;
+    max-height: 240px;
+    width: 540px;
+    overflow-y: auto;   /* prevent horizontal scrollbar */
+    overflow-x: hidden; /* add padding to account for vertical scrollbar */
+    z-index:1000 !important;
+    background-color: rgb(223, 223, 223);
+    margin-left: 6px;
+    border-radius: 25px;
+    padding: 12px;
+  }
+  #autocompleteResult ul {
+    position: relative;
+    color: rgb(34, 34, 34);
+    margin: 0;
+    font-size: 30px;
+    font-weight: bold;
+	cursor: pointer;
+	/* support: IE10, see #8844 */
+	list-style-image: url("../images/blank.gif");
+  }
+  #autocompleteResult ul li {
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  #autocompleteResult ul li:hover {
+    background: rgb(122, 122, 122);
+    color: rgb(224, 224, 224);
+    border-radius: 20px;
+  }
+  .autocompletedSelected {
+    background: rgb(122, 122, 122);
+    color: rgb(49, 49, 49);
+    border-radius: 20px;
+  }
 
 
 .ui-widget-overlay {
@@ -970,4 +1010,26 @@ legend { font-weight: bold; text-align: center; }
     unicode-bidi: embed;
     cursor: pointer;
     user-select: text;
+}
+
+.dnsrecords {
+    padding-bottom: 10px;
+}
+.dnsrecords:empty {
+    display: none;
+}
+.dnsrecords .title {
+    color: rgb(124, 124, 124);
+    font-weight: bold;
+}
+.dnsrecords .key {
+    color: rgb(172, 172, 172);
+    font-weight: bold;
+}
+.dnsrecords .value {
+    color: rgb(236, 236, 236);
+}
+.dnsrecords .valueb {
+    color: rgb(219, 219, 219);
+    font-weight: bold;
 }
