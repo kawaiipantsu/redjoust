@@ -7,8 +7,8 @@
     <head>
         <meta charset="UTF-8">
         <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk https://enforcer.darknet.dk">
-        <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk https://enforcer.darknet.dk">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk">
+        <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk">
 
         <base href="./assets/">
 
@@ -157,7 +157,7 @@
                       </tr>
                       <tr class="itembottom">
                         <td class="itemmainarea boxborder">
-                          <div id="dnshostresult" class="boxborder fill terminal">Host name dns information ...</div>
+                          <div class="dnsresult boxborder fill terminal"></div>
                         </td>
                       </tr>
                     </table>
@@ -171,7 +171,7 @@
                       </tr>
                       <tr class="itembottom">
                         <td class="itemmainarea boxborder">
-                          <div id="dnsdomresult" class="boxborder fill terminal">Domain name dns information ...</div>
+                          <div class="dnsresult boxborder fill terminal"></div>
                         </td>
                       </tr>
                     </table>

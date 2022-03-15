@@ -1011,3 +1011,25 @@ legend { font-weight: bold; text-align: center; }
     cursor: pointer;
     user-select: text;
 }
+
+.dnsrecords {
+    padding-bottom: 10px;
+}
+.dnsrecords:empty {
+    display: none;
+}
+.dnsrecords .title {
+    color: rgb(124, 124, 124);
+    font-weight: bold;
+}
+.dnsrecords .key {
+    color: rgb(172, 172, 172);
+    font-weight: bold;
+}
+.dnsrecords .value {
+    color: rgb(236, 236, 236);
+}
+.dnsrecords .valueb {
+    color: rgb(219, 219, 219);
+    font-weight: bold;
+}

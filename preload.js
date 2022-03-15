@@ -9,6 +9,7 @@ const crypto = require('crypto')
 const { Resolver } = require('dns');
 const punycode = require('punycode/');
 const { isNull } = require('util');
+var util = require('util')
 const { exit } = require('process');
 
 
@@ -31,6 +32,17 @@ const sysUserInfo = os.userInfo();
 
 // Our DNS resolver
 const resolver = new Resolver();
+// Handle custom NS server for our resolver !!
+// We support
+// - System (default)
+// - Multiple NS (as array)
+// - Single NS (as string)
+var nsresolver = store.get('info.itemDefaults.dnsresolver');
+if ( nsresolver ) {
+  if ( nsresolver == "system" ) resolver.setServers(resolver.getServers()); // Yes set get blooper! But config might change on fly
+  else if ( Array.isArray(nsresolver) ) resolver.setServers(nsresolver);
+  else resolver.setServers([nsresolver]);
+}
 
 // Redjoust vars
 var myDebug = store.get('settings.debug')
@@ -118,6 +130,7 @@ window.onload = () => {
   // DEBUG BLOCK BEGIN
   if (myDebug) {
   
+
   }
   // DEBUG BLOCK END
 
@@ -964,18 +977,6 @@ function parseTarget(target) {
   $("#haveHostname").hide();
   $("#haveDomainname").hide();
   $("#haveIP").hide();
-
-  // Handle custom NS server for our resolver !!
-  // We support
-  // - System (default)
-  // - Multiple NS (as array)
-  // - Single NS (as string)
-  var nsresolver = store.get('info.itemDefaults.dnsresolver');
-  if ( nsresolver ) {
-    if ( nsresolver == "system" ) resolver.setServers(resolver.getServers()); // Yes set get blooper! But config might change on fly
-    else if ( Array.isArray(nsresolver) ) resolver.setServers(nsresolver);
-    else resolver.setServers([nsresolver]);
-  }
   const whoisServers = require("./assets/json/whois-servers.json");
   if ( net.isIP(target) ) {
     // TARGET IS IP ADDRESS
@@ -1335,25 +1336,124 @@ window.dnsMain = function(myID=false) {
   var itemTitle = $("#"+myID).data("title");
   var itemPage = $("#"+myID).data("page");
   var itemFunc = $("#"+myID).data("function");
-  var ourMode = "misconfigured";
-  if ( $("#"+myID).hasClass( "item--passive" ) ) ourMode = "passive";
-  if ( $("#"+myID).hasClass( "item--active" ) ) ourMode = "active";
-  if ( $("#"+myID).hasClass( "item--redteam" ) ) ourMode = "redteam";
-  var ourStatus = "unknown";
-  if ( $("#"+myID).hasClass( "status--disabled" ) ) ourStatus = "disabled";
-  if ( $("#"+myID).hasClass( "status--ready" ) ) ourStatus = "ready";
-  if ( $("#"+myID).hasClass( "status--working" ) ) ourStatus = "working";
-  if ( $("#"+myID).hasClass( "status--done" ) ) ourStatus = "done";
   $("#"+myID).data('status',"working");
   if (myDebug) console.log("["+itemFunc+"]"+itemID+": Function running, output to: "+itemPage);
+  var itemResult = $("#"+itemPage).find(".dnsresult");
+  // Clear page
+  itemResult.html("");
+  // Set totalt subtasts and prepare for subwork
+  itemResult.data("totalTasks",5) // Set to actual number of subtasks you do ...
+  itemResult.data("totalTasksDone",0)
 
-  // This is crude code to pretend we are working !
-  var num = getRandomInt(1,10);
-  $.ajax({url: "https://enforcer.darknet.dk/sleep.php?num="+num, success: function(result) {
-    $("#dnsresult").append("<div>Hi i'm item "+itemID+" slept for "+num+"sec</div>")
-    $("#"+myID).data('status',"done");
-  }});
+  // Prepare placeholders
+  itemResult.append('<div class="worktarget dnsrecords"></div>')
+  itemResult.append('<div class="soa dnsrecords"></div>')
+  itemResult.append('<div class="ns dnsrecords"></div>')
+  itemResult.append('<div class="resolve dnsrecords"></div>')
 
+  // Do this when something is done
+  // itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+  const elmTarget = $("#"+itemPage).find(".dnsresult").find(".worktarget")
+  if ( itemPage == "pageDNShostname") var workTarget = $("#targetHostname").text();
+  if ( itemPage == "pageDNSdomainname") var workTarget = $("#targetDomainname").text();
+  elmTarget.append("<span class='title'>Deep dive on target:</span> <span class='value'>" + workTarget + "</span><br>")
+
+
+  const elmSOA = $("#"+itemPage).find(".dnsresult").find(".soa")
+  resolver.resolve(String(workTarget),'SOA', (err, result) => {
+    if (err) {
+      itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+    } else {
+      itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+      elmSOA.append("<span class='title'>==[ SOA record ]===============================</span><br>")
+      elmSOA.append("<span class='key'> - Primary NS.....:</span> <span class='value'>" + result.nsname + "</span><br>")
+      elmSOA.append("<span class='key'> - Hostmaster.....:</span> <span class='value'>" + result.hostmaster + "</span><br>")
+      elmSOA.append("<span class='key'> - Serial.........:</span> <span class='value'>" + result.serial + "</span><br>")
+      elmSOA.append("<span class='key'> - Refresh / Retry:</span> <span class='value'>" + parseInt(result.refresh/60) + "min / "+parseInt(result.retry/60)+"min</span><br>")
+      elmSOA.append("<span class='key'> - MinTTL / Expire:</span> <span class='value'>" + parseInt(result.minttl/60) + "min / "+parseInt(result.expire/60)+"min</span><br>")
+    }
+  });
+
+  const elmNS = $("#"+itemPage).find(".dnsresult").find(".ns")
+  resolver.resolve(String(workTarget),'NS', (err, result) => {
+    if (err) {
+      itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+    } else {
+      elmNS.append("<span class='title'>==[ NS record ]================================</span><br>")
+      result.forEach( function(nssrv) {
+        resolver.resolve(String(nssrv),'A', (err, result2) => {
+          if ( !err ) {
+            var nsip = result2[0]
+            resolver.reverse(String(result2[0]), (err, result3) => {
+              if ( !err ) {
+                elmNS.append("<span class='key'> -</span> <span class='valueb'>"+nssrv+"</span> ( <span class='value'>"+nsip+"</span> <span class='key'>&#8605;</span> <span class='value'>"+result3+"</span> )<br>" )
+              } else {
+                elmNS.append("<span class='key'> -</span> <span class='valueb'>" + nssrv + "</span> ( <span class='value'>"+nsip+"</span> )<br>")
+              }
+            });
+          }
+        });
+      });
+      itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+    }
+  });
+
+  const options = {
+    all: true
+  };
+  const elmA = $("#"+itemPage).find(".dnsresult").find(".resolve")
+  resolver.resolve(String(workTarget),'A', (err, addresses) => {
+    elmA.append("<span class='title'>==[ A,AAAA,CNAME ]=============================</span><br>")
+    if (err) {
+      itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+      elmA.append("<span class='key'> - No A record(s)</span><br>")
+    } else {
+      addresses.forEach( function(addr) {
+        elmA.append("<span class='key'> - A record....:</span> <span class='value'>"+addr+"</span><br>")
+      });
+      itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+    }
+    resolver.resolve(String(workTarget),'AAAA', (err, addresses) => {
+      if (err) {
+        itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+        elmA.append("<span class='key'> - No AAAA record(s)</span><br>")
+      } else {
+        addresses.forEach( function(addr) {
+          elmA.append("<span class='key'> - AAAA record.:</span> <span class='value'>"+addr+"</span><br>")
+        });
+        itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+      }
+      resolver.resolve(String(workTarget),'CNAME', (err, addresses) => {
+        if (err) {
+          itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+          elmA.append("<span class='key'> - No CNAME record(s)</span><br>")
+        } else {
+          addresses.forEach( function(addr) {
+            elmA.append("<span class='key'> - CNAME record:</span> <span class='value'>"+addr+"</span><br>")
+          });
+          itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+        }
+      });
+    });
+  });
+  
+
+
+
+
+  // This is the internal timer to check if all async things have finished ...
+  // Dont forget to count up the totalTasksDone or else we "run" in working state
+  // forever :) Thats not cool bro!
+  itemResult.data('interval', setInterval(function(myID) {
+    var itemID = $("#"+myID).attr('id');
+    var itemTitle = $("#"+myID).data("title");
+    var itemPage = $("#"+myID).data("page");
+    var itemResult = $("#"+itemPage).find(".dnsresult");
+    if ( itemResult.data("totalTasks") == itemResult.data("totalTasksDone") ) {
+      $("#"+itemID).data('status',"done");
+      clearInterval(itemResult.data('interval'));
+    }
+  }, 1000,myID));
 }
 
 window.dnsWhois = function(myID=false) {
