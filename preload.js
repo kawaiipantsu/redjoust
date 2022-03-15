@@ -1409,7 +1409,13 @@ window.dnsMain = function(myID=false) {
       elmA.append("<span class='key'> - No A record(s)</span><br>")
     } else {
       addresses.forEach( function(addr) {
-        elmA.append("<span class='key'> - A record....:</span> <span class='value'>"+addr+"</span><br>")
+        resolver.reverse(String(addr), (err, addrrev) => {
+          if ( !err ) {
+            elmA.append("<span class='key'> - A record....:</span> <span class='value'>"+addr+"</span> ( Reverse DNS <span class='key'>&#8605;</span> <span class='value'>"+addrrev+"</span> )<br>" )
+          } else {
+            elmA.append("<span class='key'> - A record....:</span> <span class='value'>"+addr+"</span><br>")
+          }
+        });
       });
       itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
     }
@@ -1419,7 +1425,13 @@ window.dnsMain = function(myID=false) {
         elmA.append("<span class='key'> - No AAAA record(s)</span><br>")
       } else {
         addresses.forEach( function(addr) {
-          elmA.append("<span class='key'> - AAAA record.:</span> <span class='value'>"+addr+"</span><br>")
+          resolver.reverse(String(addr), (err, addrrev) => {
+            if ( !err ) {
+              elmA.append("<span class='key'> - AAAA record.:</span> <span class='value'>"+addr+"</span> ( Reverse DNS <span class='key'>&#8605;</span> <span class='value'>"+addrrev+"</span> )<br>" )
+            } else {
+              elmA.append("<span class='key'> - AAAA record.:</span> <span class='value'>"+addr+"</span><br>")
+            }
+          });
         });
         itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
       }
