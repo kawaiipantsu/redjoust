@@ -20,6 +20,8 @@ I have included 2 screenshots, i will update them regularly :)
 
 ![Main view](assets/screenshot-main-view.png)
 
+![DNS Deep dive view](assets/screenshot-dnsdeepdive-view.png)
+
 ![Showing of the internal whois client](assets/screenshot-domwhois-view.png)
 
 ![Toolbox Base64 view](assets/screenshot-base64-view.png)
