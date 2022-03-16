@@ -1342,14 +1342,16 @@ window.dnsMain = function(myID=false) {
   // Clear page
   itemResult.html("");
   // Set totalt subtasts and prepare for subwork
-  itemResult.data("totalTasks",5) // Set to actual number of subtasks you do ...
+  itemResult.data("totalTasks",7) // Set to actual number of subtasks you do ...
   itemResult.data("totalTasksDone",0)
 
   // Prepare placeholders
   itemResult.append('<div class="worktarget dnsrecords"></div>')
   itemResult.append('<div class="soa dnsrecords"></div>')
   itemResult.append('<div class="ns dnsrecords"></div>')
-  itemResult.append('<div class="resolve dnsrecords"></div>')
+  itemResult.append('<div class="resolve dnsrecords"><div class="a"></div><div class="aaaa"></div><div class="cname"></div></div>')
+  itemResult.append('<div class="resolvefuzz dnsrecords"><div class="title"></div><div class="wildcard"></div><div class="fuzzout gridcont"></div>')
+  itemResult.append('<div class="mx dnsrecords"></div>')
 
   // Do this when something is done
   // itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
@@ -1401,7 +1403,9 @@ window.dnsMain = function(myID=false) {
   const options = {
     all: true
   };
-  const elmA = $("#"+itemPage).find(".dnsresult").find(".resolve")
+  const elmA = $("#"+itemPage).find(".dnsresult").find(".resolve").find(".a")
+  const elmAAAA = $("#"+itemPage).find(".dnsresult").find(".resolve").find(".aaaa")
+  const elmCNAME = $("#"+itemPage).find(".dnsresult").find(".resolve").find(".cname")
   resolver.resolve(String(workTarget),'A', (err, addresses) => {
     elmA.append("<span class='title'>==[ A,AAAA,CNAME ]=============================</span><br>")
     if (err) {
@@ -1409,27 +1413,39 @@ window.dnsMain = function(myID=false) {
       elmA.append("<span class='key'> - No A record(s)</span><br>")
     } else {
       addresses.forEach( function(addr) {
-        elmA.append("<span class='key'> - A record....:</span> <span class='value'>"+addr+"</span><br>")
+        resolver.reverse(String(addr), (err, addrrev) => {
+          if ( !err ) {
+            elmA.append("<span class='key'> - A record....:</span> <span class='value'>"+addr+"</span> ( Reverse DNS <span class='key'>&#8605;</span> <span class='value'>"+addrrev+"</span> )<br>" )
+          } else {
+            elmA.append("<span class='key'> - A record....:</span> <span class='value'>"+addr+"</span><br>")
+          }
+        });
       });
       itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
     }
     resolver.resolve(String(workTarget),'AAAA', (err, addresses) => {
       if (err) {
         itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
-        elmA.append("<span class='key'> - No AAAA record(s)</span><br>")
+        elmAAAA.append("<span class='key'> - No AAAA record(s)</span><br>")
       } else {
         addresses.forEach( function(addr) {
-          elmA.append("<span class='key'> - AAAA record.:</span> <span class='value'>"+addr+"</span><br>")
+          resolver.reverse(String(addr), (err, addrrev) => {
+            if ( !err ) {
+              elmAAAA.append("<span class='key'> - AAAA record.:</span> <span class='value'>"+addr+"</span> ( Reverse DNS <span class='key'>&#8605;</span> <span class='value'>"+addrrev+"</span> )<br>" )
+            } else {
+              elmAAAA.append("<span class='key'> - AAAA record.:</span> <span class='value'>"+addr+"</span><br>")
+            }
+          });
         });
         itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
       }
       resolver.resolve(String(workTarget),'CNAME', (err, addresses) => {
         if (err) {
           itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
-          elmA.append("<span class='key'> - No CNAME record(s)</span><br>")
+          elmCNAME.append("<span class='key'> - No CNAME record(s)</span><br>")
         } else {
           addresses.forEach( function(addr) {
-            elmA.append("<span class='key'> - CNAME record:</span> <span class='value'>"+addr+"</span><br>")
+            elmCNAME.append("<span class='key'> - CNAME record:</span> <span class='value'>"+addr+"</span><br>")
           });
           itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
         }
@@ -1437,6 +1453,111 @@ window.dnsMain = function(myID=false) {
     });
   });
   
+  const fuzz = require("./assets/json/dns-host-fuzz.json");
+  if (myDebug) console.log("dns-host-fuzz count: "+fuzz['dns-host-fuzz'].length)
+  const fuzzTITLE = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".title")
+  const fuzzWILD = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".wildcard")
+  const fuzzOut = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".fuzzout")
+
+  fuzzTITLE.append("<span class='title'>==[ Subdomain Fuzz ]===========================</span>")
+  // Wildcard detection - Lets just try to resolve something stupid :)
+  resolver.resolve('somethingthatshouldneverresolvewhentryingthisout.'+String(workTarget),'A', (err, addresses) => {
+    if (!err) {
+      fuzzWILD.append("<span class='key'> - </span><span class='valueb'>WARNING</span>: <span class='value'>Target seems to have a wildcard record</span><br>")
+      fuzzWILD.append("<span class='key'>   </span><span class='valueb'>WARNING</span>: <span class='value'>Fuzz results might not be reliable</span>")
+    }
+  });
+
+  var ifuzzA=0
+  hostFuzzArray = fuzz['dns-host-fuzz'].concat( store.get('info.fuzzDNSCustom.hostFuzz',[]) )
+  hostFuzzArraySorted = hostFuzzArray.sort().filter(function(item, pos, ary) {
+    return !pos || item != ary[pos - 1];
+  });
+  var ifuzzAend = hostFuzzArraySorted.length
+  hostFuzzArraySorted.forEach( function(fuzz) {
+    ifuzzA++;
+    var fuzzTarget = fuzz+"."+workTarget
+    fuzzOut.append("<div data-hostfuzzid='"+fuzz+"' data-target='"+fuzzTarget+"' data-addr='[]' data-gotA=false data-gotAAAA=false data-textA='' data-textAAAA='' class='fuzz--hit--none fuzzbox hostfuzz hostfuzzclick griditem'>"+fuzz+"</div>")
+    resolver.resolve(String(fuzzTarget),'A', (errA, addressesA) => {
+      if (!errA) {
+        var me = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".fuzzout").find(".griditem[data-hostfuzzid='"+fuzz+"']")
+        me.attr('title','Click to set new target as: '+fuzzTarget)
+        if ( me.data("gotAAAA") ) {
+          me.data('gotA',true)
+          me.attr('data-textA','IPv4')
+          me.removeClass('fuzz--hit--lower')
+          me.addClass('fuzz--hit--both')
+          //me.data("addr",push(addressesA[0]))
+        } else {
+          me.data('gotA',true)
+          me.attr('data-textA','IPv4')
+          me.removeClass('fuzz--hit--none')
+          me.addClass('fuzz--hit--upper')
+          //me.data("addr",push(addressesA[0]))
+        }
+      }
+    });
+    resolver.resolve(String(fuzzTarget),'AAAA', (errAAAA, addressesAAAA) => {
+      if (!errAAAA) {
+        var me = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".fuzzout").find(".griditem[data-hostfuzzid='"+fuzz+"']")
+        me.attr('title','Click to set new target as: '+fuzzTarget)
+        if ( me.data("gotA") ) {
+          me.data('gotAAAA',true)
+          me.attr('data-textAAAA','IPv6')
+          me.removeClass('fuzz--hit--upper')
+          me.addClass('fuzz--hit--both')
+          //me.data("addr",push(addressesAAAA[0]))
+        } else {
+          me.data('gotAAAA',true)
+          me.attr('data-textAAAA','IPv6')
+          me.removeClass('fuzz--hit--none')
+          me.addClass('fuzz--hit--lower')
+          //me.data("addr",push(addressesAAAA[0]))
+        }
+      }
+    });
+    if ( ifuzzA == ifuzzAend ) { // This will run one time when loop is done, so use wisely!
+      $(".hostfuzzclick").on("click", function() {
+        if ( $(this).data("gotA") || $(this).data("gotAAAA") ) {
+          var myFuzz = $(this).data("hostfuzzid")
+          var setNewTarget = $(this).data("target")
+          if (setNewTarget) {
+            setTarget(setNewTarget)
+            showPage("pagedefault")
+          }
+        }
+      });
+      itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+    }
+  });
+  
+  const elmMX = $("#"+itemPage).find(".dnsresult").find(".mx")
+  resolver.resolve(String(workTarget),'MX', (err, result) => {
+    if (err) {
+      itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+    } else {
+      itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+      if (result.length > 0) elmMX.append("<span class='title'>==[ Mail Exchange (MX) ]=======================</span><br>")
+      result.forEach( function(mx) {
+        var mxSrv = mx.exchange
+        var mxPrio = mx.priority
+        resolver.resolve(String(mxSrv),'A', (err, mxaddr) => {
+          if ( err ) {
+            elmMX.append("<span class='key'> -</span> <span class='valueb'>" + mxSrv + "</span> ( <span class='valueErr'>Not found?</span> )<br>")
+          } else {
+            resolver.reverse(String(mxaddr[0]), (err, mxrev) => {
+              if ( !err ) {
+                elmMX.append("<span class='key'> -</span> <span class='valueb'>"+mxSrv+"</span> ( <span class='value'>"+mxaddr[0]+"</span> <span class='key'>&#8605;</span> <span class='value'>"+mxrev+"</span> )<br>" )
+              } else {
+                elmMX.append("<span class='key'> -</span> <span class='valueb'>" + mxSrv + "</span> ( <span class='value'>"+mxaddr[0]+"</span> )<br>")
+              }
+            });
+          }
+        });
+      });
+    }
+  });
+    
 
 
 
@@ -1449,6 +1570,7 @@ window.dnsMain = function(myID=false) {
     var itemTitle = $("#"+myID).data("title");
     var itemPage = $("#"+myID).data("page");
     var itemResult = $("#"+itemPage).find(".dnsresult");
+    console.log(itemResult.data("totalTasks")+" :: " +itemResult.data("totalTasksDone"))
     if ( itemResult.data("totalTasks") == itemResult.data("totalTasksDone") ) {
       $("#"+itemID).data('status',"done");
       clearInterval(itemResult.data('interval'));

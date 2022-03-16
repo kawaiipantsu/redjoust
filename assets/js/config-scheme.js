@@ -47,6 +47,11 @@
             username: 'admin',
             password: 'admin',
             timeout: 5
+        },
+        fuzzDNSCustom: {
+            hostFuzz: ['app','bitbucket','callflow','gitlab','jira','outlook'],
+            txtFuzz: [],
+            srvFuzz: []
         }
     },
     targetHistory: {
