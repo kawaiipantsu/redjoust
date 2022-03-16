@@ -1,5 +1,5 @@
 /*****************************************************
- * RedJoust - Default Config settings
+ * RedJoust - Default Config scheme
  * 
  * We use the Electron module called: electron-store
  * It's a simple get/set/has storage module and it
@@ -12,50 +12,20 @@
 
  module.exports = {
     
-    settings: {
-        theme: 'system',
-        streamermode: false,
-        idle: 300,
-        idlelock: false,
-        debug: false
-    },
-    menuitems: {
-        passive: {
-            allow: true,
-            runwarning: false
+    conf: {
+        type: 'object',
+        properties: {
+            test: {
+                type: 'object',
+                properties: {
+                    a1: {
+                        type: 'string',
+                        default: 'test'
+                    }
+                },
+                default: {}
+            }
         },
-        active: {
-            allow: true,
-            runwarning: false
-        },
-        redteam: {
-            allow: true,
-            runwarning: false
-        },
-        externaltools: {
-            show: true,
-            terminal: false
-        }
-    },
-    info: {
-        target: null,
-        mode: null,
-        itemDefaults: {
-            whoistimeout: '60000',
-            whoisfollow: '2',
-            dnsresolver: 'system',
-            username: 'admin',
-            password: 'admin',
-            timeout: 5
-        },
-        fuzzDNSCustom: {
-            hostFuzz: ['app','bitbucket','callflow','gitlab','jira','outlook'],
-            txtFuzz: [],
-            srvFuzz: []
-        }
-    },
-    targetHistory: {
-        maxtargets: 50,
-        targets: []
+        default: {}
     }
 };
