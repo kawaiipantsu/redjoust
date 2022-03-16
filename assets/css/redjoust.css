@@ -876,6 +876,9 @@ legend { font-weight: bold; text-align: center; }
     font-size: 20px;
     font-weight: bold;
 }
+.itemmainarea {
+    height: 100%;
+}
 .tooltable {
     border-spacing: 10px;
     border-collapse: separate;
@@ -1010,6 +1013,7 @@ legend { font-weight: bold; text-align: center; }
     unicode-bidi: embed;
     cursor: pointer;
     user-select: text;
+    height: 100%;
 }
 
 .dnsrecords {
@@ -1025,11 +1029,82 @@ legend { font-weight: bold; text-align: center; }
 .dnsrecords .key {
     color: rgb(172, 172, 172);
     font-weight: bold;
+    user-select: text;
 }
 .dnsrecords .value {
+    user-select: text;
     color: rgb(236, 236, 236);
 }
+.dnsrecords .valueErr {
+    color: rgb(238, 124, 124);
+}
 .dnsrecords .valueb {
+    user-select: text;
     color: rgb(219, 219, 219);
     font-weight: bold;
+}
+.gridcont {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto auto;
+    padding: 10px;
+    margin: 2px;
+}
+.griditem {
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    border-radius: 5px;
+    padding: 20px;
+    font-size: 15px;
+    text-align: center;
+}
+.griditem:hover {
+    color: rgb(109, 109, 161);
+    font-weight: bold;
+    cursor: pointer;
+}
+.hostfuzz::before {
+    display: inline-flex;
+    vertical-align: top;
+    float: left;
+    text-align: left;
+    font-size: 9px;
+    padding-top: 1px;
+    padding-left: 1px;
+    color: rgb(173, 173, 173);
+    content: attr(data-textA);
+}
+.hostfuzz::after {
+    display: inline-flex;
+    vertical-align: text-bottom;
+    float: right;
+    text-align: right;
+    font-size: 9px;
+    padding-top: 8px;
+    padding-left: 1px;
+    padding-right: 1px;
+    color: rgb(173, 173, 173);
+    content: attr(data-textAAAA);
+}
+
+.fuzzbox {
+    padding: 2px;
+}
+
+.fuzz--hit--both {
+    color: #c1c1c1;
+    background: rgb(65, 71, 26);
+}
+.fuzz--hit--upper {
+    color: #c1c1c1;
+    background: rgb(65, 71, 26);
+    background: linear-gradient(345deg, rgb(139, 0, 0) 53%, rgb(65, 71, 26) 53%);
+}
+.fuzz--hit--lower {
+    color: #c1c1c1;
+    background: rgb(65, 71, 26);
+    background: linear-gradient(145deg, rgb(139, 0, 0) 53%, rgb(65, 71, 26) 53%);
+}
+.fuzz--hit--none {
+    color: #c1c1c1;
+    background: rgb(139, 0, 0);
 }
