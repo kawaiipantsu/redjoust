@@ -63,16 +63,16 @@
     info: {
         type: 'object',
         properties: {
-            target: { type: 'string', default: null },
-            mode: { type: 'string', default: null },
+            target: { type: 'string', default: '' },
+            mode: { type: 'string', default: '' },
             itemDefaults: {
                 type: 'object',
                 properties: {
                     whoistimeout: { type: 'integer', default: 60000 },
                     whoisfollow: { type: 'integer', default: 2 },
                     whoistidnsresolvermeout: { type: 'string', default: 'system' },
-                    username: { type: 'boolean', default: 'admin' },
-                    password: { type: 'boolean', default: 'admin' },
+                    username: { type: 'string', default: 'admin' },
+                    password: { type: 'string', default: 'admin' },
                     timeout: { type: 'integer', default: 5 }
                 },
                 default: {}

@@ -37,8 +37,8 @@
         }
     },
     info: {
-        target: null,
-        mode: null,
+        target: '',
+        mode: '',
         itemDefaults: {
             whoistimeout: 60000,
             whoisfollow: 2,

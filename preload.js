@@ -225,26 +225,6 @@ window.onload = () => {
 
 }
 
-function loadDefaultSettings() {
-  store.set({
-    settings: {
-      exist: true,
-      theme: 'system',
-      debug: false
-    },
-    info: {
-      target: null,
-      mode: null,
-      itemDefaults: {
-        username: 'admin',
-        password: 'admin',
-        timeout: 5
-      }
-    }
-  });
-  if (myDebug) console.log("Loaded default settings, first time run!");
-}
-
 function updateItemVisibility() {
   switch (myMode) {
     case "Passive":
