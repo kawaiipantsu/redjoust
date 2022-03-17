@@ -1551,7 +1551,6 @@ window.dnsMain = function(myID=false) {
     var itemTitle = $("#"+myID).data("title");
     var itemPage = $("#"+myID).data("page");
     var itemResult = $("#"+itemPage).find(".dnsresult");
-    console.log(itemResult.data("totalTasks")+" :: " +itemResult.data("totalTasksDone"))
     if ( itemResult.data("totalTasks") == itemResult.data("totalTasksDone") ) {
       $("#"+itemID).data('status',"done");
       clearInterval(itemResult.data('interval'));
