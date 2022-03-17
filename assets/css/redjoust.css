@@ -1065,6 +1065,14 @@ legend { font-weight: bold; text-align: center; }
     font-weight: bold;
     cursor: pointer;
 }
+.poiTarget {
+    color: rgb(255, 255, 255);
+}
+.poiTarget:hover {
+    color: rgb(109, 109, 161);
+    font-weight: bold;
+    cursor: pointer;
+}
 .hostfuzz::before {
     display: inline-flex;
     vertical-align: top;
