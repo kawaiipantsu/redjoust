@@ -1,5 +1,5 @@
 /*****************************************************
- * RedJoust - Default Config settings
+ * RedJoust - Default Config scheme
  * 
  * We use the Electron module called: electron-store
  * It's a simple get/set/has storage module and it
@@ -10,52 +10,91 @@
  * config file with missing values when the app is run.
  */
 
- module.exports = {
-    
+ module.exports = { 
     settings: {
-        theme: 'system',
-        streamermode: false,
-        idle: 300,
-        idlelock: false,
-        debug: false
+        type: 'object',
+        properties: {
+            theme: { type: 'string', default: 'system' },
+            streamermode: { type: 'boolean', default: false },
+            idle: { type: 'integer', default: 300 },
+            idlelock: { type: 'boolean', default: false },
+            debug: { type: 'boolean', default: false }
+        },
+        default: {}
     },
     menuitems: {
-        passive: {
-            allow: true,
-            runwarning: false
+        type: 'object',
+        properties: {
+            passive: {
+                type: 'object',
+                properties: {
+                    allow: { type: 'boolean', default: true },
+                    runwarning: { type: 'boolean', default: false }
+                },
+                default: {}
+            },
+            active: {
+                type: 'object',
+                properties: {
+                    allow: { type: 'boolean', default: true },
+                    runwarning: { type: 'boolean', default: false }
+                },
+                default: {}
+            },
+            redteam: {
+                type: 'object',
+                properties: {
+                    allow: { type: 'boolean', default: true },
+                    runwarning: { type: 'boolean', default: false }
+                },
+                default: {}
+            },
+            externaltools: {
+                type: 'object',
+                properties: {
+                    show: { type: 'boolean', default: true },
+                    terminal: { type: 'boolean', default: false }
+                },
+                default: {}
+            }
         },
-        active: {
-            allow: true,
-            runwarning: false
-        },
-        redteam: {
-            allow: true,
-            runwarning: false
-        },
-        externaltools: {
-            show: true,
-            terminal: false
-        }
+        default: {}
     },
     info: {
-        target: null,
-        mode: null,
-        itemDefaults: {
-            whoistimeout: '60000',
-            whoisfollow: '2',
-            dnsresolver: 'system',
-            username: 'admin',
-            password: 'admin',
-            timeout: 5
+        type: 'object',
+        properties: {
+            target: { type: 'string', default: '' },
+            mode: { type: 'string', default: '' },
+            itemDefaults: {
+                type: 'object',
+                properties: {
+                    whoistimeout: { type: 'integer', default: 60000 },
+                    whoisfollow: { type: 'integer', default: 2 },
+                    whoistidnsresolvermeout: { type: 'string', default: 'system' },
+                    username: { type: 'string', default: 'admin' },
+                    password: { type: 'string', default: 'admin' },
+                    timeout: { type: 'integer', default: 5 }
+                },
+                default: {}
+            },
+            fuzzDNSCustom: {
+                type: 'object',
+                properties: {
+                    hostFuzz: { type: 'array', default: [] },
+                    txtFuzz: { type: 'array', default: [] },
+                    srvFuzz: { type: 'array', default: [] }
+                },
+                default: {}
+            }
         },
-        fuzzDNSCustom: {
-            hostFuzz: ['app','bitbucket','callflow','gitlab','jira','outlook'],
-            txtFuzz: [],
-            srvFuzz: []
-        }
+        default: {}
     },
     targetHistory: {
-        maxtargets: 50,
-        targets: []
+        type: 'object',
+        properties: {
+            maxtargets: { type: 'integer', default: 50 },
+            targets: { type: 'array', default: [] }
+        },
+        default: {}
     }
 };

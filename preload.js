@@ -13,14 +13,15 @@ var util = require('util')
 const { exit } = require('process');
 
 
-const defaultSettingsSchema = require('./assets/js/config-scheme.js');
-const { resolve } = require('path');
+// configDefaults.: Is how the default config.json file is to look if no file found
+// configScheme...: Is the validation on what happens if we dont know the value, ie.
+//                  user has older config.json file and new changes have been introduced.
+//                  But it can also be used for validating whats accepted via the set()
+//                  function and what type it holds.
+const configDefaults = require('./assets/js/config-defaults.js');
+const configScheme = require('./assets/js/config-scheme.js');
+const store = new Store({defaults: configDefaults, schema: configScheme});
 
-// We are now using the scheme to set the overall template of the config file.
-// This is super as even if the user has an old config file any new "settings"
-// will apply based on the schemes default values when using the "store.get".
-
-const store = new Store({defaults: defaultSettingsSchema});
 
 // Not sure if i want to use this yet, trying settings out for now
 //const storage = require('electron-json-storage')
@@ -222,26 +223,6 @@ window.onload = () => {
     }
   }, 500);
 
-}
-
-function loadDefaultSettings() {
-  store.set({
-    settings: {
-      exist: true,
-      theme: 'system',
-      debug: false
-    },
-    info: {
-      target: null,
-      mode: null,
-      itemDefaults: {
-        username: 'admin',
-        password: 'admin',
-        timeout: 5
-      }
-    }
-  });
-  if (myDebug) console.log("Loaded default settings, first time run!");
 }
 
 function updateItemVisibility() {
@@ -1570,7 +1551,6 @@ window.dnsMain = function(myID=false) {
     var itemTitle = $("#"+myID).data("title");
     var itemPage = $("#"+myID).data("page");
     var itemResult = $("#"+itemPage).find(".dnsresult");
-    console.log(itemResult.data("totalTasks")+" :: " +itemResult.data("totalTasksDone"))
     if ( itemResult.data("totalTasks") == itemResult.data("totalTasksDone") ) {
       $("#"+itemID).data('status',"done");
       clearInterval(itemResult.data('interval'));
