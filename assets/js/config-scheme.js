@@ -10,21 +10,90 @@
  * config file with missing values when the app is run.
  */
 
- module.exports = {
-    
-    conf: {
+ module.exports = { 
+    settings: {
         type: 'object',
         properties: {
-            test: {
+            theme: { type: 'string', default: 'system' },
+            streamermode: { type: 'boolean', default: false },
+            idle: { type: 'integer', default: 300 },
+            idlelock: { type: 'boolean', default: false },
+            debug: { type: 'boolean', default: false }
+        },
+        default: {}
+    },
+    menuitems: {
+        type: 'object',
+        properties: {
+            passive: {
                 type: 'object',
                 properties: {
-                    a1: {
-                        type: 'string',
-                        default: 'test'
-                    }
+                    allow: { type: 'boolean', default: true },
+                    runwarning: { type: 'boolean', default: false }
+                },
+                default: {}
+            },
+            active: {
+                type: 'object',
+                properties: {
+                    allow: { type: 'boolean', default: true },
+                    runwarning: { type: 'boolean', default: false }
+                },
+                default: {}
+            },
+            redteam: {
+                type: 'object',
+                properties: {
+                    allow: { type: 'boolean', default: true },
+                    runwarning: { type: 'boolean', default: false }
+                },
+                default: {}
+            },
+            externaltools: {
+                type: 'object',
+                properties: {
+                    show: { type: 'boolean', default: true },
+                    terminal: { type: 'boolean', default: false }
                 },
                 default: {}
             }
+        },
+        default: {}
+    },
+    info: {
+        type: 'object',
+        properties: {
+            target: { type: 'string', default: null },
+            mode: { type: 'string', default: null },
+            itemDefaults: {
+                type: 'object',
+                properties: {
+                    whoistimeout: { type: 'integer', default: 60000 },
+                    whoisfollow: { type: 'integer', default: 2 },
+                    whoistidnsresolvermeout: { type: 'string', default: 'system' },
+                    username: { type: 'boolean', default: 'admin' },
+                    password: { type: 'boolean', default: 'admin' },
+                    timeout: { type: 'integer', default: 5 }
+                },
+                default: {}
+            },
+            fuzzDNSCustom: {
+                type: 'object',
+                properties: {
+                    hostFuzz: { type: 'array', default: [] },
+                    txtFuzz: { type: 'array', default: [] },
+                    srvFuzz: { type: 'array', default: [] }
+                },
+                default: {}
+            }
+        },
+        default: {}
+    },
+    targetHistory: {
+        type: 'object',
+        properties: {
+            maxtargets: { type: 'integer', default: 50 },
+            targets: { type: 'array', default: [] }
         },
         default: {}
     }

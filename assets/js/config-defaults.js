@@ -11,11 +11,6 @@
  */
 
  module.exports = {
-    conf: {
-        test: {
-            a1: 'test'
-        }
-    },
     settings: {
         theme: 'system',
         streamermode: false,
@@ -45,15 +40,15 @@
         target: null,
         mode: null,
         itemDefaults: {
-            whoistimeout: '60000',
-            whoisfollow: '2',
+            whoistimeout: 60000,
+            whoisfollow: 2,
             dnsresolver: 'system',
             username: 'admin',
             password: 'admin',
             timeout: 5
         },
         fuzzDNSCustom: {
-            hostFuzz: ['app','bitbucket','callflow','gitlab','jira','outlook'],
+            hostFuzz: [],
             txtFuzz: [],
             srvFuzz: []
         }
