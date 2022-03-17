@@ -1035,6 +1035,9 @@ legend { font-weight: bold; text-align: center; }
     user-select: text;
     color: rgb(236, 236, 236);
 }
+.dnsrecords .note {
+    color: rgb(138, 138, 138);
+}
 .dnsrecords .valueErr {
     color: rgb(238, 124, 124);
 }
@@ -1107,4 +1110,10 @@ legend { font-weight: bold; text-align: center; }
 .fuzz--hit--none {
     color: #c1c1c1;
     background: rgb(139, 0, 0);
+}
+.spf1 {
+    content: attr(data-count);
+}
+.spf2 {
+    content: attr(data-count);
 }

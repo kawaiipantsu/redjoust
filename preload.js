@@ -575,6 +575,8 @@ function showPage( pagename=null ) {
         if ( pagename == "pagetarget" ) {
           if ( myTarget ) $("#inputTarget").val(myTarget);
           $("#inputTarget").trigger('focus');
+          $("#inputTarget").trigger('select');
+
         }
     } else {
         $(".pages").hide();
@@ -1281,6 +1283,21 @@ function whoisLookup ( useTarget=false, netLookupOnly=false) {
 
 }
 
+function spfNote(str) {
+  if ( /^v=spf1/i.test(str) ) return "(SPF Version 1)"
+  if ( /^spf2.0\/mfrom,pra/i.test(str) ) return "(SPF Sender ID - Envelope sender / Purported Responsible Address)"
+  if ( /^spf2.0\/pra,mfrom/i.test(str) ) return "(SPF Sender ID - Purported Responsible Address / Envelope sender)"
+  if ( /^spf2.0\/mfrom/i.test(str) ) return "(SPF Sender ID - Envelope sender)"
+  if ( /^spf2.0\/pra/i.test(str) ) return "(SPF Sender ID - Purported Responsible Address)"
+  if ( /^all/i.test(str) ) return "(Action: No security)"
+  if ( /^-all/i.test(str) ) return "(Action: Hardfail - Reject)"
+  if ( /^~all/i.test(str) ) return "(Action: Softfail - Allow, but mark)"
+  if ( /^include:/i.test(str) ) return "(SPF extends to this txt record)"
+  if ( /^ip4/i.test(str) ) return "(IPv4 - Authorized)"
+  if ( /^ip6/i.test(str) ) return "(IPv6 - Authorized)"
+  return "" // Default just return no note text
+}
+
 
 // Lets just dump all the item functions below here...
 // -----------------------------------------------------------
@@ -1323,7 +1340,7 @@ window.dnsMain = function(myID=false) {
   // Clear page
   itemResult.html("");
   // Set totalt subtasts and prepare for subwork
-  itemResult.data("totalTasks",7) // Set to actual number of subtasks you do ...
+  itemResult.data("totalTasks",9) // Set to actual number of subtasks you do ...
   itemResult.data("totalTasksDone",0)
 
   // Prepare placeholders
@@ -1333,6 +1350,11 @@ window.dnsMain = function(myID=false) {
   itemResult.append('<div class="resolve dnsrecords"><div class="a"></div><div class="aaaa"></div><div class="cname"></div></div>')
   itemResult.append('<div class="resolvefuzz dnsrecords"><div class="title"></div><div class="wildcard"></div><div class="fuzzout gridcont"></div>')
   itemResult.append('<div class="mx dnsrecords"></div>')
+  itemResult.append('<div class="spf dnsrecords"></div>') // This is really just TXT, so match on "v=spf*"
+  itemResult.append('<div class="spfcount dnsrecords"><div data-count=0 class="spf1"></div><div data-count=0 class="spf2"></div></div>')
+  itemResult.append('<div class="loc dnsrecords"></div>') // Wishfull thinking, NodeJS dns dont support this, so we would have to build our own dns client ....
+  itemResult.append('<div class="txt dnsrecords"></div>') // Still dump all TXT here even spf (or ?) info ...
+  itemResult.append('<div class="srv dnsrecords"></div>')
 
   // Do this when something is done
   // itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
@@ -1536,6 +1558,137 @@ window.dnsMain = function(myID=false) {
           }
         });
       });
+    }
+  });
+
+  // SPF i hardcoded traversal up to 3 layers down
+  // IF we want a more dynamic solution this needs to be redone.
+  // For now, just enjoy that we can follow includes 2 times etc ...
+  const elmSPF = $("#"+itemPage).find(".dnsresult").find(".spf")
+  const spfCount1 = $("#"+itemPage).find(".dnsresult").find(".spfcount").find(".spf1")
+  const spfCount2 = $("#"+itemPage).find(".dnsresult").find(".spfcount").find(".spf2")
+
+  resolver.resolve(String(workTarget),'TXT', (err, result) => {
+    if (err) {
+      console.log(err)
+      itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+    } else {
+      elmSPF.append("<span class='title'>==[ SPF record(s) ]============================</span><br>")
+      result.forEach( function(txtrecord) {
+        // Have not yet decided, but for now lets skip any SPF records and handle
+        // them under the SPF section and show it more pretty ...
+        if ( /spf/i.test(txtrecord) ) {
+          if ( /^v=spf1/i.test(txtrecord) ) spfCount1.data("count", parseInt(spfCount1.data("count"))+1 )
+          if ( /^spf2/i.test(txtrecord) ) spfCount2.data("count", parseInt(spfCount2.data("count"))+1 )
+          spfCount1.html("<span class='key'> - SPFv1 Lookup count: </span><span class='value'>"+spfCount1.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
+          spfCount2.html("<span class='key'> - SPFv2 Lookup count: </span><span class='value'>"+spfCount2.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
+          var spfblocks = String(txtrecord).split(' ')
+          spfblocks.forEach( function(spfstr) {
+            elmSPF.append("<span class='key'> - </span><span class='valueb'>"+spfstr+"</span> <span class='note'>"+spfNote(spfstr)+"</span><br>")
+            if ( /^include:/i.test(spfstr) ) {
+              const regexp = /include:(.*)/i
+              var includeHost = spfstr.match(regexp)
+              elmSPF.append("<span class='key'>   `- </span><span class='value'>"+includeHost[1]+"</span>  <span class='note'>"+spfNote(includeHost[1])+"</span><br>")
+              elmSPF.append("<div data-spfincludehost='"+includeHost[1]+"'></div>")
+              resolver.resolve(String(includeHost[1]),'TXT', (err, result) => {
+                var inclHost = includeHost[1]
+                if (!err) {
+                  result.forEach( function(txtrecord) {
+                    if ( /spf/i.test(txtrecord) ) {
+                      if ( /^v=spf1/i.test(txtrecord) ) spfCount1.data("count", parseInt(spfCount1.data("count"))+1 )
+                      if ( /^spf2/i.test(txtrecord) ) spfCount2.data("count", parseInt(spfCount2.data("count"))+1 )
+                      spfCount1.html("<span class='key'> - SPFv1 Lookup count: </span><span class='value'>"+spfCount1.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
+                      spfCount2.html("<span class='key'> - SPFv2 Lookup count: </span><span class='value'>"+spfCount2.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
+                      var $this = $("#"+itemPage).find(".dnsresult").find(".spf").find("div[data-spfincludehost='"+inclHost+"']")
+                      var spfblocks = String(txtrecord).split(' ')
+                      spfblocks.forEach( function(spfstr) {
+                        $this.append("<span class='key'>     `- </span><span class='value'>"+spfstr+"</span>  <span class='note'>"+spfNote(spfstr)+"</span><br>")
+                        if ( /^include:/i.test(spfstr) ) {
+                          const regexp = /include:(.*)/i
+                          var includeHost2 = spfstr.match(regexp)
+                          $this.append("<span class='key'>       `- </span><span class='value'>"+includeHost2[1]+"</span>  <span class='note'>"+spfNote(includeHost2[1])+"</span><br>")
+                          $this.append("<div data-spfincludehostsub='"+includeHost2[1]+"'></div>")
+                          resolver.resolve(String(includeHost2[1]),'TXT', (err, result2) => {
+                            var inclHost2 = includeHost2[1]
+                            if (!err) {
+                              result2.forEach( function(txtrecord2) {
+                                if ( /spf/i.test(txtrecord2) ) {
+                                  if ( /^v=spf1/i.test(txtrecord2) ) spfCount1.data("count", parseInt(spfCount1.data("count"))+1 )
+                                  if ( /^spf2/i.test(txtrecord2) ) spfCount2.data("count", parseInt(spfCount2.data("count"))+1 )
+                                  spfCount1.html("<span class='key'> - SPFv1 Lookup count: </span><span class='value'>"+spfCount1.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
+                                  spfCount2.html("<span class='key'> - SPFv2 Lookup count: </span><span class='value'>"+spfCount2.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
+                                  var $this2 = $("#"+itemPage).find(".dnsresult").find(".spf").find("div[data-spfincludehostsub='"+inclHost2+"']")
+                                  var spfblocks2 = String(txtrecord2).split(' ')
+                                  spfblocks2.forEach( function(spfstr2) {
+
+
+
+                                    $this2.append("<span class='key'>         `- </span><span class='value'>"+spfstr2+"</span>  <span class='note'>"+spfNote(spfstr2)+"</span><br>")
+                                    if ( /^include:/i.test(spfstr2) ) {
+                                      const regexp = /include:(.*)/i
+                                      var includeHost3 = spfstr2.match(regexp)
+                                      $this.append("<span class='key'>         `- </span><span class='value'>"+includeHost3[1]+"</span>  <span class='note'>"+spfNote(includeHost3[1])+"</span><br>")
+                                      $this.append("<div data-spfincludehostsubsub='"+includeHost3[1]+"'></div>")
+                                      resolver.resolve(String(includeHost3[1]),'TXT', (err, result3) => {
+                                        var inclHost3 = includeHost3[1]
+                                        if (!err) {
+                                          result3.forEach( function(txtrecord3) {
+                                            if ( /spf/i.test(txtrecord3) ) {
+                                              if ( /^v=spf1/i.test(txtrecord3) ) spfCount1.data("count", parseInt(spfCount1.data("count"))+1 )
+                                              if ( /^spf2/i.test(txtrecord3) ) spfCount2.data("count", parseInt(spfCount2.data("count"))+1 )
+                                              spfCount1.html("<span class='key'> - SPFv1 Lookup count: </span><span class='value'>"+spfCount1.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
+                                              spfCount2.html("<span class='key'> - SPFv2 Lookup count: </span><span class='value'>"+spfCount2.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
+                                              var $this3 = $("#"+itemPage).find(".dnsresult").find(".spf").find("div[data-spfincludehostsubsub='"+inclHost3+"']")
+                                              var spfblocks3 = String(txtrecord3).split(' ')
+                                              spfblocks3.forEach( function(spfstr3) {
+                                                $this3.append("<span class='key'>           `- </span><span class='value'>"+spfstr3+"</span>  <span class='note'>"+spfNote(spfstr3)+"</span><br>")
+                                              })
+                                            }
+                                          })
+                                        }
+                                      });
+                                    }
+
+
+
+
+
+
+
+                                  })
+                                }
+                              })
+                            }
+                          });
+                        }
+                      })
+                    }
+                  })
+                }
+              });
+            }
+          })
+          elmSPF.append("<br>")
+        }
+      })
+      itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+    }
+  });
+
+  const elmTXT = $("#"+itemPage).find(".dnsresult").find(".txt")
+  resolver.resolve(String(workTarget),'TXT', (err, result) => {
+    if (err) {
+      console.log(err)
+      itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+    } else {
+      elmTXT.append("<span class='title'>==[ TXT record(s) ]============================</span><br>")
+      result.forEach( function(txtrecord) {
+        // Have not yet decided, but for now lets skip any SPF records and handle
+        // them under the SPF section and show it more pretty ...
+        if ( !/spf/i.test(txtrecord) ) elmTXT.append("<span class='key'> - \"</span><span class='value'>"+txtrecord+"</span><span class='key'>\"</span><br>")
+        else elmTXT.append("<span class='key'> - </span><span class='valueErr'>Found SPF related TXT record, look under SPF section instead</span><br>")
+      })
+      itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
     }
   });
     
