@@ -1327,8 +1327,7 @@ function strSanitizer(inputString=false, butcherMode=false) {
   if ( butcherMode ) {
     // ButcherMode is us butchering the string even more to
     // sanitize it all the way !!
-    outputString = outputString.replace('\n', '_');
-    outputString = outputString.replace('\r', '_');
+    outputString = outputString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     outputString = outputString.trim();
   }
   return ESAPI.encoder().encodeForHTML(outputString);
@@ -1401,7 +1400,7 @@ window.dnsMain = function(myID=false) {
   const elmTarget = $("#"+itemPage).find(".dnsresult").find(".worktarget")
   if ( itemPage == "pageDNShostname") var workTarget = $("#targetHostname").text();
   if ( itemPage == "pageDNSdomainname") var workTarget = $("#targetDomainname").text();
-  elmTarget.append("<span class='title'>Deep dive on target:</span> <span class='value'>" + workTarget + "</span><br>")
+  elmTarget.append("<span class='title'>Deep dive on target:</span> <span class='value'>" + strSanitizer(workTarget) + "</span><br>")
 
 
   const elmSOA = $("#"+itemPage).find(".dnsresult").find(".soa")
@@ -1428,7 +1427,7 @@ window.dnsMain = function(myID=false) {
       elmDMARC.append("<span class='title'>==[ DMARC record ]=============================</span><br>")
       if ( result[0].length > 1 ) {
         var resultString = result[0].join(' ')
-        var resultClean = String(resultString).replace('"','')
+        var resultClean = String(resultString).replace(/"/g,'')
         var dmarcRecords = String(resultClean).split(';')
       } else {
         var dmarcRecords = String(result).split(';')
@@ -1835,7 +1834,7 @@ window.dnsMain = function(myID=false) {
             //  if ( !/v=spf/i.test(txtr) && /v=dmarc1/i.test(txtr) && !/spf2/i.test(txtr)) otherInterresting++
             //})
             //if (otherInterresting > 0) fuzzTxtOut.append("<span class='key'> - <span class='poiTarget'>"+fuzzTarget+"</span></span> <span class='note'>(We strip spf/dmarc)</span><br>")
-            fuzzTxtOut.append("<span class='key'> - <span class='poiTarget'>"+fuzzTarget+"</span></span> <span class='note'>(We strip spf/dmarc)</span><br>")
+            fuzzTxtOut.append("<span class='key'> - <span class='poiTarget'>"+strSanitizer(fuzzTarget)+"</span></span> <span class='note'>(We strip spf/dmarc)</span><br>")
             result.forEach( function(txtr) {
               // We strip SPF and DMARC txt records, this is more for digging for other stuff !!
               // Proper SPF viewing should be done directly on the target!
