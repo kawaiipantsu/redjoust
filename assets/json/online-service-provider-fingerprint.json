@@ -38,6 +38,7 @@
             },
             "serviceHash": {
                 "original": "google-site-verification=ZZYRwyiI6QKg0jVwmdIha68vuiZlNtfAJ90msPo1i7E",
+                "comment": "",
                 "regexp": {
                     "test": "/^google-site-verification=[a-zA-Z0-9]+/i",
                     "match": "/^google-site-verification=([a-zA-Z0-9]+)/i"
@@ -55,6 +56,7 @@
             },
             "serviceHash": {
                 "original": "MS=ms12345678",
+                "comment": "",
                 "regexp": {
                     "test": "/^ms=ms[0-9]+/i",
                     "match": "/^ms=ms([0-9]+)/i"
@@ -72,6 +74,7 @@
             },
             "serviceHash": {
                 "original": "mscid=veniWolTd6miqdmIAwHTER4ZDHPBmT0mDwordEu6ABR7Dy2SH8TjniQ7e2O+Bv5+svcY7vJ+ZdSYG9aCOu8GYQ==",
+                "comment": "",
                 "regexp": {
                     "test": "/^mscid=[a-zA-Z0-9+=]+/i",
                     "match": "/^mscid=([a-zA-Z0-9+=]+)/i"
@@ -89,6 +92,7 @@
             },
             "serviceHash": {
                 "original": "facebook-domain-verification=zyzferd0kpm04en8wn4jnu4ooen5ct",
+                "comment": "",
                 "regexp": {
                     "test": "/^facebook-domain-verification=[a-zA-Z0-9]+/i",
                     "match": "/^facebook-domain-verification=([a-zA-Z0-9]+)/i"
@@ -106,12 +110,104 @@
             },
             "serviceHash": {
                 "original": "_globalsign-domain-verification=Zv6aPQO0CFgBxwOk23uUOkmdLjhc9qmcz-UnQcgXkA",
+                "comment": "Originally seen with an underscore in front but not always there, test/match both with and without",
                 "regexp": {
-                    "test": "/^_globalsign-domain-verification=[a-zA-Z0-9\\-]+/i",
-                    "match": "/^_globalsign-domain-verification=([a-zA-Z0-9\\-]+)/i"
+                    "test": "/^globalsign-domain-verification=[a-zA-Z0-9\\-]+/i",
+                    "match": "/^globalsign-domain-verification=([a-zA-Z0-9\\-]+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Adobe Enterprise IDP claim",
+            "inCategoeries": [2,5],
+            "serviceProvider": {
+                "name": "Adobe Inc.",
+                "desc": "Adobe Inc., originally called Adobe Systems Incorporated, is an American multinational computer software company",
+                "url": "https://www.adobe.com/"
+            },
+            "serviceHash": {
+                "original": "adobe-idp-site-verification=ffe3ccbe-f64a-44c5-80d7-b010605a3bc4",
+                "comment": "",
+                "regexp": {
+                    "test": "/^adobe-idp-site-verification=/i",
+                    "match": "/^adobe-idp-site-verification=([a-zA-Z0-9\\-]+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Amazon AWS - Simple Email Service (SES)",
+            "inCategoeries": [2,6],
+            "serviceProvider": {
+                "name": "Amazon Web Services, Inc",
+                "desc": "Amazon Web Services, Inc. is a subsidiary of Amazon providing on-demand cloud computing platforms and APIs",
+                "url": "https://aws.amazon.com/"
+            },
+            "serviceHash": {
+                "original": "amazonses:ZW5WU+BVqrNaP9NU2+qhUvKLdAYOkxWRuTJDksWHJi4=",
+                "comment": "",
+                "regexp": {
+                    "test": "/^amazonses:/i",
+                    "match": "/^amazonses:(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Atlassian Organization/IDP claim",
+            "inCategoeries": [3],
+            "serviceProvider": {
+                "name": "Atlassian Corporation Plc",
+                "desc": "Atlassian Corporation Plc is a UK-domiciled, American-Australian -originated software company that develops products for software developers, project managers",
+                "url": "https://www.atlassian.com/"
+            },
+            "serviceHash": {
+                "original": "atlassian-domain-verification=Z8oUd5brL6/RGUMCkxs4U0P/RyhpiNJEIVx9HXJLr3uqEQ1eDmTnj1eq1ObCgY1i",
+                "comment": "",
+                "regexp": {
+                    "test": "/^atlassian-domain-verification=/i",
+                    "match": "/^atlassian-domain-verification=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Mail.ru Postmaster/Org IDP claim",
+            "inCategoeries": [6,7],
+            "serviceProvider": {
+                "name": "VK Mail.ru Group",
+                "desc": "VK, which was known as Mail.ru Group until 12 October 2021, is a Russian internet company. It was started in 1998 as an e-mail service",
+                "url": "https://www.mail.ru"
+            },
+            "serviceHash": {
+                "original": "mailru-verification: fa868a61bb236ae5",
+                "comment": "",
+                "regexp": {
+                    "test": "/^mailru-verification:/i",
+                    "match": "/^mailru-verification: (.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Yandex.Webmaster managed site",
+            "inCategoeries": [0],
+            "serviceProvider": {
+                "name": "Yandex N.V.",
+                "desc": "Yandex N.V. is a multinational corporation primarily for Russian and Russian-language users, providing 70 Internet-related products and services, including transportation, search and information services, e-commerce, navigation, mobile applications, and online advertising",
+                "url": "https://yandex.com/"
+            },
+            "serviceHash": {
+                "original": "yandex-verification=fb9a7e8303137b4c",
+                "comment": "",
+                "regexp": {
+                    "test": "/^yandex-verification=/i",
+                    "match": "/^yandex-verification=(.+)/i"
                 }
             }
         }
+
     ],
 
     "todoFingerprints": [
