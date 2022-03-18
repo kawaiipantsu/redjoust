@@ -11,6 +11,7 @@ const punycode = require('punycode/');
 const { isNull } = require('util');
 var util = require('util')
 const { exit } = require('process');
+var ESAPI = require('node-esapi');
 
 
 // configDefaults.: Is how the default config.json file is to look if no file found
@@ -1312,6 +1313,18 @@ function spfNote(str) {
   return "" // Default just return no note text
 }
 
+function strSanitizer(inputString=false, butcherMode=false) {
+  if ( inputString === false || inputString == '' || inputString.length < 1 ) { return String(''); }
+  var outputString = inputString
+  if ( butcherMode ) {
+    // ButcherMode is us butchering the string even more to
+    // sanitize it all the way !!
+    outputString = outputString.replace('\n', '_');
+    outputString = outputString.replace('\r', '_');
+    outputString = outputString.trim();
+  }
+  return ESAPI.encoder().encodeForHTML(outputString);
+}
 
 // Lets just dump all the item functions below here...
 // -----------------------------------------------------------
@@ -1584,7 +1597,7 @@ window.dnsMain = function(myID=false) {
   hostFuzzArraySorted.forEach( function(fuzz) {
     ifuzzA++;
     var fuzzTarget = fuzz+"."+workTarget
-    fuzzOut.append("<div data-hostfuzzid='"+fuzz+"' data-target='"+fuzzTarget+"' data-addr='[]' data-gotA=false data-gotAAAA=false data-textA='' data-textAAAA='' class='fuzz--hit--none fuzzbox hostfuzz hostfuzzclick griditem'>"+fuzz+"</div>")
+    fuzzOut.append("<div data-hostfuzzid='"+strSanitizer(fuzz)+"' data-target='"+strSanitizer(fuzzTarget)+"' data-addr='[]' data-gotA=false data-gotAAAA=false data-textA='' data-textAAAA='' class='fuzz--hit--none fuzzbox hostfuzz hostfuzzclick griditem'>"+strSanitizer(fuzz)+"</div>")
     resolver.resolve(String(fuzzTarget),'A', (errA, addressesA) => {
       if (!errA) {
         var me = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".fuzzout").find(".griditem[data-hostfuzzid='"+fuzz+"']")
