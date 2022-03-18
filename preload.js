@@ -574,8 +574,8 @@ function showPage( pagename=null ) {
         // A click hack for the dns deep dive! (its a nice feature! Quickly change POI target)
         if ( pagename == "pageDNSdomainname" || pagename == "pageDNShostname" ) {
           $(".poiTarget").on("click", function() {
-            if ( $(this).text().length > 0 ) {
-              var poiTarget = $(this).text()
+            if ( $(this).html().length > 0 ) {
+              var poiTarget = $(this).html()
               if (poiTarget) {
                 setTarget(poiTarget)
                 showPage("pagedefault")
@@ -1313,6 +1313,14 @@ function spfNote(str) {
   return "" // Default just return no note text
 }
 
+function txtParser(str) {
+  // We parse for known things!!
+  // And we decide the output etc ...
+
+  // For now, just return the original string :)
+  return str
+}
+
 function strSanitizer(inputString=false, butcherMode=false) {
   if ( inputString === false || inputString == '' || inputString.length < 1 ) { return String(''); }
   var outputString = inputString
@@ -1367,7 +1375,7 @@ window.dnsMain = function(myID=false) {
   // Clear page
   itemResult.html("");
   // Set totalt subtasts and prepare for subwork
-  itemResult.data("totalTasks",10) // Set to actual number of subtasks you do ...
+  itemResult.data("totalTasks",11) // Set to actual number of subtasks you do ...
   itemResult.data("totalTasksDone",0)
 
   // Prepare placeholders
@@ -1382,6 +1390,7 @@ window.dnsMain = function(myID=false) {
   itemResult.append('<div class="spfcount dnsrecords"><div data-count=0 class="spf1"></div><div data-count=0 class="spf2"></div></div>')
   itemResult.append('<div class="loc dnsrecords"></div>') // Wishfull thinking, NodeJS dns dont support this, so we would have to build our own dns client ....
   itemResult.append('<div class="txt dnsrecords"></div>') // Still dump all TXT here even spf (or ?) info ...
+  itemResult.append('<div class="txtfuzz dnsrecords"><div class="title"></div><div class="fuzzout"></div>')
   itemResult.append('<div class="srv dnsrecords"></div>')
 
   // Any new "POI" targets, dont forget to wrap them in
@@ -1417,10 +1426,6 @@ window.dnsMain = function(myID=false) {
     } else {
       itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
       elmDMARC.append("<span class='title'>==[ DMARC record ]=============================</span><br>")
-      console.log( result )
-      console.log( typeof result )
-      console.log( typeof result[0] )
-      console.log( "len: "+result[0].length )
       if ( result[0].length > 1 ) {
         var resultString = result[0].join(' ')
         var resultClean = String(resultString).replace('"','')
@@ -1792,14 +1797,67 @@ window.dnsMain = function(myID=false) {
       result.forEach( function(txtrecord) {
         // Have not yet decided, but for now lets skip any SPF records and handle
         // them under the SPF section and show it more pretty ...
-        if ( !/spf/i.test(txtrecord) ) elmTXT.append("<span class='key'> - \"</span><span class='value'>"+txtrecord+"</span><span class='key'>\"</span><br>")
+        if ( !/spf/i.test(txtrecord) ) elmTXT.append("<span class='key'> - \"</span><span class='value'>"+txtParser(txtrecord)+"</span><span class='key'>\"</span><br>")
         else elmTXT.append("<span class='key'> - </span><span class='valueErr'>Found SPF related TXT record, look under SPF section instead</span><br>")
       })
       itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
     }
   });
     
+  const fuzzTXT = require("./assets/json/dns-txt-fuzz.json");
+  const fuzzTxtTITLE = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".title")
+  const fuzzTxtOut = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".fuzzout")
 
+  fuzzTxtTITLE.append("<span class='title'>==[ TXT Fuzz ]===========================</span>")
+
+  var ifuzzTXT=0
+  txtFuzzArray = fuzzTXT['dns-txt-fuzz'].concat( store.get('info.fuzzDNSCustom.txtFuzz') )
+  txtFuzzArraySorted = txtFuzzArray.sort().filter(function(item, pos, ary) {
+    return !pos || item != ary[pos - 1];
+  });
+  
+  var txtFuzzTargets = [
+    "%FUZZ%."+workTarget,
+    "_%FUZZ%."+workTarget
+  ]
+  var ifuzzTXTend = txtFuzzArraySorted.length * txtFuzzTargets.length
+
+  for ( fii=0 ; fii < txtFuzzTargets.length ; fii++ ) {
+    var fuzzSub = txtFuzzTargets[fii]
+    txtFuzzArraySorted.forEach( function(fuzz) {
+      var fuzzTarget = fuzzSub.replace('%FUZZ%', fuzz)
+      ifuzzTXT++
+      resolver.resolve(String(fuzzTarget),'TXT', (err, result) => {
+        if (!err) {
+          if ( result.length > 0 ) {
+            //var otherInterresting = 0
+            //result.forEach( function(txtr) {
+            //  if ( !/v=spf/i.test(txtr) && /v=dmarc1/i.test(txtr) && !/spf2/i.test(txtr)) otherInterresting++
+            //})
+            //if (otherInterresting > 0) fuzzTxtOut.append("<span class='key'> - <span class='poiTarget'>"+fuzzTarget+"</span></span> <span class='note'>(We strip spf/dmarc)</span><br>")
+            fuzzTxtOut.append("<span class='key'> - <span class='poiTarget'>"+fuzzTarget+"</span></span> <span class='note'>(We strip spf/dmarc)</span><br>")
+            result.forEach( function(txtr) {
+              // We strip SPF and DMARC txt records, this is more for digging for other stuff !!
+              // Proper SPF viewing should be done directly on the target!
+              //if (!/v=spf/i.test(txtr) && /v=dmarc1/i.test(txtr) && !/spf2/i.test(txtr) ) {
+              //  console.log("txtr: "+txtr)
+                fuzzTxtOut.append("<span class='key'>   `- \"</span><span class='value'>"+txtParser(txtr)+"</span><span class='key'>\"</span><br>")
+              //}
+            })
+          }
+        }
+      });
+      console.log(ifuzzTXT +" / "+ ifuzzTXTend )
+      if ( ifuzzTXT == ifuzzTXTend ) { // This will run one time when loop is done, so use wisely!
+        itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+      }
+    });
+    //if ( fuzzSrvOut.html().length < 1 ) {
+    //  fuzzTxtTITLE.hide();
+    //}
+  }
+
+  
 
 
 
