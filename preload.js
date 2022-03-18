@@ -11,6 +11,7 @@ const punycode = require('punycode/');
 const { isNull } = require('util');
 var util = require('util')
 const { exit } = require('process');
+var ESAPI = require('node-esapi');
 
 
 // configDefaults.: Is how the default config.json file is to look if no file found
@@ -570,7 +571,19 @@ function showPage( pagename=null ) {
         }
 
         $("#"+pagename).show() // The main "magic" - Show the page :D
-        
+        // A click hack for the dns deep dive! (its a nice feature! Quickly change POI target)
+        if ( pagename == "pageDNSdomainname" || pagename == "pageDNShostname" ) {
+          $(".poiTarget").on("click", function() {
+            if ( $(this).text().length > 0 ) {
+              var poiTarget = $(this).text()
+              if (poiTarget) {
+                setTarget(poiTarget)
+                showPage("pagedefault")
+              }
+            }
+          });
+        }
+
         // A bit of focus handling ...
         if ( pagename == "pagetarget" ) {
           if ( myTarget ) $("#inputTarget").val(myTarget);
@@ -1293,11 +1306,25 @@ function spfNote(str) {
   if ( /^-all/i.test(str) ) return "(Action: Hardfail - Reject)"
   if ( /^~all/i.test(str) ) return "(Action: Softfail - Allow, but mark)"
   if ( /^include:/i.test(str) ) return "(SPF extends to this txt record)"
-  if ( /^ip4/i.test(str) ) return "(IPv4 - Authorized)"
-  if ( /^ip6/i.test(str) ) return "(IPv6 - Authorized)"
+  if ( /^ip4/i.test(str) ) return "(IPv4 ip/range - Authorized)"
+  if ( /^ip6/i.test(str) ) return "(IPv6 ip/range - Authorized)"
+  if ( /^a/i.test(str) ) return "(A record(s) - Authorized)"
+  if ( /^mx/i.test(str) ) return "(MX record(s) - Authorized)"
   return "" // Default just return no note text
 }
 
+function strSanitizer(inputString=false, butcherMode=false) {
+  if ( inputString === false || inputString == '' || inputString.length < 1 ) { return String(''); }
+  var outputString = inputString
+  if ( butcherMode ) {
+    // ButcherMode is us butchering the string even more to
+    // sanitize it all the way !!
+    outputString = outputString.replace('\n', '_');
+    outputString = outputString.replace('\r', '_');
+    outputString = outputString.trim();
+  }
+  return ESAPI.encoder().encodeForHTML(outputString);
+}
 
 // Lets just dump all the item functions below here...
 // -----------------------------------------------------------
@@ -1340,7 +1367,7 @@ window.dnsMain = function(myID=false) {
   // Clear page
   itemResult.html("");
   // Set totalt subtasts and prepare for subwork
-  itemResult.data("totalTasks",9) // Set to actual number of subtasks you do ...
+  itemResult.data("totalTasks",10) // Set to actual number of subtasks you do ...
   itemResult.data("totalTasksDone",0)
 
   // Prepare placeholders
@@ -1350,11 +1377,15 @@ window.dnsMain = function(myID=false) {
   itemResult.append('<div class="resolve dnsrecords"><div class="a"></div><div class="aaaa"></div><div class="cname"></div></div>')
   itemResult.append('<div class="resolvefuzz dnsrecords"><div class="title"></div><div class="wildcard"></div><div class="fuzzout gridcont"></div>')
   itemResult.append('<div class="mx dnsrecords"></div>')
+  itemResult.append('<div class="dmarc dnsrecords"></div>')
   itemResult.append('<div class="spf dnsrecords"></div>') // This is really just TXT, so match on "v=spf*"
   itemResult.append('<div class="spfcount dnsrecords"><div data-count=0 class="spf1"></div><div data-count=0 class="spf2"></div></div>')
   itemResult.append('<div class="loc dnsrecords"></div>') // Wishfull thinking, NodeJS dns dont support this, so we would have to build our own dns client ....
   itemResult.append('<div class="txt dnsrecords"></div>') // Still dump all TXT here even spf (or ?) info ...
   itemResult.append('<div class="srv dnsrecords"></div>')
+
+  // Any new "POI" targets, dont forget to wrap them in
+  // <span class="poitarget"></span>
 
   // Do this when something is done
   // itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
@@ -1371,11 +1402,97 @@ window.dnsMain = function(myID=false) {
     } else {
       itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
       elmSOA.append("<span class='title'>==[ SOA record ]===============================</span><br>")
-      elmSOA.append("<span class='key'> - Primary NS.....:</span> <span class='value'>" + result.nsname + "</span><br>")
+      elmSOA.append("<span class='key'> - Primary NS.....:</span> <span class='value'><span class='poiTarget'>" + result.nsname + "</span></span><br>")
       elmSOA.append("<span class='key'> - Hostmaster.....:</span> <span class='value'>" + result.hostmaster + "</span><br>")
       elmSOA.append("<span class='key'> - Serial.........:</span> <span class='value'>" + result.serial + "</span><br>")
       elmSOA.append("<span class='key'> - Refresh / Retry:</span> <span class='value'>" + parseInt(result.refresh/60) + "min / "+parseInt(result.retry/60)+"min</span><br>")
       elmSOA.append("<span class='key'> - MinTTL / Expire:</span> <span class='value'>" + parseInt(result.minttl/60) + "min / "+parseInt(result.expire/60)+"min</span><br>")
+    }
+  });
+
+  const elmDMARC = $("#"+itemPage).find(".dnsresult").find(".dmarc")
+  resolver.resolve('_dmarc.'+String(workTarget),'TXT', (err, result) => {
+    if (err) {
+      itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+    } else {
+      itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+      elmDMARC.append("<span class='title'>==[ DMARC record ]=============================</span><br>")
+      console.log( result )
+      console.log( typeof result )
+      console.log( typeof result[0] )
+      console.log( "len: "+result[0].length )
+      if ( result[0].length > 1 ) {
+        var resultString = result[0].join(' ')
+        var resultClean = String(resultString).replace('"','')
+        var dmarcRecords = String(resultClean).split(';')
+      } else {
+        var dmarcRecords = String(result).split(';')
+      }
+      
+      const dregV = /^v=(.+)/i             // Protocol version
+      const dregP = /^p=(.+)/i         // Policy for organizational domain
+      const dregPCT = /^pct=(.+)/i     // Percentage of messages subjected to filtering
+      const dregRUA = /^rua=(.+)/i     // Reporting URI of aggregate reports
+      const dregRUF = /^ruf=(.+)/i     // Reporting URI for forensic reports
+      const dregSP = /^sp=(.+)/i       // Policy for subdomains of the OD
+      const dregADKIM = /^adkim=(.+)/i // Alignment mode for DKIM
+      const dregASPF = /^aspf=(.+)/i   // Alignment mode for SPF
+      const dregFO = /^fo=(.+)/i       // Failure Reporting Options
+      const dregRF = /^rf=(.+)/i       // Report Format
+      const dregRI = /^ri=(.+)/i       // Report Interval
+
+      for( i=0 ; i<dmarcRecords.length ; i++ ) {
+        if (dmarcRecords[i].length > 0 ) {
+          if ( d_v = String(dmarcRecords[i]).trim().match(dregV) ) elmDMARC.append("<span class='key'> - Protocol version..............................:</span> <span class='value'>" + d_v[1] + "</span><br>")
+          else if ( d_p = String(dmarcRecords[i]).trim().match(dregP) ) elmDMARC.append("<span class='key'> - Policy for organizational domain..............:</span> <span class='value'>" + d_p[1] + "</span><br>")
+          else if ( d_pct = String(dmarcRecords[i]).trim().match(dregPCT) ) elmDMARC.append("<span class='key'> - Percentage of messages subjected to filtering.:</span> <span class='value'>" + d_pct[1] + "%</span><br>")
+          else if ( d_rua = String(dmarcRecords[i]).trim().match(dregRUA) ) {
+            elmDMARC.append("<span class='key'> - Reporting URI of aggregate reports</span><br>")
+            var ruamails = String(d_rua[1]).split(',')
+            const mailtoreg = /^mailto:(.+)/i
+            for( ii=0 ; ii<ruamails.length ; ii++ ) {
+              var ruaemail = String(ruamails[ii]).trim().match(mailtoreg)
+              elmDMARC.append("<span class='key'>   `- Email......................................:</span> <span class='value'>" + ruaemail[1] + "</span><br>")
+            }
+          }
+          else if ( d_ruf = String(dmarcRecords[i]).trim().match(dregRUF) ) {
+            elmDMARC.append("<span class='key'> - Reporting URI for forensic reports</span><br>")
+            var rufmails = String(d_ruf[1]).split(',')
+            const mailtoreg = /^mailto:(.+)/i
+            for( iii=0 ; iii<rufmails.length ; iii++ ) {
+              var rufemail = String(rufmails[iii]).trim().match(mailtoreg)
+              elmDMARC.append("<span class='key'>   `- Email......................................:</span> <span class='value'>" + rufemail[1] + "</span><br>")
+            }
+          }
+          else if ( d_rf = String(dmarcRecords[i]).trim().match(dregRF) ) elmDMARC.append("<span class='key'> - Report format.................................:</span> <span class='value'>" + d_rf[1] + "</span><br>")
+          else if ( d_ri = String(dmarcRecords[i]).trim().match(dregRI) ) elmDMARC.append("<span class='key'> - Report interval (sec).........................:</span> <span class='value'>" + d_ri[1] + "</span><br>")
+          else if ( d_sp = String(dmarcRecords[i]).trim().match(dregSP) ) elmDMARC.append("<span class='key'> - Policy for subdomains of the org-domain.......:</span> <span class='value'>" + d_sp[1] + "</span><br>")
+          else if ( d_adkim = String(dmarcRecords[i]).trim().match(dregADKIM) ) elmDMARC.append("<span class='key'> - Alignment mode for DKIM.......................:</span> <span class='value'>" + d_adkim[1] + "</span><br>")
+          else if ( d_aspf = String(dmarcRecords[i]).trim().match(dregASPF) ) elmDMARC.append("<span class='key'> - Alignment mode for SPF........................:</span> <span class='value'>" + d_aspf[1] + "</span><br>")
+          else if ( d_fo = String(dmarcRecords[i]).trim().match(dregFO) ) {
+            elmDMARC.append("<span class='key'> - Failure Reporting Options.....................:</span> <span class='value'>" + d_fo[1] + "</span><br>")
+            if ( /0/.test(String(d_fo[1])) ) {
+              elmDMARC.append("<span class='key'>   `- </span><span class='note'>Generate a DMARC failure report if all underlying authentication mechanisms</span><br>")
+              elmDMARC.append("      <span class='note'>(SPF and DKIM) fail to produce an aligned “pass” result. (Default)</span><br>")
+            }
+            if ( /1/.test(String(d_fo[1])) ) {
+              elmDMARC.append("<span class='key'>   `- </span><span class='note'>Generate a DMARC failure report if any underlying authentication mechanism</span><br>")
+              elmDMARC.append("      <span class='note'>(SPF or DKIM) produced something other than an aligned \"pass\" result. (Recommended)</span><br>")
+            }
+            if ( /d/i.test(String(d_fo[1])) ) {
+              elmDMARC.append("<span class='key'>   `- </span><span class='note'>Generate a DKIM failure report if the message had a signature that failed</span><br>")
+              elmDMARC.append("      <span class='note'>evaluation, regardless of its alignment.</span><br>")
+            }
+            if ( /s/i.test(String(d_fo[1])) ) {
+              elmDMARC.append("<span class='key'>   `- </span><span class='note'>Generate an SPF failure report if the message failed SPF evaluation,</span><br>")
+              elmDMARC.append("      <span class='note'>regardless of its alignment.</span><br>")
+            }
+          } else elmDMARC.append("<span class='key'> - Unknown DMARC mechanism.......................:</span> <span class='value'>" + dmarcRecords[i] + "</span><br>")
+        }
+        
+      }
+      if ( !/pct=/.test(String(result)) ) elmDMARC.append("<span class='key'> - Percentage of messages subjected to filtering.:</span> <span class='value'>100%</span><br>")
+
     }
   });
 
@@ -1391,9 +1508,9 @@ window.dnsMain = function(myID=false) {
             var nsip = result2[0]
             resolver.reverse(String(result2[0]), (err, result3) => {
               if ( !err ) {
-                elmNS.append("<span class='key'> -</span> <span class='valueb'>"+nssrv+"</span> ( <span class='value'>"+nsip+"</span> <span class='key'>&#8605;</span> <span class='value'>"+result3+"</span> )<br>" )
+                elmNS.append("<span class='key'> -</span> <span class='valueb'><span class='poiTarget'>"+nssrv+"</span></span> ( <span class='value'>"+nsip+"</span> <span class='key'>&#8605;</span> <span class='value'><span class='poiTarget'>"+result3+"</span></span> )<br>" )
               } else {
-                elmNS.append("<span class='key'> -</span> <span class='valueb'>" + nssrv + "</span> ( <span class='value'>"+nsip+"</span> )<br>")
+                elmNS.append("<span class='key'> -</span> <span class='valueb'><span class='poiTarget'>" + nssrv + "</span></span> ( <span class='value'>"+nsip+"</span> )<br>")
               }
             });
           }
@@ -1418,7 +1535,7 @@ window.dnsMain = function(myID=false) {
       addresses.forEach( function(addr) {
         resolver.reverse(String(addr), (err, addrrev) => {
           if ( !err ) {
-            elmA.append("<span class='key'> - A record....:</span> <span class='value'>"+addr+"</span> ( Reverse DNS <span class='key'>&#8605;</span> <span class='value'>"+addrrev+"</span> )<br>" )
+            elmA.append("<span class='key'> - A record....:</span> <span class='value'>"+addr+"</span> ( Reverse DNS <span class='key'>&#8605;</span> <span class='value'><span class='poiTarget'>"+addrrev+"</span></span> )<br>" )
           } else {
             elmA.append("<span class='key'> - A record....:</span> <span class='value'>"+addr+"</span><br>")
           }
@@ -1434,7 +1551,7 @@ window.dnsMain = function(myID=false) {
         addresses.forEach( function(addr) {
           resolver.reverse(String(addr), (err, addrrev) => {
             if ( !err ) {
-              elmAAAA.append("<span class='key'> - AAAA record.:</span> <span class='value'>"+addr+"</span> ( Reverse DNS <span class='key'>&#8605;</span> <span class='value'>"+addrrev+"</span> )<br>" )
+              elmAAAA.append("<span class='key'> - AAAA record.:</span> <span class='value'>"+addr+"</span> ( Reverse DNS <span class='key'>&#8605;</span> <span class='value'><span class='poiTarget'>"+addrrev+"</span></span> )<br>" )
             } else {
               elmAAAA.append("<span class='key'> - AAAA record.:</span> <span class='value'>"+addr+"</span><br>")
             }
@@ -1448,7 +1565,7 @@ window.dnsMain = function(myID=false) {
           elmCNAME.append("<span class='key'> - No CNAME record(s)</span><br>")
         } else {
           addresses.forEach( function(addr) {
-            elmCNAME.append("<span class='key'> - CNAME record:</span> <span class='value'>"+addr+"</span><br>")
+            elmCNAME.append("<span class='key'> - CNAME record:</span> <span class='value'><span class='poiTarget'>"+addr+"</span></span><br>")
           });
           itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
         }
@@ -1480,7 +1597,7 @@ window.dnsMain = function(myID=false) {
   hostFuzzArraySorted.forEach( function(fuzz) {
     ifuzzA++;
     var fuzzTarget = fuzz+"."+workTarget
-    fuzzOut.append("<div data-hostfuzzid='"+fuzz+"' data-target='"+fuzzTarget+"' data-addr='[]' data-gotA=false data-gotAAAA=false data-textA='' data-textAAAA='' class='fuzz--hit--none fuzzbox hostfuzz hostfuzzclick griditem'>"+fuzz+"</div>")
+    fuzzOut.append("<div data-hostfuzzid='"+strSanitizer(fuzz)+"' data-target='"+strSanitizer(fuzzTarget)+"' data-addr='[]' data-gotA=false data-gotAAAA=false data-textA='' data-textAAAA='' class='fuzz--hit--none fuzzbox hostfuzz hostfuzzclick griditem'>"+strSanitizer(fuzz)+"</div>")
     resolver.resolve(String(fuzzTarget),'A', (errA, addressesA) => {
       if (!errA) {
         var me = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".fuzzout").find(".griditem[data-hostfuzzid='"+fuzz+"']")
@@ -1546,13 +1663,13 @@ window.dnsMain = function(myID=false) {
         var mxPrio = mx.priority
         resolver.resolve(String(mxSrv),'A', (err, mxaddr) => {
           if ( err ) {
-            elmMX.append("<span class='key'> -</span> <span class='valueb'>" + mxSrv + "</span> ( <span class='valueErr'>Not found?</span> )<br>")
+            elmMX.append("<span class='key'> -</span> <span class='valueb'><span class='poiTarget'>" + mxSrv + "</span></span> ( <span class='valueErr'>Not found?</span> )<br>")
           } else {
             resolver.reverse(String(mxaddr[0]), (err, mxrev) => {
               if ( !err ) {
-                elmMX.append("<span class='key'> -</span> <span class='valueb'>"+mxSrv+"</span> ( <span class='value'>"+mxaddr[0]+"</span> <span class='key'>&#8605;</span> <span class='value'>"+mxrev+"</span> )<br>" )
+                elmMX.append("<span class='key'> -</span> <span class='valueb'><span class='poiTarget'>"+mxSrv+"</span></span> ( <span class='value'>"+mxaddr[0]+"</span> <span class='key'>&#8605;</span> <span class='value'><span class='poiTarget'>"+mxrev+"</span></span> )<br>" )
               } else {
-                elmMX.append("<span class='key'> -</span> <span class='valueb'>" + mxSrv + "</span> ( <span class='value'>"+mxaddr[0]+"</span> )<br>")
+                elmMX.append("<span class='key'> -</span> <span class='valueb'><span class='poiTarget'>" + mxSrv + "</span></span> ( <span class='value'>"+mxaddr[0]+"</span> )<br>")
               }
             });
           }
@@ -1588,7 +1705,7 @@ window.dnsMain = function(myID=false) {
             if ( /^include:/i.test(spfstr) ) {
               const regexp = /include:(.*)/i
               var includeHost = spfstr.match(regexp)
-              elmSPF.append("<span class='key'>   `- </span><span class='value'>"+includeHost[1]+"</span>  <span class='note'>"+spfNote(includeHost[1])+"</span><br>")
+              elmSPF.append("<span class='key'>   `- </span><span class='value'><span class='poiTarget'>"+includeHost[1]+"</span></span>  <span class='note'>"+spfNote(includeHost[1])+"</span><br>")
               elmSPF.append("<div data-spfincludehost='"+includeHost[1]+"'></div>")
               resolver.resolve(String(includeHost[1]),'TXT', (err, result) => {
                 var inclHost = includeHost[1]
@@ -1606,7 +1723,7 @@ window.dnsMain = function(myID=false) {
                         if ( /^include:/i.test(spfstr) ) {
                           const regexp = /include:(.*)/i
                           var includeHost2 = spfstr.match(regexp)
-                          $this.append("<span class='key'>       `- </span><span class='value'>"+includeHost2[1]+"</span>  <span class='note'>"+spfNote(includeHost2[1])+"</span><br>")
+                          $this.append("<span class='key'>       `- </span><span class='value'><span class='poiTarget'>"+includeHost2[1]+"</span></span>  <span class='note'>"+spfNote(includeHost2[1])+"</span><br>")
                           $this.append("<div data-spfincludehostsub='"+includeHost2[1]+"'></div>")
                           resolver.resolve(String(includeHost2[1]),'TXT', (err, result2) => {
                             var inclHost2 = includeHost2[1]
@@ -1620,14 +1737,11 @@ window.dnsMain = function(myID=false) {
                                   var $this2 = $("#"+itemPage).find(".dnsresult").find(".spf").find("div[data-spfincludehostsub='"+inclHost2+"']")
                                   var spfblocks2 = String(txtrecord2).split(' ')
                                   spfblocks2.forEach( function(spfstr2) {
-
-
-
                                     $this2.append("<span class='key'>         `- </span><span class='value'>"+spfstr2+"</span>  <span class='note'>"+spfNote(spfstr2)+"</span><br>")
                                     if ( /^include:/i.test(spfstr2) ) {
                                       const regexp = /include:(.*)/i
                                       var includeHost3 = spfstr2.match(regexp)
-                                      $this.append("<span class='key'>         `- </span><span class='value'>"+includeHost3[1]+"</span>  <span class='note'>"+spfNote(includeHost3[1])+"</span><br>")
+                                      $this.append("<span class='key'>         `- </span><span class='value'><span class='poiTarget'>"+includeHost3[1]+"</span></span>  <span class='note'>"+spfNote(includeHost3[1])+"</span><br>")
                                       $this.append("<div data-spfincludehostsubsub='"+includeHost3[1]+"'></div>")
                                       resolver.resolve(String(includeHost3[1]),'TXT', (err, result3) => {
                                         var inclHost3 = includeHost3[1]
@@ -1648,13 +1762,6 @@ window.dnsMain = function(myID=false) {
                                         }
                                       });
                                     }
-
-
-
-
-
-
-
                                   })
                                 }
                               })
