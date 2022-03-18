@@ -1,0 +1,120 @@
+{
+    "_online-service-provider-fingerprint": {
+        "_description_1": "--------------------------------------------------------",
+        "_description_2": " This JSON file will contain information about online   ",
+        "_description_3": " service providers 'verification' tokens/hashes that    ",
+        "_description_4": " you typically need to create a txt dns records for.    ",
+        "_description_5": "                                                        ",
+        "_description_6": " This file is updated by me, so i can make no promises  ",
+        "_description_7": " to how well maintained it is or how frequent :)        ",
+        "_description_8": "                                                        ",
+        "_description_9": " The purpose of this fingerprinting is not to see/leak  ",
+        "_description10": " the data that is hashes/secret, but rather to identify ",
+        "_description11": " the service providers behind them in order to figure   ",
+        "_description12": " out what technologies/hardware/solutions that your     ",
+        "_description13": " target is using...                                     ",
+        "_description14": "--------------------------------------------------------"
+    },
+    "serviceCategories": [
+        { "id": 0, "name": "General", "desc": "Everything" },
+        { "id": 1, "name": "Certificate Authority", "desc": "Certificate authority or Certification authority (CA) is an organization/entity that issues digital certificates to help validate identities" },
+        { "id": 2, "name": "Cloud Services", "desc": "Cloud services are infrastructure, platforms, or software that are hosted by third-party providers and made available to users through the internet" },
+        { "id": 3, "name": "Collaboration", "desc": "Collaboration is the process of two or more people, entities or organizations working together to complete a task or achieve a goal" },
+        { "id": 4, "name": "Development", "desc": "Development is a process that creates growth, progress, positive change or the addition of physical, economic, environmental, social and demographic components" },
+        { "id": 5, "name": "Electronic Signing", "desc": "An electronic signature, or e-signature, is data that is logically associated with other data and which is used by the signatory to sign the associated data" },
+        { "id": 6, "name": "Email", "desc": "Electronic mail (email or e-mail) is a method of exchanging messages (mail) between people using electronic devices" },
+        { "id": 7, "name": "Marketing and Analytics", "desc": "Marketing and analytics is the study of data to evaluate the performance of a marketing activity" },
+        { "id": 8, "name": "B2B Marketing", "desc": "B2B marketing is a collection of techniques for marketing to business buyers. Its goal is to improve lead quality, sales acceptance of leads and conversion rates" },
+        { "id": 9, "name": "Security", "desc": "Security is protection from, or resilience against, potential harm caused by others, by restraining the freedom of others to act" }
+    ],
+    "knownFingerprints": [
+        {
+            "fingerprintName": "Google Webmaster/Analytics managed site",
+            "inCategories": [2,7],
+            "serviceProvider": {
+                "name": "Google LLC",
+                "desc": "Google LLC is an American multinational technology company that specializes in Internet-related services and products",
+                "url": "https://www.google.com"
+            },
+            "serviceHash": {
+                "original": "google-site-verification=ZZYRwyiI6QKg0jVwmdIha68vuiZlNtfAJ90msPo1i7E",
+                "regexp": {
+                    "test": "/^google-site-verification=[a-zA-Z0-9]+/i",
+                    "match": "/^google-site-verification=([a-zA-Z0-9]+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Microsoft Office 365 tenant",
+            "inCategoeries": [2],
+            "serviceProvider": {
+                "name": "Microsoft Corporation",
+                "desc": "Microsoft Corporation is an American multinational technology corporation which produces computer software, consumer electronics, personal computers, and related services",
+                "url": "https://www.microsoft.com"
+            },
+            "serviceHash": {
+                "original": "MS=ms12345678",
+                "regexp": {
+                    "test": "/^ms=ms[0-9]+/i",
+                    "match": "/^ms=ms([0-9]+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Microsoft Azure/O365 SPF",
+            "inCategoeries": [2],
+            "serviceProvider": {
+                "name": "Microsoft Corporation",
+                "desc": "Microsoft Corporation is an American multinational technology corporation which produces computer software, consumer electronics, personal computers, and related services",
+                "url": "https://www.microsoft.com"
+            },
+            "serviceHash": {
+                "original": "mscid=veniWolTd6miqdmIAwHTER4ZDHPBmT0mDwordEu6ABR7Dy2SH8TjniQ7e2O+Bv5+svcY7vJ+ZdSYG9aCOu8GYQ==",
+                "regexp": {
+                    "test": "/^mscid=[a-zA-Z0-9+=]+/i",
+                    "match": "/^mscid=([a-zA-Z0-9+=]+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Facebook Business Manager",
+            "inCategoeries": [2,7],
+            "serviceProvider": {
+                "name": "Meta / Facebook Inc.",
+                "desc": "Meta Platforms, Inc., doing business as Meta and formerly known as Facebook, Inc. creating social platforms",
+                "url": "https://www.facebook.com"
+            },
+            "serviceHash": {
+                "original": "facebook-domain-verification=zyzferd0kpm04en8wn4jnu4ooen5ct",
+                "regexp": {
+                    "test": "/^facebook-domain-verification=[a-zA-Z0-9]+/i",
+                    "match": "/^facebook-domain-verification=([a-zA-Z0-9]+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "GlobalSign - AlphaSSL or DomainSSL",
+            "inCategoeries": [1],
+            "serviceProvider": {
+                "name": "GlobalSign",
+                "desc": "GlobalSign is a WebTrust-certified certificate authority and provider of Identity Services",
+                "url": "https://www.globalsign.com"
+            },
+            "serviceHash": {
+                "original": "_globalsign-domain-verification=Zv6aPQO0CFgBxwOk23uUOkmdLjhc9qmcz-UnQcgXkA",
+                "regexp": {
+                    "test": "/^_globalsign-domain-verification=[a-zA-Z0-9\\-]+/i",
+                    "match": "/^_globalsign-domain-verification=([a-zA-Z0-9\\-]+)/i"
+                }
+            }
+        }
+    ],
+
+    "todoFingerprints": [
+        { "verificationString": "", "verificationNote": "" }
+    ]
+}

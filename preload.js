@@ -1834,14 +1834,17 @@ window.dnsMain = function(myID=false) {
             //  if ( !/v=spf/i.test(txtr) && /v=dmarc1/i.test(txtr) && !/spf2/i.test(txtr)) otherInterresting++
             //})
             //if (otherInterresting > 0) fuzzTxtOut.append("<span class='key'> - <span class='poiTarget'>"+fuzzTarget+"</span></span> <span class='note'>(We strip spf/dmarc)</span><br>")
-            fuzzTxtOut.append("<span class='key'> - <span class='poiTarget'>"+strSanitizer(fuzzTarget)+"</span></span> <span class='note'>(We strip spf/dmarc)</span><br>")
+            fuzzTxtOut.append("<span class='key'> - <span class='poiTarget'>"+strSanitizer(fuzzTarget)+"</span></span> <span class='note'></span><br>")
             result.forEach( function(txtr) {
               // We strip SPF and DMARC txt records, this is more for digging for other stuff !!
               // Proper SPF viewing should be done directly on the target!
-              //if (!/v=spf/i.test(txtr) && /v=dmarc1/i.test(txtr) && !/spf2/i.test(txtr) ) {
-              //  console.log("txtr: "+txtr)
+              if ( /v=dmarc1/i.test(txtr) ) {
+                fuzzTxtOut.append("<span class='key'>   `- </span><span class='note'>DMARC txt found, click the hostname to set target for details</span><br>")
+              } else if ( /v=spf1/i.test(txtr) || /spf2.0/i.test(txtr) ) {
+                fuzzTxtOut.append("<span class='key'>   `- </span><span class='note'>SPF txt found, click the hostname to set target for details</span><br>")
+              } else {
                 fuzzTxtOut.append("<span class='key'>   `- \"</span><span class='value'>"+txtParser(txtr)+"</span><span class='key'>\"</span><br>")
-              //}
+              }
             })
           }
         }
