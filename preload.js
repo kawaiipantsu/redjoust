@@ -1327,8 +1327,7 @@ function strSanitizer(inputString=false, butcherMode=false) {
   if ( butcherMode ) {
     // ButcherMode is us butchering the string even more to
     // sanitize it all the way !!
-    outputString = outputString.replace('\n', '_');
-    outputString = outputString.replace('\r', '_');
+    outputString = outputString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     outputString = outputString.trim();
   }
   return ESAPI.encoder().encodeForHTML(outputString);
