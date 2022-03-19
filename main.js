@@ -208,9 +208,9 @@ menu.append(new MenuItem({
 menu.append(new MenuItem({
     label: 'View',
     submenu: [{
-      label: 'Toggle Streamer-mode',
+      label: 'Toggle Privacy-mode',
       accelerator: process.platform === 'darwin' ? 'F9' : 'F9',
-      click: () => { mainWindow.webContents.send("togglestreamermode") }
+      click: () => { mainWindow.webContents.send("toggleprivacymode") }
     },
     {
       label: 'Toggle Toolbox',

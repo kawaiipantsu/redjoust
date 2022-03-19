@@ -51,7 +51,7 @@ var myDebug = store.get('settings.debug')
 var myTheme = store.get('settings.theme')
 var myTarget = store.get('info.target')
 var myMode = store.get('info.mode')
-var streamerMode = store.get('settings.streamermode')
+var privacyMode = store.get('settings.privacymode')
 var showExternals = store.get('menuitems.externaltools.show')
 var myStatusbarMessage = "";
 var myStatusbarIcon = "";
@@ -136,9 +136,6 @@ window.onload = () => {
   }
   // DEBUG BLOCK END
 
-
-
-  if (myDebug) console.log("loading theme: "+myTheme)
   ipcRenderer.invoke('theme:'+myTheme)
 
   window.$ = window.jQuery = require('jquery');
@@ -716,16 +713,17 @@ ipcRenderer.on('escpressed', (event) => {
   showPage("pagedefault");
 });
 
-ipcRenderer.on('togglestreamermode', (event) => {
-  if ( streamerMode ) {
-    // Streamer mode enabled - toggle to disabled!
-    streamerMode = false;
-    store.set('settings.streamermode', false);
+ipcRenderer.on('toggleprivacymode', (event) => {
+  if ( privacyMode ) {
+    // Privacy mode enabled - toggle to disabled!
+    privacyMode = false;
+    store.set('settings.privacymode', false);
   } else {
-    // Streamer mode disabled - toggle to enabled!
-    streamerMode = true;
-    store.set('settings.streamermode', true);
+    // Privacy mode disabled - toggle to enabled!
+    privacyMode = true;
+    store.set('settings.privacymode', true);
   }
+  // Things we need to refresh when toggling this mode
   reloadPublicIP();
 });
 
@@ -1261,6 +1259,10 @@ function whoisLookup ( useTarget=false, netLookupOnly=false) {
   }
 
   var client = new net.Socket();
+
+  // Enable a timeout so that the item wont spin forever
+  client.setTimeout(10000);
+
   // I have opend a issue for electron-store questioning the default value return on store.get,
   // Why do i have to staticly add it when i have included defauls for the "Store" module ...
   // Until i know more, just skip setting a timeout :D
@@ -1270,13 +1272,18 @@ function whoisLookup ( useTarget=false, netLookupOnly=false) {
     if (myDebug) console.log("[WHOIS] Looking up '"+target+"' at '"+finalWhoisServer+"' via query: "+finalWhoisQuery);
     client.write(finalWhoisQuery+'\r\n')
   });
-  
+
   client.on('timeout', function() {
-    client.end();
+    client.destroy();
   });
 
   return new Promise((resolve, reject) => {
     var dataResult = '';
+
+    client.on('error', function(err) {
+      if (myDebug) console.log("error?")
+      reject(err)
+    });
 
     client.on('data', function(chunk) {
       dataResult += chunk
@@ -1285,9 +1292,9 @@ function whoisLookup ( useTarget=false, netLookupOnly=false) {
     client.on('end', function() {
       resolve(dataResult);
     });
-  
-    client.on('error', function(err) {
-      reject(err)
+
+    client.on('close', function() {
+      resolve("Timeout !!\n\nI tried to establish a connection for 10sec now\nBut could not connect to whois server:\n\n - "+finalWhoisServer+":"+finalWhoisPort+"\n\nPerhaps something is wrong with their backend?\nYou could try hitting 'F6' and then 'F5' to clear status and re-run all...");
     });
   
    });
@@ -1313,9 +1320,14 @@ function spfNote(str) {
   return "" // Default just return no note text
 }
 
-function txtParser(str) {
-  // We parse for known things!!
-  // And we decide the output etc ...
+function txtParser(str=false) {
+  // DNS TXT records parser
+  // - Use this function if you want to change or detect TXT content
+
+  // Sanity check
+  if ( str === false ) return;
+
+
 
   // For now, just return the original string :)
   return str
@@ -1895,7 +1907,6 @@ window.dnsWhois = function(myID=false) {
 
   // Just setting tsome stuff to be nice
   $("#"+itemID).data('status',"working");
-
   whoisLookup(useTarget).then((data) => { 
     $("#domwhoisresult").text(data).html()
     $("#"+itemID).data('status',"done"); // Mark us as done! ( Or you will see working-spin-of-death :D )
