@@ -514,20 +514,22 @@ contextBridge.exposeInMainWorld('toolAPI', {
 });
 
 function reloadPublicIP() {
-  $.ajax({
-    dataType: 'json',
-    url: "https://api.buffer.dk/myip",
-    success: function(result){
-      if ( streamerMode ) {
-        $("#myip").html("Privacy mode");
-      } else {
+  if ( privacyMode ) {
+    // Now for real this time!
+    // DONT make any http calls :) We want privacy...
+    $("#myip").html("Privacy mode");
+  } else {
+    $.ajax({
+      dataType: 'json',
+      url: "https://api.buffer.dk/myip", // Full disclaimer i own this api site, so kinda a call-home?
+      success: function(result){
         $("#myip").html(result.ip);
+      },
+      fail: function(xhr, textStatus, errorThrown){
+        $("#myip").html("Unknown?");
       }
-    },
-    fail: function(xhr, textStatus, errorThrown){
-      $("#myip").html("Unknown?");
-    }
-  });
+    });
+  }
 }
 
 function showPage( pagename=null ) {
