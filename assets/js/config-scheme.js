@@ -15,7 +15,7 @@
         type: 'object',
         properties: {
             theme: { type: 'string', default: 'system' },
-            streamermode: { type: 'boolean', default: false },
+            privacymode: { type: 'boolean', default: false },
             idle: { type: 'integer', default: 300 },
             idlelock: { type: 'boolean', default: false },
             debug: { type: 'boolean', default: false }

@@ -1,0 +1,518 @@
+{
+    "_online-service-provider-fingerprint": {
+        "_description_1": "--------------------------------------------------------",
+        "_description_2": " This JSON file will contain information about online   ",
+        "_description_3": " service providers 'verification' tokens/hashes that    ",
+        "_description_4": " you typically need to create a txt dns records for.    ",
+        "_description_5": "                                                        ",
+        "_description_6": " This file is updated by me, so i can make no promises  ",
+        "_description_7": " to how well maintained it is or how frequent :)        ",
+        "_description_8": "                                                        ",
+        "_description_9": " The purpose of this fingerprinting is not to see/leak  ",
+        "_description10": " the data that is hashes/secret, but rather to identify ",
+        "_description11": " the service providers behind them in order to figure   ",
+        "_description12": " out what technologies/hardware/solutions that your     ",
+        "_description13": " target is using...                                     ",
+        "_description14": "--------------------------------------------------------"
+    },
+    "serviceCategories": [
+        { "id": 0, "name": "General", "desc": "Everything" },
+        { "id": 1, "name": "Certificate Authority", "desc": "Certificate authority or Certification authority (CA) is an organization/entity that issues digital certificates to help validate identities" },
+        { "id": 2, "name": "Cloud Services", "desc": "Cloud services are infrastructure, platforms, or software that are hosted by third-party providers and made available to users through the internet" },
+        { "id": 3, "name": "Collaboration", "desc": "Collaboration is the process of two or more people, entities or organizations working together to complete a task or achieve a goal" },
+        { "id": 4, "name": "Development", "desc": "Development is a process that creates growth, progress, positive change or the addition of physical, economic, environmental, social and demographic components" },
+        { "id": 5, "name": "Electronic Signing", "desc": "An electronic signature, or e-signature, is data that is logically associated with other data and which is used by the signatory to sign the associated data" },
+        { "id": 6, "name": "Email", "desc": "Electronic mail (email or e-mail) is a method of exchanging messages (mail) between people using electronic devices" },
+        { "id": 7, "name": "Marketing and Analytics", "desc": "Marketing and analytics is the study of data to evaluate the performance of a marketing activity" },
+        { "id": 8, "name": "B2B Marketing", "desc": "B2B marketing is a collection of techniques for marketing to business buyers. Its goal is to improve lead quality, sales acceptance of leads and conversion rates" },
+        { "id": 9, "name": "Security", "desc": "Security is protection from, or resilience against, potential harm caused by others, by restraining the freedom of others to act" }
+    ],
+    "knownFingerprints": [
+        {
+            "fingerprintName": "Google Webmaster/Analytics managed site",
+            "inCategories": [2,7],
+            "serviceProvider": {
+                "name": "Google LLC",
+                "desc": "Google LLC is an American multinational technology company that specializes in Internet-related services and products",
+                "url": "https://www.google.com"
+            },
+            "serviceHash": {
+                "original": "google-site-verification=ZZYRwyiI6QKg0jVwmdIha68vuiZlNtfAJ90msPo1i7E",
+                "comment": "",
+                "regexp": {
+                    "test": "/^google-site-verification=/i",
+                    "match": "/^google-site-verification=([a-zA-Z0-9\\-]+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Microsoft Office 365 tenant",
+            "inCategoeries": [2],
+            "serviceProvider": {
+                "name": "Microsoft Corporation",
+                "desc": "Microsoft Corporation is an American multinational technology corporation which produces computer software, consumer electronics, personal computers, and related services",
+                "url": "https://www.microsoft.com"
+            },
+            "serviceHash": {
+                "original": "MS=ms12345678",
+                "comment": "",
+                "regexp": {
+                    "test": "/^ms=/i",
+                    "match": "/^ms=([a-z0-9]+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Microsoft Azure/O365 SPF",
+            "inCategoeries": [2],
+            "serviceProvider": {
+                "name": "Microsoft Corporation",
+                "desc": "Microsoft Corporation is an American multinational technology corporation which produces computer software, consumer electronics, personal computers, and related services",
+                "url": "https://www.microsoft.com"
+            },
+            "serviceHash": {
+                "original": "mscid=veniWolTd6miqdmIAwHTER4ZDHPBmT0mDwordEu6ABR7Dy2SH8TjniQ7e2O+Bv5+svcY7vJ+ZdSYG9aCOu8GYQ==",
+                "comment": "",
+                "regexp": {
+                    "test": "/^mscid=/i",
+                    "match": "/^mscid=([a-zA-Z0-9+=]+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Facebook Business Manager",
+            "inCategoeries": [2,7],
+            "serviceProvider": {
+                "name": "Meta / Facebook Inc.",
+                "desc": "Meta Platforms, Inc., doing business as Meta and formerly known as Facebook, Inc. creating social platforms",
+                "url": "https://www.facebook.com"
+            },
+            "serviceHash": {
+                "original": "facebook-domain-verification=zyzferd0kpm04en8wn4jnu4ooen5ct",
+                "comment": "",
+                "regexp": {
+                    "test": "/^facebook-domain-verification=/i",
+                    "match": "/^facebook-domain-verification=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "GlobalSign - AlphaSSL or DomainSSL",
+            "inCategoeries": [1],
+            "serviceProvider": {
+                "name": "GlobalSign",
+                "desc": "GlobalSign is a WebTrust-certified certificate authority and provider of Identity Services",
+                "url": "https://www.globalsign.com"
+            },
+            "serviceHash": {
+                "original": "_globalsign-domain-verification=Zv6aPQO0CFgBxwOk23uUOkmdLjhc9qmcz-UnQcgXkA",
+                "comment": "Originally seen with an underscore in front but not always there, test/match both with and without",
+                "regexp": {
+                    "test": "/^globalsign-domain-verification=/i",
+                    "match": "/^globalsign-domain-verification=([a-zA-Z0-9\\-]+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Adobe Enterprise IDP claim",
+            "inCategoeries": [2,5],
+            "serviceProvider": {
+                "name": "Adobe Inc.",
+                "desc": "Adobe Inc., originally called Adobe Systems Incorporated, is an American multinational computer software company",
+                "url": "https://www.adobe.com/"
+            },
+            "serviceHash": {
+                "original": "adobe-idp-site-verification=ffe3ccbe-f64a-44c5-80d7-b010605a3bc4",
+                "comment": "",
+                "regexp": {
+                    "test": "/^adobe-idp-site-verification=/i",
+                    "match": "/^adobe-idp-site-verification=([a-zA-Z0-9\\-]+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Amazon AWS - Simple Email Service (SES)",
+            "inCategoeries": [2,6],
+            "serviceProvider": {
+                "name": "Amazon Web Services, Inc",
+                "desc": "Amazon Web Services, Inc. is a subsidiary of Amazon providing on-demand cloud computing platforms and APIs",
+                "url": "https://aws.amazon.com/"
+            },
+            "serviceHash": {
+                "original": "amazonses:ZW5WU+BVqrNaP9NU2+qhUvKLdAYOkxWRuTJDksWHJi4=",
+                "comment": "",
+                "regexp": {
+                    "test": "/^amazonses:/i",
+                    "match": "/^amazonses:(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Atlassian Organization/IDP claim",
+            "inCategoeries": [3],
+            "serviceProvider": {
+                "name": "Atlassian Corporation Plc",
+                "desc": "Atlassian Corporation Plc is a UK-domiciled, American-Australian -originated software company that develops products for software developers, project managers",
+                "url": "https://www.atlassian.com/"
+            },
+            "serviceHash": {
+                "original": "atlassian-domain-verification=Z8oUd5brL6/RGUMCkxs4U0P/RyhpiNJEIVx9HXJLr3uqEQ1eDmTnj1eq1ObCgY1i",
+                "comment": "",
+                "regexp": {
+                    "test": "/^atlassian-domain-verification=/i",
+                    "match": "/^atlassian-domain-verification=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Mail.ru Postmaster/Org IDP claim",
+            "inCategoeries": [6,7],
+            "serviceProvider": {
+                "name": "VK Mail.ru Group",
+                "desc": "VK, which was known as Mail.ru Group until 12 October 2021, is a Russian internet company. It was started in 1998 as an e-mail service",
+                "url": "https://www.mail.ru"
+            },
+            "serviceHash": {
+                "original": "mailru-verification: fa868a61bb236ae5",
+                "comment": "",
+                "regexp": {
+                    "test": "/^mailru-verification:/i",
+                    "match": "/^mailru-verification: (.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Yandex.Webmaster managed site",
+            "inCategoeries": [0],
+            "serviceProvider": {
+                "name": "Yandex N.V.",
+                "desc": "Yandex N.V. is a multinational corporation primarily for Russian and Russian-language users, providing 70 Internet-related products and services, including transportation, search and information services, e-commerce, navigation, mobile applications, and online advertising",
+                "url": "https://yandex.com/"
+            },
+            "serviceHash": {
+                "original": "yandex-verification=fb9a7e8303137b4c",
+                "comment": "",
+                "regexp": {
+                    "test": "/^yandex-verification=/i",
+                    "match": "/^yandex-verification=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Salesforge Pardot - Tracking domain",
+            "inCategoeries": [7,8],
+            "serviceProvider": {
+                "name": "Salesforge - Paradot",
+                "desc": "Pardot is a marketing automation solution that helps companies create meaningful connections, generate more pipeline, and empower sales to close more deals",
+                "url": "https://www.pardot.com/"
+            },
+            "serviceHash": {
+                "original": "pardot_104652_*=b9b92faaea08bdf6d7d89da132ba50aaff6a4b055647ce7fdccaf95833d12c17",
+                "comment": "",
+                "regexp": {
+                    "test": "/^pardot_/i",
+                    "match": "/^pardot_[0-9]+_\\*=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "DocuSign Admin (SSO domain claim)",
+            "inCategoeries": [5],
+            "serviceProvider": {
+                "name": "DocuSign",
+                "desc": "DocuSign, Inc. is an American company headquartered in San Francisco, California, that allows organizations to manage electronic agreements",
+                "url": "https://www.docusign.com/"
+            },
+            "serviceHash": {
+                "original": "docusign=ff4d259b-5b2b-4dc7-84e5-34dc2c13e83e",
+                "comment": "",
+                "regexp": {
+                    "test": "/^docusign=/i",
+                    "match": "/^docusign=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Cisco WebEX Control Hub - IDP Domain claim",
+            "inCategoeries": [3],
+            "serviceProvider": {
+                "name": "Cisco",
+                "desc": "Webex by Cisco is an American company that develops and sells web conferencing, videoconferencing, Unified communications as a service",
+                "url": "https://www.webex.com/"
+            },
+            "serviceHash": {
+                "original": "webexdomainverification.P7KF=bf9d7a4f-41e4-4fa3-9ccb-d26f307e6be4",
+                "comment": "",
+                "regexp": {
+                    "test": "/^webexdomainverification/i",
+                    "match": "/^webexdomainverification(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Cisco WebEX Control Hub - SIP Video domain/device",
+            "inCategoeries": [3],
+            "serviceProvider": {
+                "name": "Cisco",
+                "desc": "Webex by Cisco is an American company that develops and sells web conferencing, videoconferencing, Unified communications as a service",
+                "url": "https://www.webex.com/"
+            },
+            "serviceHash": {
+                "original": "ciscocidomainverification=f1d51662d07e32cdf508fe2103f9060ac5ba2f9efeaa79274003d12d0a9a745",
+                "comment": "",
+                "regexp": {
+                    "test": "/^ciscocidomainverification=/i",
+                    "match": "/^ciscocidomainverification=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Cisco WebEX Control Hub - SIP Video domain/device",
+            "inCategoeries": [3],
+            "serviceProvider": {
+                "name": "Cisco",
+                "desc": "Webex by Cisco is an American company that develops and sells web conferencing, videoconferencing, Unified communications as a service",
+                "url": "https://www.webex.com/"
+            },
+            "serviceHash": {
+                "original": "cisco-ci-domain-verification=f1d51662d07e32cdf508fe2103f9060ac5ba2f9efeaa79274003d12d0a9a745",
+                "comment": "",
+                "regexp": {
+                    "test": "/^cisco-ci-domain-verification=/i",
+                    "match": "/^cisco-ci-domain-verification=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Sendinblue - Send via Non-Shared IPs domain claim",
+            "inCategoeries": [6,7],
+            "serviceProvider": {
+                "name": "Sendinblue",
+                "desc": "Sendinblue is a SaaS solution for relationship marketing",
+                "url": "https://www.sendinblue.com/"
+            },
+            "serviceHash": {
+                "original": "Sendinblue-code:faab5d512036749b0f69d906db2a7824",
+                "comment": "",
+                "regexp": {
+                    "test": "/^sendinblue-code:/i",
+                    "match": "/^sendinblue-code:(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Zoho Mail - Sender domain claim",
+            "inCategoeries": [6],
+            "serviceProvider": {
+                "name": "Zoho Corporation",
+                "desc": "Zoho Corporation is an Indian multinational technology company that makes web-based business tools",
+                "url": "https://www.zoho.com/"
+            },
+            "serviceHash": {
+                "original": "zoho-verification=zb[sequentialnumber].zmverify.zoho.[com|in]",
+                "comment": "",
+                "regexp": {
+                    "test": "/^zoho-verification=/i",
+                    "match": "/^zoho-verification=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Dropbox Business - Team domain claim",
+            "inCategoeries": [2],
+            "serviceProvider": {
+                "name": "Dropbox",
+                "desc": "Dropbox is a file hosting service operated by the American company Dropbox, Inc",
+                "url": "https://www.dropbox.com"
+            },
+            "serviceHash": {
+                "original": "dropbox-domain-verification=zsp1beovavgv",
+                "comment": "",
+                "regexp": {
+                    "test": "/^dropbox-domain-verification=/i",
+                    "match": "/^dropbox-domain-verification=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Spiceworks Monitor/Tracking - domain claim",
+            "inCategoeries": [9],
+            "serviceProvider": {
+                "name": "Spiceworks",
+                "desc": "Spiceworks is a professional network for the information technology industry that is headquartered in Austin, Texas",
+                "url": "https://www.spiceworks.com/"
+            },
+            "serviceHash": {
+                "original": "workplace-domain-verification=BEJd6oynFk3ED6u0W4uAGMguAVnPKY",
+                "comment": "Im not sure about this one, perhaps its facebook workplace ??",
+                "regexp": {
+                    "test": "/^workplace-domain-verification=/i",
+                    "match": "/^workplace-domain-verification=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Have I Been Pwned (HIBP)? Domain search access",
+            "inCategoeries": [9],
+            "serviceProvider": {
+                "name": "Have I Been Pwned",
+                "desc": "Post-breach / Leak credential analysis",
+                "url": "https://haveibeenpwned.com/"
+            },
+            "serviceHash": {
+                "original": "have-i-been-pwned-verification=faf85761f15dc53feff4e2f71ca32510",
+                "comment": "",
+                "regexp": {
+                    "test": "/^have-i-been-pwned-verification=/i",
+                    "match": "/^have-i-been-pwned-verification=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Citrix IDP domain claim",
+            "inCategoeries": [2],
+            "serviceProvider": {
+                "name": "Citrix Systems",
+                "desc": "Citrix Systems, Inc. is an American multinational cloud computing and virtualization technology company",
+                "url": "https://"
+            },
+            "serviceHash": {
+                "original": "citrix-verification-code=ed1a7948-6f0d-4830-9014-d22f188c3bab",
+                "comment": "Not much info to go on here, cant find anything",
+                "regexp": {
+                    "test": "/^citrix-verification-code=/i",
+                    "match": "/^citrix-verification-code=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Brave Rewards program for Creators - Domain signup",
+            "inCategoeries": [3,7],
+            "serviceProvider": {
+                "name": "Brave",
+                "desc": "Brave is a free and open-source web browser developed by Brave Software, Inc. based on the Chromium web browser",
+                "url": "https://brave.com/"
+            },
+            "serviceHash": {
+                "original": "brave-ledger-verification=fb42f0147b2264aa781f664eef7d51a1be9196011a205a2ce100dc76ab9de39f",
+                "comment": "",
+                "regexp": {
+                    "test": "/^brave-ledger-verification=/i",
+                    "match": "/^brave-ledger-verification=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Adobe Sign Identity Authentication - Domain claim",
+            "inCategoeries": [5],
+            "serviceProvider": {
+                "name": "Adobe",
+                "desc": "Adobe Inc., originally called Adobe Systems Incorporated, is an American multinational computer software company",
+                "url": "https://www.adobe.com"
+            },
+            "serviceHash": {
+                "original": "adobe-sign-verification=fe9cdca76cd809222e1acae2866ae896",
+                "comment": "",
+                "regexp": {
+                    "test": "/^adobe-sign-verification=/i",
+                    "match": "/^adobe-sign-verification=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Firebase Hosting - Custom domain claim",
+            "inCategoeries": [2,4],
+            "serviceProvider": {
+                "name": "Google - Firebase",
+                "desc": "Firebase is a platform developed by Google for creating mobile and web applications",
+                "url": "https://firebase.google.com/"
+            },
+            "serviceHash": {
+                "original": "firebase=solar-virtue-511",
+                "comment": "",
+                "regexp": {
+                    "test": "/^firebase=/i",
+                    "match": "/^firebase=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Loader.io - Load testing target host/domain claim",
+            "inCategoeries": [9],
+            "serviceProvider": {
+                "name": "Loader.io",
+                "desc": "loader.io is a cloud-based load and scalability testing service SaaS that allows developers to test their web applications and API",
+                "url": "https://loader.io"
+            },
+            "serviceHash": {
+                "original": "loaderio=fefa7eab8eb4a9235df87456251d8a48",
+                "comment": "",
+                "regexp": {
+                    "test": "/^loaderio=/i",
+                    "match": "/^loaderio=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "VMWare CloudHealth Single Sign-On domain claim",
+            "inCategoeries": [2],
+            "serviceProvider": {
+                "name": "CloudHealth Technologies",
+                "desc": "CloudHealth Technologies, now CloudHealth by VMware",
+                "url": "https://cloudhealth.vmware.com/"
+            },
+            "serviceHash": {
+                "original": "cloudhealth=1659ead7-5c47-4817-a0d3-94b456169734",
+                "comment": "",
+                "regexp": {
+                    "test": "/^cloudhealth=/i",
+                    "match": "/^cloudhealth=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Fastly Apex/Subdomains delegation to allow multiple accounts",
+            "inCategoeries": [2],
+            "serviceProvider": {
+                "name": "Fastly",
+                "desc": "Fastly is an American cloud computing services provider",
+                "url": "https://www.fastly.com/"
+            },
+            "serviceHash": {
+                "original": "fastly-domain-delegation-w049tcm0w48ds-341317-20210209",
+                "comment": "",
+                "regexp": {
+                    "test": "/^fastly-domain-delegation/i",
+                    "match": "/^fastly-domain-delegation-(.+)/i"
+                }
+            }
+        }
+
+    ]
+}

@@ -13,7 +13,7 @@
  module.exports = {
     settings: {
         theme: 'system',
-        streamermode: false,
+        privacymode: false,
         idle: 300,
         idlelock: false,
         debug: false

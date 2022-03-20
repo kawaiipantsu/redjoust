@@ -51,7 +51,7 @@ var myDebug = store.get('settings.debug')
 var myTheme = store.get('settings.theme')
 var myTarget = store.get('info.target')
 var myMode = store.get('info.mode')
-var streamerMode = store.get('settings.streamermode')
+var privacyMode = store.get('settings.privacymode')
 var showExternals = store.get('menuitems.externaltools.show')
 var myStatusbarMessage = "";
 var myStatusbarIcon = "";
@@ -136,9 +136,6 @@ window.onload = () => {
   }
   // DEBUG BLOCK END
 
-
-
-  if (myDebug) console.log("loading theme: "+myTheme)
   ipcRenderer.invoke('theme:'+myTheme)
 
   window.$ = window.jQuery = require('jquery');
@@ -517,20 +514,22 @@ contextBridge.exposeInMainWorld('toolAPI', {
 });
 
 function reloadPublicIP() {
-  $.ajax({
-    dataType: 'json',
-    url: "https://api.buffer.dk/myip",
-    success: function(result){
-      if ( streamerMode ) {
-        $("#myip").html("Privacy mode");
-      } else {
+  if ( privacyMode ) {
+    // Now for real this time!
+    // DONT make any http calls :) We want privacy...
+    $("#myip").html("Privacy mode");
+  } else {
+    $.ajax({
+      dataType: 'json',
+      url: "https://api.buffer.dk/myip", // Full disclaimer i own this api site, so kinda a call-home?
+      success: function(result){
         $("#myip").html(result.ip);
+      },
+      fail: function(xhr, textStatus, errorThrown){
+        $("#myip").html("Unknown?");
       }
-    },
-    fail: function(xhr, textStatus, errorThrown){
-      $("#myip").html("Unknown?");
-    }
-  });
+    });
+  }
 }
 
 function showPage( pagename=null ) {
@@ -716,16 +715,17 @@ ipcRenderer.on('escpressed', (event) => {
   showPage("pagedefault");
 });
 
-ipcRenderer.on('togglestreamermode', (event) => {
-  if ( streamerMode ) {
-    // Streamer mode enabled - toggle to disabled!
-    streamerMode = false;
-    store.set('settings.streamermode', false);
+ipcRenderer.on('toggleprivacymode', (event) => {
+  if ( privacyMode ) {
+    // Privacy mode enabled - toggle to disabled!
+    privacyMode = false;
+    store.set('settings.privacymode', false);
   } else {
-    // Streamer mode disabled - toggle to enabled!
-    streamerMode = true;
-    store.set('settings.streamermode', true);
+    // Privacy mode disabled - toggle to enabled!
+    privacyMode = true;
+    store.set('settings.privacymode', true);
   }
+  // Things we need to refresh when toggling this mode
   reloadPublicIP();
 });
 
@@ -1261,6 +1261,10 @@ function whoisLookup ( useTarget=false, netLookupOnly=false) {
   }
 
   var client = new net.Socket();
+
+  // Enable a timeout so that the item wont spin forever
+  client.setTimeout(10000);
+
   // I have opend a issue for electron-store questioning the default value return on store.get,
   // Why do i have to staticly add it when i have included defauls for the "Store" module ...
   // Until i know more, just skip setting a timeout :D
@@ -1270,13 +1274,18 @@ function whoisLookup ( useTarget=false, netLookupOnly=false) {
     if (myDebug) console.log("[WHOIS] Looking up '"+target+"' at '"+finalWhoisServer+"' via query: "+finalWhoisQuery);
     client.write(finalWhoisQuery+'\r\n')
   });
-  
+
   client.on('timeout', function() {
-    client.end();
+    client.destroy();
   });
 
   return new Promise((resolve, reject) => {
     var dataResult = '';
+
+    client.on('error', function(err) {
+      if (myDebug) console.log("error?")
+      reject(err)
+    });
 
     client.on('data', function(chunk) {
       dataResult += chunk
@@ -1285,9 +1294,9 @@ function whoisLookup ( useTarget=false, netLookupOnly=false) {
     client.on('end', function() {
       resolve(dataResult);
     });
-  
-    client.on('error', function(err) {
-      reject(err)
+
+    client.on('close', function() {
+      resolve("Timeout !!\n\nI tried to establish a connection for 10sec now\nBut could not connect to whois server:\n\n - "+finalWhoisServer+":"+finalWhoisPort+"\n\nPerhaps something is wrong with their backend?\nYou could try hitting 'F6' and then 'F5' to clear status and re-run all...");
     });
   
    });
@@ -1306,6 +1315,7 @@ function spfNote(str) {
   if ( /^-all/i.test(str) ) return "(Action: Hardfail - Reject)"
   if ( /^~all/i.test(str) ) return "(Action: Softfail - Allow, but mark)"
   if ( /^include:/i.test(str) ) return "(SPF extends to this txt record)"
+  if ( /^redirect=/i.test(str) ) return "(SPF record is taken from other domain)"
   if ( /^ip4/i.test(str) ) return "(IPv4 ip/range - Authorized)"
   if ( /^ip6/i.test(str) ) return "(IPv6 ip/range - Authorized)"
   if ( /^a/i.test(str) ) return "(A record(s) - Authorized)"
@@ -1313,12 +1323,41 @@ function spfNote(str) {
   return "" // Default just return no note text
 }
 
-function txtParser(str) {
-  // We parse for known things!!
-  // And we decide the output etc ...
+function txtParser(inputString=false) {
+  // DNS TXT records parser
+  // - Use this function if you want to change or detect TXT content
 
-  // For now, just return the original string :)
-  return str
+  // Sanity check
+  if ( inputString === false ) return;
+
+  // Our inputString is also our outputString!
+  // What ever we decide to do with it from here on out is on us!
+  var outputString = inputString
+
+  // When all good and done, return the outputString!
+  return outputString
+}
+
+function fingerprintVendorStrings(inputString=false) {
+  if ( inputString === false || inputString.length < 1 ) return false;
+  // Trim string !
+  var workString = String(inputString).trim()
+  // Fingerprinting vendor verification strings
+  const fingerprints = require('./assets/json/online-service-provider-fingerprint.json')
+  for (i=0;i<fingerprints.knownFingerprints.length;i++) {
+    // Lets loop through all fingerprints and see if anyone match our string
+    var _regx = fingerprints.knownFingerprints[i].serviceHash.regexp.test.match(/^\/(.*)\/([a-z]{0,4})$/i)
+    if ( _regx.length > 0 ) {
+      if ( _regx.length == 2) var testRegExp = new RegExp(String(_regx[1]))
+      if ( _regx.length == 3) var testRegExp = new RegExp(String(_regx[1]),String(_regx[2]))
+      if ( testRegExp.test(workString) ) {
+        console.log("Found fingerprint! : "+fingerprints.knownFingerprints[i].fingerprintName)
+        return fingerprints.knownFingerprints[i]
+      }
+    }
+  }
+  // We found nothing ? Tell them about it ...
+  return false;
 }
 
 function strSanitizer(inputString=false, butcherMode=false) {
@@ -1382,16 +1421,15 @@ window.dnsMain = function(myID=false) {
   itemResult.append('<div class="soa dnsrecords"></div>')
   itemResult.append('<div class="ns dnsrecords"></div>')
   itemResult.append('<div class="resolve dnsrecords"><div class="a"></div><div class="aaaa"></div><div class="cname"></div></div>')
-  itemResult.append('<div class="resolvefuzz dnsrecords"><div class="title"></div><div class="wildcard"></div><div class="fuzzout gridcont"></div>')
+  itemResult.append('<div class="resolvefuzz dnsrecords"><div class="resolvefuzztitle"></div><div class="resolvefuzzwildcard"></div><div class="resolvefuzzfuzzout gridcont"></div></div>')
   itemResult.append('<div class="mx dnsrecords"></div>')
   itemResult.append('<div class="dmarc dnsrecords"></div>')
   itemResult.append('<div class="spf dnsrecords"></div>') // This is really just TXT, so match on "v=spf*"
   itemResult.append('<div class="spfcount dnsrecords"><div data-count=0 class="spf1"></div><div data-count=0 class="spf2"></div></div>')
   itemResult.append('<div class="loc dnsrecords"></div>') // Wishfull thinking, NodeJS dns dont support this, so we would have to build our own dns client ....
-  itemResult.append('<div class="txt dnsrecords"></div>') // Still dump all TXT here even spf (or ?) info ...
-  itemResult.append('<div class="txtfuzz dnsrecords"><div class="title"></div><div class="fuzzout"></div>')
+  itemResult.append('<div class="txt dnsrecords"><div class="txttitle"></div><div class="txtspf"></div><div class="txtfingerprint"></div><div class="txtother"></div></div>') // Still dump all TXT here even spf (or ?) info ...
+  itemResult.append('<div class="txtfuzz dnsrecords"><div class="txtfuzztitle"></div><div class="txtfuzzspf"></div><div class="txtfuzzfingerprint"></div><div class="txtfuzzfuzzout"></div></div>')
   itemResult.append('<div class="srv dnsrecords"></div>')
-
   // Any new "POI" targets, dont forget to wrap them in
   // <span class="poitarget"></span>
 
@@ -1579,9 +1617,9 @@ window.dnsMain = function(myID=false) {
   
   const fuzz = require("./assets/json/dns-host-fuzz.json");
   if (myDebug) console.log("dns-host-fuzz count: "+fuzz['dns-host-fuzz'].length)
-  const fuzzTITLE = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".title")
-  const fuzzWILD = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".wildcard")
-  const fuzzOut = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".fuzzout")
+  const fuzzTITLE = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".resolvefuzztitle")
+  const fuzzWILD = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".resolvefuzzwildcard")
+  const fuzzOut = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".resolvefuzzfuzzout")
 
   fuzzTITLE.append("<span class='title'>==[ Subdomain Fuzz ]===========================</span>")
   // Wildcard detection - Lets just try to resolve something stupid :)
@@ -1698,16 +1736,18 @@ window.dnsMain = function(myID=false) {
       result.forEach( function(txtrecord) {
         // Have not yet decided, but for now lets skip any SPF records and handle
         // them under the SPF section and show it more pretty ...
-        if ( /spf/i.test(txtrecord) ) {
-          if ( /^v=spf1/i.test(txtrecord) ) spfCount1.data("count", parseInt(spfCount1.data("count"))+1 )
-          if ( /^spf2/i.test(txtrecord) ) spfCount2.data("count", parseInt(spfCount2.data("count"))+1 )
+        if ( /^v=spf1/i.test(txtrecord) || /^spf[23]/i.test(txtrecord) ) {
+          //if ( /^v=spf1/i.test(txtrecord) ) spfCount1.data("count", parseInt(spfCount1.data("count"))+1 )
+          //if ( /^spf[23]/i.test(txtrecord) ) spfCount2.data("count", parseInt(spfCount2.data("count"))+1 )
           spfCount1.html("<span class='key'> - SPFv1 Lookup count: </span><span class='value'>"+spfCount1.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
           spfCount2.html("<span class='key'> - SPFv2 Lookup count: </span><span class='value'>"+spfCount2.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
           var spfblocks = String(txtrecord).split(' ')
           spfblocks.forEach( function(spfstr) {
             elmSPF.append("<span class='key'> - </span><span class='valueb'>"+spfstr+"</span> <span class='note'>"+spfNote(spfstr)+"</span><br>")
-            if ( /^include:/i.test(spfstr) ) {
-              const regexp = /include:(.*)/i
+            if ( /^include:/i.test(spfstr) || /^redirect=/i.test(spfstr) ) {
+              // We will allow REDIRECT SPF in the first TXT record only !
+              if (/^redirect=/i.test(spfstr)) var regexp = /redirect=(.*)/i
+              else var regexp = /include:(.*)/i
               var includeHost = spfstr.match(regexp)
               elmSPF.append("<span class='key'>   `- </span><span class='value'><span class='poiTarget'>"+includeHost[1]+"</span></span>  <span class='note'>"+spfNote(includeHost[1])+"</span><br>")
               elmSPF.append("<div data-spfincludehost='"+includeHost[1]+"'></div>")
@@ -1715,9 +1755,9 @@ window.dnsMain = function(myID=false) {
                 var inclHost = includeHost[1]
                 if (!err) {
                   result.forEach( function(txtrecord) {
-                    if ( /spf/i.test(txtrecord) ) {
+                    if ( /^v=spf1/i.test(txtrecord) || /^spf[23]/i.test(txtrecord) ) {
                       if ( /^v=spf1/i.test(txtrecord) ) spfCount1.data("count", parseInt(spfCount1.data("count"))+1 )
-                      if ( /^spf2/i.test(txtrecord) ) spfCount2.data("count", parseInt(spfCount2.data("count"))+1 )
+                      if ( /^spf[23]/i.test(txtrecord) ) spfCount2.data("count", parseInt(spfCount2.data("count"))+1 )
                       spfCount1.html("<span class='key'> - SPFv1 Lookup count: </span><span class='value'>"+spfCount1.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
                       spfCount2.html("<span class='key'> - SPFv2 Lookup count: </span><span class='value'>"+spfCount2.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
                       var $this = $("#"+itemPage).find(".dnsresult").find(".spf").find("div[data-spfincludehost='"+inclHost+"']")
@@ -1733,9 +1773,9 @@ window.dnsMain = function(myID=false) {
                             var inclHost2 = includeHost2[1]
                             if (!err) {
                               result2.forEach( function(txtrecord2) {
-                                if ( /spf/i.test(txtrecord2) ) {
+                                if ( /^v=spf1/i.test(txtrecord2) || /^spf[23]/i.test(txtrecord2) ) {
                                   if ( /^v=spf1/i.test(txtrecord2) ) spfCount1.data("count", parseInt(spfCount1.data("count"))+1 )
-                                  if ( /^spf2/i.test(txtrecord2) ) spfCount2.data("count", parseInt(spfCount2.data("count"))+1 )
+                                  if ( /^spf[23]/i.test(txtrecord2) ) spfCount2.data("count", parseInt(spfCount2.data("count"))+1 )
                                   spfCount1.html("<span class='key'> - SPFv1 Lookup count: </span><span class='value'>"+spfCount1.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
                                   spfCount2.html("<span class='key'> - SPFv2 Lookup count: </span><span class='value'>"+spfCount2.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
                                   var $this2 = $("#"+itemPage).find(".dnsresult").find(".spf").find("div[data-spfincludehostsub='"+inclHost2+"']")
@@ -1751,9 +1791,9 @@ window.dnsMain = function(myID=false) {
                                         var inclHost3 = includeHost3[1]
                                         if (!err) {
                                           result3.forEach( function(txtrecord3) {
-                                            if ( /spf/i.test(txtrecord3) ) {
+                                            if ( /^v=spf1/i.test(txtrecord3) || /^spf[23]/i.test(txtrecord3) ) {
                                               if ( /^v=spf1/i.test(txtrecord3) ) spfCount1.data("count", parseInt(spfCount1.data("count"))+1 )
-                                              if ( /^spf2/i.test(txtrecord3) ) spfCount2.data("count", parseInt(spfCount2.data("count"))+1 )
+                                              if ( /^spf[23]/i.test(txtrecord3) ) spfCount2.data("count", parseInt(spfCount2.data("count"))+1 )
                                               spfCount1.html("<span class='key'> - SPFv1 Lookup count: </span><span class='value'>"+spfCount1.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
                                               spfCount2.html("<span class='key'> - SPFv2 Lookup count: </span><span class='value'>"+spfCount2.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
                                               var $this3 = $("#"+itemPage).find(".dnsresult").find(".spf").find("div[data-spfincludehostsubsub='"+inclHost3+"']")
@@ -1786,26 +1826,40 @@ window.dnsMain = function(myID=false) {
     }
   });
 
-  const elmTXT = $("#"+itemPage).find(".dnsresult").find(".txt")
+  const elmTXTTitle = $("#"+itemPage).find(".dnsresult").find(".txt").find(".txttitle")
+  const elmTXTSPF = $("#"+itemPage).find(".dnsresult").find(".txt").find(".txtspf")
+  const elmTXTFingerprint = $("#"+itemPage).find(".dnsresult").find(".txt").find(".txtfingerprint")
+  const elmTXTOther = $("#"+itemPage).find(".dnsresult").find(".txt").find(".txtother")
   resolver.resolve(String(workTarget),'TXT', (err, result) => {
     if (err) {
       console.log(err)
       itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
     } else {
-      elmTXT.append("<span class='title'>==[ TXT record(s) ]============================</span><br>")
+      elmTXTTitle.append("<span class='title'>==[ TXT record(s) ]============================</span><br>")
+      // Lets try to sort the result for fun
+      result.sort()
       result.forEach( function(txtrecord) {
-        // Have not yet decided, but for now lets skip any SPF records and handle
-        // them under the SPF section and show it more pretty ...
-        if ( !/spf/i.test(txtrecord) ) elmTXT.append("<span class='key'> - \"</span><span class='value'>"+txtParser(txtrecord)+"</span><span class='key'>\"</span><br>")
-        else elmTXT.append("<span class='key'> - </span><span class='valueErr'>Found SPF related TXT record, look under SPF section instead</span><br>")
+        // We handle some records diffrently, just to make the output easier to read
+        if ( /^v=spf/i.test(txtrecord) || /^spf[23]/i.test(txtrecord) ) elmTXTSPF.append("<span class='key'> - </span><span class='valueErr'>Found SPF record, it's shown above in detail</span><br>")
+        else if ( /v=dmarc/i.test(txtrecord) ) elmTXTSPF.append("<span class='key'> - </span><span class='valueErr'>Found DMARC record, it's shown above in detail</span><br>")
+        else {
+          // Also if we fingerprint something, lets show it before all the rest
+          var fingerprintResult = fingerprintVendorStrings(txtrecord)
+          if ( fingerprintResult ) {
+            // We found a fingerprint !
+            elmTXTFingerprint.append("<span class='key'> - </span><span class='valueb'>"+txtParser(fingerprintResult.fingerprintName)+"</span><br>")
+          } else {
+            elmTXTOther.append("<span class='key'> - \"</span><span class='value'>"+txtParser(txtrecord)+"</span><span class='key'>\"</span><br>")
+          }
+        }
       })
       itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
     }
   });
     
   const fuzzTXT = require("./assets/json/dns-txt-fuzz.json");
-  const fuzzTxtTITLE = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".title")
-  const fuzzTxtOut = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".fuzzout")
+  const fuzzTxtTITLE = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".txtfuzztitle")
+  const fuzzTxtOut = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".txtfuzzfuzzout")
 
   fuzzTxtTITLE.append("<span class='title'>==[ TXT Fuzz ]===========================</span>")
 
@@ -1834,19 +1888,21 @@ window.dnsMain = function(myID=false) {
             //  if ( !/v=spf/i.test(txtr) && /v=dmarc1/i.test(txtr) && !/spf2/i.test(txtr)) otherInterresting++
             //})
             //if (otherInterresting > 0) fuzzTxtOut.append("<span class='key'> - <span class='poiTarget'>"+fuzzTarget+"</span></span> <span class='note'>(We strip spf/dmarc)</span><br>")
-            fuzzTxtOut.append("<span class='key'> - <span class='poiTarget'>"+strSanitizer(fuzzTarget)+"</span></span> <span class='note'>(We strip spf/dmarc)</span><br>")
+            fuzzTxtOut.append("<span class='key'> - <span class='poiTarget'>"+strSanitizer(fuzzTarget)+"</span></span> <span class='note'></span><br>")
             result.forEach( function(txtr) {
               // We strip SPF and DMARC txt records, this is more for digging for other stuff !!
               // Proper SPF viewing should be done directly on the target!
-              //if (!/v=spf/i.test(txtr) && /v=dmarc1/i.test(txtr) && !/spf2/i.test(txtr) ) {
-              //  console.log("txtr: "+txtr)
+              if ( /v=dmarc1/i.test(txtr) ) {
+                fuzzTxtOut.append("<span class='key'>   `- </span><span class='note'>DMARC txt found, see main domain dns deep dive for details</span><br>")
+              } else if ( /v=spf1/i.test(txtr) || /spf2.0/i.test(txtr) ) {
+                fuzzTxtOut.append("<span class='key'>   `- </span><span class='note'>SPF txt found, click the hostname to set target for details</span><br>")
+              } else {
                 fuzzTxtOut.append("<span class='key'>   `- \"</span><span class='value'>"+txtParser(txtr)+"</span><span class='key'>\"</span><br>")
-              //}
+              }
             })
           }
         }
       });
-      console.log(ifuzzTXT +" / "+ ifuzzTXTend )
       if ( ifuzzTXT == ifuzzTXTend ) { // This will run one time when loop is done, so use wisely!
         itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
       }
@@ -1892,7 +1948,6 @@ window.dnsWhois = function(myID=false) {
 
   // Just setting tsome stuff to be nice
   $("#"+itemID).data('status',"working");
-
   whoisLookup(useTarget).then((data) => { 
     $("#domwhoisresult").text(data).html()
     $("#"+itemID).data('status',"done"); // Mark us as done! ( Or you will see working-spin-of-death :D )

@@ -7,6 +7,12 @@
 
 ---
 
+## Join the community
+
+Join the community of Kawaiipantsu / THUGS(red) and participate in the dev talk around Redjoust or simply just come visit us and chat about anything security related :) We love playing around with security. Also we have ctf events and small howto events for new players.
+
+**THUGS(red) Discord**: <https://discord.gg/Xg2jMdvss9>
+
 > Its beginning to take shape !! I now have almost all internal logic in place, so i can now begin to develop a bit more on the actual intel gathering items.
 >
 > Come back later :)
