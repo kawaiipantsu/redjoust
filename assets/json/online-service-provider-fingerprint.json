@@ -476,6 +476,42 @@
                     "match": "/^loaderio=(.+)/i"
                 }
             }
+        },
+
+        {
+            "fingerprintName": "VMWare CloudHealth Single Sign-On domain claim",
+            "inCategoeries": [2],
+            "serviceProvider": {
+                "name": "CloudHealth Technologies",
+                "desc": "CloudHealth Technologies, now CloudHealth by VMware",
+                "url": "https://cloudhealth.vmware.com/"
+            },
+            "serviceHash": {
+                "original": "cloudhealth=1659ead7-5c47-4817-a0d3-94b456169734",
+                "comment": "",
+                "regexp": {
+                    "test": "/^cloudhealth=/i",
+                    "match": "/^cloudhealth=(.+)/i"
+                }
+            }
+        },
+
+        {
+            "fingerprintName": "Fastly Apex/Subdomains delegation to allow multiple accounts",
+            "inCategoeries": [2],
+            "serviceProvider": {
+                "name": "Fastly",
+                "desc": "Fastly is an American cloud computing services provider",
+                "url": "https://www.fastly.com/"
+            },
+            "serviceHash": {
+                "original": "fastly-domain-delegation-w049tcm0w48ds-341317-20210209",
+                "comment": "",
+                "regexp": {
+                    "test": "/^fastly-domain-delegation/i",
+                    "match": "/^fastly-domain-delegation-(.+)/i"
+                }
+            }
         }
 
     ]
