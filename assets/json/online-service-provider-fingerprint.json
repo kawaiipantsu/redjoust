@@ -40,8 +40,8 @@
                 "original": "google-site-verification=ZZYRwyiI6QKg0jVwmdIha68vuiZlNtfAJ90msPo1i7E",
                 "comment": "",
                 "regexp": {
-                    "test": "/^google-site-verification=[a-zA-Z0-9]+/i",
-                    "match": "/^google-site-verification=([a-zA-Z0-9]+)/i"
+                    "test": "/^google-site-verification=/i",
+                    "match": "/^google-site-verification=([a-zA-Z0-9\\-]+)/i"
                 }
             }
         },
@@ -58,8 +58,8 @@
                 "original": "MS=ms12345678",
                 "comment": "",
                 "regexp": {
-                    "test": "/^ms=ms[0-9]+/i",
-                    "match": "/^ms=ms([0-9]+)/i"
+                    "test": "/^ms=/i",
+                    "match": "/^ms=([a-z0-9]+)/i"
                 }
             }
         },
@@ -76,7 +76,7 @@
                 "original": "mscid=veniWolTd6miqdmIAwHTER4ZDHPBmT0mDwordEu6ABR7Dy2SH8TjniQ7e2O+Bv5+svcY7vJ+ZdSYG9aCOu8GYQ==",
                 "comment": "",
                 "regexp": {
-                    "test": "/^mscid=[a-zA-Z0-9+=]+/i",
+                    "test": "/^mscid=/i",
                     "match": "/^mscid=([a-zA-Z0-9+=]+)/i"
                 }
             }
@@ -94,8 +94,8 @@
                 "original": "facebook-domain-verification=zyzferd0kpm04en8wn4jnu4ooen5ct",
                 "comment": "",
                 "regexp": {
-                    "test": "/^facebook-domain-verification=[a-zA-Z0-9]+/i",
-                    "match": "/^facebook-domain-verification=([a-zA-Z0-9]+)/i"
+                    "test": "/^facebook-domain-verification=/i",
+                    "match": "/^facebook-domain-verification=(.+)/i"
                 }
             }
         },
@@ -112,7 +112,7 @@
                 "original": "_globalsign-domain-verification=Zv6aPQO0CFgBxwOk23uUOkmdLjhc9qmcz-UnQcgXkA",
                 "comment": "Originally seen with an underscore in front but not always there, test/match both with and without",
                 "regexp": {
-                    "test": "/^globalsign-domain-verification=[a-zA-Z0-9\\-]+/i",
+                    "test": "/^globalsign-domain-verification=/i",
                     "match": "/^globalsign-domain-verification=([a-zA-Z0-9\\-]+)/i"
                 }
             }
@@ -220,8 +220,8 @@
                 "original": "pardot_104652_*=b9b92faaea08bdf6d7d89da132ba50aaff6a4b055647ce7fdccaf95833d12c17",
                 "comment": "",
                 "regexp": {
-                    "test": "/^pardot_104652_\\*=/i",
-                    "match": "/^pardot_104652_\\*=(.+)/i"
+                    "test": "/^pardot_/i",
+                    "match": "/^pardot_[0-9]+_\\*=(.+)/i"
                 }
             }
         },
