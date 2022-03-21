@@ -9,7 +9,7 @@ We have a JSON file with all the fingerprinting data in it, so we have made a fe
 ``` bash
 # Edit the file to set target and then run
 
-❯ nodejs fingerprinting-example.php
+❯ node fingerprinting-example.js
 ❯ python fingerprinting-example.py
 ❯ php fingerprinting-example.php
 ```
