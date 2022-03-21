@@ -18,10 +18,10 @@
  // Read the JSON file and decode it!
  $fingerprints = json_decode(file_get_contents("../assets/json/online-service-provider-fingerprint.json"));
 
+ // Out arrays that holds the output results for later printing
  $result["detected"] = array();
  $result["undetected"] = array();
  
-
 // Make DNS TXT lookup, loop through all TXT records and then match them up against
 // all the fingerprint test regexp's
 
