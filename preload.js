@@ -1428,7 +1428,7 @@ window.dnsMain = function(myID=false) {
   itemResult.append('<div class="spfcount dnsrecords"><div data-count=0 class="spf1"></div><div data-count=0 class="spf2"></div></div>')
   itemResult.append('<div class="loc dnsrecords"></div>') // Wishfull thinking, NodeJS dns dont support this, so we would have to build our own dns client ....
   itemResult.append('<div class="txt dnsrecords"><div class="txttitle"></div><div class="txtspf"></div><div class="txtfingerprint"></div><div class="txtother"></div></div>') // Still dump all TXT here even spf (or ?) info ...
-  itemResult.append('<div class="txtfuzz dnsrecords"><div class="txtfuzztitle"></div><div class="txtfuzzspf"></div><div class="txtfuzzfingerprint"></div><div class="txtfuzzfuzzout"></div></div>')
+  itemResult.append('<div class="txtfuzz dnsrecords"><div class="txtfuzztitle"></div><div class="txtfuzzout"></div></div>')
   itemResult.append('<div class="srv dnsrecords"></div>')
   // Any new "POI" targets, dont forget to wrap them in
   // <span class="poitarget"></span>
@@ -1859,10 +1859,10 @@ window.dnsMain = function(myID=false) {
     
   const fuzzTXT = require("./assets/json/dns-txt-fuzz.json");
   const fuzzTxtTITLE = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".txtfuzztitle")
-  const fuzzTxtOut = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".txtfuzzfuzzout")
+  const fuzzTxtOut = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".txtfuzzout")
 
   fuzzTxtTITLE.append("<span class='title'>==[ TXT Fuzz ]===========================</span>")
-
+  fuzzTxtTITLE.hide();
   var ifuzzTXT=0
   txtFuzzArray = fuzzTXT['dns-txt-fuzz'].concat( store.get('info.fuzzDNSCustom.txtFuzz') )
   txtFuzzArraySorted = txtFuzzArray.sort().filter(function(item, pos, ary) {
@@ -1883,23 +1883,30 @@ window.dnsMain = function(myID=false) {
       resolver.resolve(String(fuzzTarget),'TXT', (err, result) => {
         if (!err) {
           if ( result.length > 0 ) {
-            //var otherInterresting = 0
-            //result.forEach( function(txtr) {
-            //  if ( !/v=spf/i.test(txtr) && /v=dmarc1/i.test(txtr) && !/spf2/i.test(txtr)) otherInterresting++
-            //})
-            //if (otherInterresting > 0) fuzzTxtOut.append("<span class='key'> - <span class='poiTarget'>"+fuzzTarget+"</span></span> <span class='note'>(We strip spf/dmarc)</span><br>")
-            fuzzTxtOut.append("<span class='key'> - <span class='poiTarget'>"+strSanitizer(fuzzTarget)+"</span></span> <span class='note'></span><br>")
-            result.forEach( function(txtr) {
+            fuzzTxtTITLE.show();
+            fuzzTxtOut.append("<div data-txtfuzzTarget='"+strSanitizer(fuzz)+"'><span class='key'> - <span class='poiTarget'>"+strSanitizer(fuzzTarget)+"</span></span> <span class='note'></span><br><div class='txtfuzzspf'></div><div class='txtfuzzfingerprint'></div><div class='txtfuzzother'></div></div>")
+            var fuzzTxtOutSPF = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".txtfuzzout").find("[data-txtfuzzTarget='"+fuzz+"']").find('.txtfuzzspf')
+            var fuzzTxtOutFingerprint = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".txtfuzzout").find("[data-txtfuzzTarget='"+fuzz+"']").find('.txtfuzzfingerprint')
+            var fuzzTxtOutOther = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".txtfuzzout").find("[data-txtfuzzTarget='"+fuzz+"']").find('.txtfuzzother')
+            for(ri=0;ri<result.length;ri++) {
+              var txtr = result[ri]
               // We strip SPF and DMARC txt records, this is more for digging for other stuff !!
               // Proper SPF viewing should be done directly on the target!
               if ( /v=dmarc1/i.test(txtr) ) {
-                fuzzTxtOut.append("<span class='key'>   `- </span><span class='note'>DMARC txt found, see main domain dns deep dive for details</span><br>")
+                fuzzTxtOutSPF.append("<span class='key'>   `- </span><span class='note'>DMARC txt found, see main domain dns deep dive for details</span><br>")
               } else if ( /v=spf1/i.test(txtr) || /spf2.0/i.test(txtr) ) {
-                fuzzTxtOut.append("<span class='key'>   `- </span><span class='note'>SPF txt found, click the hostname to set target for details</span><br>")
+                fuzzTxtOutSPF.append("<span class='key'>   `- </span><span class='note'>SPF txt found, click the hostname to set target for details</span><br>")
               } else {
-                fuzzTxtOut.append("<span class='key'>   `- \"</span><span class='value'>"+txtParser(txtr)+"</span><span class='key'>\"</span><br>")
+                var fingerprintResult = fingerprintVendorStrings(txtr)
+                if ( fingerprintResult ) {
+                  fuzzTxtOutFingerprint.append("<span class='key'>   `- </span><span class='valueb'>"+txtParser(fingerprintResult.fingerprintName)+"</span><br>")
+                } else {
+                  fuzzTxtOutOther.append("<span class='key'>   `- \"</span><span class='value'>"+txtParser(txtr)+"</span><span class='key'>\"</span><br>")
+                }
               }
-            })
+
+            }
+
           }
         }
       });
@@ -1907,9 +1914,6 @@ window.dnsMain = function(myID=false) {
         itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
       }
     });
-    //if ( fuzzSrvOut.html().length < 1 ) {
-    //  fuzzTxtTITLE.hide();
-    //}
   }
 
   

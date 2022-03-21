@@ -34,6 +34,7 @@
         "link",
         "local",
         "mail",
+        "mail_domainkey",
         "net",
         "nto",
         "ospf",
