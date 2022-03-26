@@ -2,12 +2,52 @@
 
 We all know the "contrib" content can often help you any so many ways :) It should come as no surprice here that we want the same thing. Redjoust is a application and getting larger and larger. That said we are implementing a lot of features in it and some of those would perhaps be of great usage in your project so the whole point of the contrib content is to carve out some of the functonallity and then show you how to use it for your self!
 
-**DNS TXT Fingerprinting Online Vendor verification strings**
+## DNS TXT Fingerprinting Online Vendor verification strings
 
 We have a JSON file with all the fingerprinting data in it, so we have made a few example scripts to show you how to ustilize it on your own. Only shown the actualy output from the PHP script, but the JS and Pyton does exactly the same.
 
+### Explenation
+
+To view categories you can go over the array `serviceCategories`
+
+- serviceCategorie object:
+  - `id` (ID number used in fingerprint)
+  - `name` (Category name)
+  - `desc` (Category description)
+- Usage examples:
+  - `serviceCategories[5].name` = `'Electronic Signing'`
+
+To use fingerprints you can go over the array `knownFingerprints`
+
+- knownFingerprint object:
+  - `fingerprintName` (Fingerprint info text)
+  - `inCategories` (Array with Category ID's)
+  - `serviceProvider`
+    - `name` (serviceProvider name)
+    - `desc` (serviceProvider description)
+    - `url` (serviceProvider web page)
+  - `serviceHash`
+    - `original` (serviceProvider name)
+    - `decommentsc` (serviceProvider description)
+    - `regexp`
+      - `test` (serviceHash regexp to test for hash)
+      - `match` (serviceHash regexp to get hash)
+- Usage examples:
+  - `knownFingerprints[7].fingerprintName` = `'Amazon AWS - Simple Email Service (SES)'`
+  - `knownFingerprints[7].serviceHash.regexp.test` = `/^amazonses:/i`
+  - if ( regexFunc (`knownFingerprints[i].serviceHash.regexp.test`) ) { }
+
+### Try it out
+
 ``` bash
-# Edit the file to set target and then run
+# To Download the JSON file!
+
+❯ wget "https://raw.githubusercontent.com/kawaiipantsu/redjoust/dev/assets/json/online-service-provider-fingerprint.json" 
+```
+
+``` bash
+# Edit the file to set target and then run on of the following
+# These test scripts expects that you have cloned Redjoust! (or edit them)
 
 ❯ node fingerprinting-example.js
 ❯ python fingerprinting-example.py
