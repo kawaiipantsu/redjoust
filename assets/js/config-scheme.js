@@ -80,6 +80,7 @@
             fuzzDNSCustom: {
                 type: 'object',
                 properties: {
+                    hideMAILrecords: { type: 'boolean', default: true },
                     hostFuzz: { type: 'array', default: [] },
                     txtFuzz: { type: 'array', default: [] },
                     srvFuzz: { type: 'array', default: [] }

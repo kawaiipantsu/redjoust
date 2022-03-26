@@ -1125,3 +1125,6 @@ legend { font-weight: bold; text-align: center; }
 .spf2 {
     content: attr(data-count);
 }
+.text--small {
+    font-size: smaller;
+}
