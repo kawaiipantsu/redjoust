@@ -1128,3 +1128,24 @@ legend { font-weight: bold; text-align: center; }
 .text--small {
     font-size: smaller;
 }
+.getReport {
+    cursor: pointer;
+    position: fixed;
+    z-index: 4000;
+    top: 117px;
+    right: 25px;
+    width: 55px;
+    height: 45px;
+    box-sizing: border-box;
+    border-bottom: 2px solid #3d3f42;
+    border-left: 2px solid #3d3f42;
+    border-bottom-left-radius: 20px;
+    background-image: url("../icons/menu/set1/getreport.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-color: #3d3f42;
+}
+.getReport:hover {
+    background-blend-mode: screen;
+}

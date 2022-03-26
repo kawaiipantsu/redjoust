@@ -111,6 +111,19 @@ $(function () {
         window.setMode.activate(mode)
     });
 
+    // Donwload report handler
+    // For now it only works with DNS Deep dive (becourse its so big ...)
+    $( ".getReport" ).on( "click", function() {
+        let textReportElm = $( this ).parent().find(".dnsresult");
+        let textReport = textReportElm.html(); // Switched to .html() from .text() let downloadReport handle it ...
+        let reportFilename = $(this).data("filename");
+        let targetSource = $(this).data("gettargetfrom");
+        let reportTarget = $("#"+targetSource).text();
+        let reportFinalFilename = reportFilename.replace(/%TIMESTAMP%/g, Math.floor(Date.now() / 1000))
+        reportFinalFilename = reportFinalFilename.replace(/%TARGET%/g, reportTarget)
+        window.actionHandler.downloadReport(textReport,reportFinalFilename);
+    });
+
     // Global keypress handler (We use this mostly for autocomplete)
     // But also this is to make things easier, like chekcing for Enter key in input fields
     $(window).on( "keypress", function(event) {

@@ -32,7 +32,10 @@
     "about-window": "^1.15.2",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
+    "file-saver": "^2.0.5",
+    "html-to-text": "^8.1.0",
     "jquery": "^3.6.0",
+    "node-esapi": "^0.0.1",
     "os-utils": "^0.0.14",
     "punycode": "^2.1.1",
     "shell": "^0.9.1"

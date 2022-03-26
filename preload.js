@@ -13,7 +13,6 @@ var util = require('util')
 const { exit } = require('process');
 var ESAPI = require('node-esapi');
 
-
 // configDefaults.: Is how the default config.json file is to look if no file found
 // configScheme...: Is the validation on what happens if we dont know the value, ie.
 //                  user has older config.json file and new changes have been introduced.
@@ -404,6 +403,17 @@ contextBridge.exposeInMainWorld('setMode', {
 });
 
 contextBridge.exposeInMainWorld('actionHandler', {
+  downloadReport (filedata=false, filename="redjoust.txt", filetype="text/plain;charset=utf-8") {
+    if ( filedata ) {
+      const { convert } = require('html-to-text');
+      const filedataText = convert(filedata, {
+        wordwrap: false
+      });
+      var FileSaver = require('file-saver');
+      var blob = new Blob([filedataText], {type: filetype});
+      FileSaver.saveAs(blob, filename);
+    }
+  },
   updateTarget (newTarget) {
     setTarget(newTarget);
   },
@@ -712,7 +722,7 @@ ipcRenderer.on('lockscreen', (event) => {
   }
 });
 ipcRenderer.on('escpressed', (event) => {
-  showPage("pagedefault");
+  if (document.hasFocus()) showPage("pagedefault");
 });
 
 ipcRenderer.on('toggleprivacymode', (event) => {
