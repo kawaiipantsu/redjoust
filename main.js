@@ -99,6 +99,21 @@ const createWindow = () => {
         locked = false;
     })
 
+
+    ipcMain.on('show-context-menu', (event) => {
+      const template = [
+        {label: "Undo", accelerator: "Ctrl+Z", selector: "undo:"},
+      {label: "Redo", accelerator: "Shift+Ctrl+Z", selector: "redo:"},
+      {type: "separator"},
+      {label: "Cut", accelerator: "Ctrl+X", selector: "cut:"},
+      {label: "Copy", accelerator: "Ctrl+C", selector: "copy:"},
+      {label: "Paste", accelerator: "Ctrl+V", selector: "paste:"},
+      {label: "Select All", accelerator: "Ctrl+A", selector: "selectAll:"}
+      ]
+      const menu = Menu.buildFromTemplate(template)
+      menu.popup(BrowserWindow.fromWebContents(event.sender))
+    })
+
     /* System Idle features, perhaps in the future
     ipcMain.handle('idle:state', () => {
       mainWindow.webContents.send(powerMonitor.getSystemIdleState(4));

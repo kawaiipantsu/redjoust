@@ -695,6 +695,8 @@ legend { font-weight: bold; text-align: center; }
     background-color: rgb(32, 122, 32);
 }
 #inputTarget {
+    user-select: all;
+	-webkit-user-select: all;
     border-radius: 25px;
     padding-left: 20px;
     padding-right: 20px;
