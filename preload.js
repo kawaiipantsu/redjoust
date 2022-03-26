@@ -13,7 +13,6 @@ var util = require('util')
 const { exit } = require('process');
 var ESAPI = require('node-esapi');
 
-
 // configDefaults.: Is how the default config.json file is to look if no file found
 // configScheme...: Is the validation on what happens if we dont know the value, ie.
 //                  user has older config.json file and new changes have been introduced.
@@ -404,6 +403,17 @@ contextBridge.exposeInMainWorld('setMode', {
 });
 
 contextBridge.exposeInMainWorld('actionHandler', {
+  downloadReport (filedata=false, filename="redjoust.txt", filetype="text/plain;charset=utf-8") {
+    if ( filedata ) {
+      const { convert } = require('html-to-text');
+      const filedataText = convert(filedata, {
+        wordwrap: false
+      });
+      var FileSaver = require('file-saver');
+      var blob = new Blob([filedataText], {type: filetype});
+      FileSaver.saveAs(blob, filename);
+    }
+  },
   updateTarget (newTarget) {
     setTarget(newTarget);
   },
@@ -712,7 +722,7 @@ ipcRenderer.on('lockscreen', (event) => {
   }
 });
 ipcRenderer.on('escpressed', (event) => {
-  showPage("pagedefault");
+  if (document.hasFocus()) showPage("pagedefault");
 });
 
 ipcRenderer.on('toggleprivacymode', (event) => {
@@ -1307,10 +1317,10 @@ function whoisLookup ( useTarget=false, netLookupOnly=false) {
 
 function spfNote(str) {
   if ( /^v=spf1/i.test(str) ) return "(SPF Version 1)"
-  if ( /^spf2.0\/mfrom,pra/i.test(str) ) return "(SPF Sender ID - Envelope sender / Purported Responsible Address)"
-  if ( /^spf2.0\/pra,mfrom/i.test(str) ) return "(SPF Sender ID - Purported Responsible Address / Envelope sender)"
-  if ( /^spf2.0\/mfrom/i.test(str) ) return "(SPF Sender ID - Envelope sender)"
-  if ( /^spf2.0\/pra/i.test(str) ) return "(SPF Sender ID - Purported Responsible Address)"
+  if ( /^spf[23][\.0]{0,2}\/mfrom,pra/i.test(str) ) return "(SPF Sender ID - Envelope sender / Purported Responsible Address)"
+  if ( /^spf[23][\.0]{0,2}\/pra,mfrom/i.test(str) ) return "(SPF Sender ID - Purported Responsible Address / Envelope sender)"
+  if ( /^spf[23][\.0]{0,2}\/mfrom/i.test(str) ) return "(SPF Sender ID - Envelope sender)"
+  if ( /^spf[23][\.0]{0,2}\/pra/i.test(str) ) return "(SPF Sender ID - Purported Responsible Address)"
   if ( /^all/i.test(str) ) return "(Action: No security)"
   if ( /^-all/i.test(str) ) return "(Action: Hardfail - Reject)"
   if ( /^~all/i.test(str) ) return "(Action: Softfail - Allow, but mark)"
@@ -1642,8 +1652,12 @@ window.dnsMain = function(myID=false) {
     fuzzOut.append("<div data-hostfuzzid='"+strSanitizer(fuzz)+"' data-target='"+strSanitizer(fuzzTarget)+"' data-addr='[]' data-gotA=false data-gotAAAA=false data-textA='' data-textAAAA='' class='fuzz--hit--none fuzzbox hostfuzz hostfuzzclick griditem'>"+strSanitizer(fuzz)+"</div>")
     resolver.resolve(String(fuzzTarget),'A', (errA, addressesA) => {
       if (!errA) {
-        var me = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".fuzzout").find(".griditem[data-hostfuzzid='"+fuzz+"']")
+        var me = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".resolvefuzzfuzzout").find(".griditem[data-hostfuzzid='"+fuzz+"']")
         me.attr('title','Click to set new target as: '+fuzzTarget)
+        var curAddrs_string = me.attr('data-addr');
+        var curAddrs = JSON.parse(curAddrs_string);
+        curAddrs.push(addressesA)
+        me.attr('data-addr',JSON.stringify(curAddrs))
         if ( me.data("gotAAAA") ) {
           me.data('gotA',true)
           me.attr('data-textA','IPv4')
@@ -1661,8 +1675,12 @@ window.dnsMain = function(myID=false) {
     });
     resolver.resolve(String(fuzzTarget),'AAAA', (errAAAA, addressesAAAA) => {
       if (!errAAAA) {
-        var me = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".fuzzout").find(".griditem[data-hostfuzzid='"+fuzz+"']")
+        var me = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".resolvefuzzfuzzout").find(".griditem[data-hostfuzzid='"+fuzz+"']")
         me.attr('title','Click to set new target as: '+fuzzTarget)
+        var curAddrs_string = me.attr('data-addr');
+        var curAddrs = JSON.parse(curAddrs_string);
+        curAddrs.push(addressesAAAA)
+        me.attr('data-addr',JSON.stringify(curAddrs))
         if ( me.data("gotA") ) {
           me.data('gotAAAA',true)
           me.attr('data-textAAAA','IPv6')
@@ -1736,7 +1754,7 @@ window.dnsMain = function(myID=false) {
       result.forEach( function(txtrecord) {
         // Have not yet decided, but for now lets skip any SPF records and handle
         // them under the SPF section and show it more pretty ...
-        if ( /^v=spf1/i.test(txtrecord) || /^spf[23]/i.test(txtrecord) ) {
+        if ( /^v=spf/i.test(txtrecord) && /\s/i.test(txtrecord) || /^spf[23]/i.test(txtrecord) ) {
           //if ( /^v=spf1/i.test(txtrecord) ) spfCount1.data("count", parseInt(spfCount1.data("count"))+1 )
           //if ( /^spf[23]/i.test(txtrecord) ) spfCount2.data("count", parseInt(spfCount2.data("count"))+1 )
           spfCount1.html("<span class='key'> - SPFv1 Lookup count: </span><span class='value'>"+spfCount1.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
@@ -1840,7 +1858,7 @@ window.dnsMain = function(myID=false) {
       result.sort()
       result.forEach( function(txtrecord) {
         // We handle some records diffrently, just to make the output easier to read
-        if ( /^v=spf/i.test(txtrecord) || /^spf[23]/i.test(txtrecord) ) elmTXTSPF.append("<span class='key'> - </span><span class='valueErr'>Found SPF record, it's shown above in detail</span><br>")
+        if ( /^v=spf/i.test(txtrecord) && /\s/i.test(txtrecord) || /^spf[23]/i.test(txtrecord) ) elmTXTSPF.append("<span class='key'> - </span><span class='valueErr'>Found SPF record, it's shown above in detail</span><br>")
         else if ( /v=dmarc/i.test(txtrecord) ) elmTXTSPF.append("<span class='key'> - </span><span class='valueErr'>Found DMARC record, it's shown above in detail</span><br>")
         else {
           // Also if we fingerprint something, lets show it before all the rest
@@ -1862,7 +1880,13 @@ window.dnsMain = function(myID=false) {
   const fuzzTxtOut = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".txtfuzzout")
 
   fuzzTxtTITLE.append("<span class='title'>==[ TXT Fuzz ]===========================</span>")
+  if ( store.get("info.fuzzDNSCustom.hideMAILrecords") ) {
+    fuzzTxtTITLE.append("<br><span class='note text--small'>Notice, we have supressed DMARC/SPF TXT records, change in Preferences</span>")
+  }
+
   fuzzTxtTITLE.hide();
+  fuzzTxtOut.hide();
+
   var ifuzzTXT=0
   txtFuzzArray = fuzzTXT['dns-txt-fuzz'].concat( store.get('info.fuzzDNSCustom.txtFuzz') )
   txtFuzzArraySorted = txtFuzzArray.sort().filter(function(item, pos, ary) {
@@ -1883,18 +1907,21 @@ window.dnsMain = function(myID=false) {
       resolver.resolve(String(fuzzTarget),'TXT', (err, result) => {
         if (!err) {
           if ( result.length > 0 ) {
-            fuzzTxtTITLE.show();
+            result.sort();
             fuzzTxtOut.append("<div data-txtfuzzTarget='"+strSanitizer(fuzz)+"'><span class='key'> - <span class='poiTarget'>"+strSanitizer(fuzzTarget)+"</span></span> <span class='note'></span><br><div class='txtfuzzspf'></div><div class='txtfuzzfingerprint'></div><div class='txtfuzzother'></div></div>")
             var fuzzTxtOutSPF = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".txtfuzzout").find("[data-txtfuzzTarget='"+fuzz+"']").find('.txtfuzzspf')
             var fuzzTxtOutFingerprint = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".txtfuzzout").find("[data-txtfuzzTarget='"+fuzz+"']").find('.txtfuzzfingerprint')
             var fuzzTxtOutOther = $("#"+itemPage).find(".dnsresult").find(".txtfuzz").find(".txtfuzzout").find("[data-txtfuzzTarget='"+fuzz+"']").find('.txtfuzzother')
+            
+            if ( store.get("info.fuzzDNSCustom.hideMAILrecords") ) fuzzTxtOutSPF.hide();
+
             for(ri=0;ri<result.length;ri++) {
               var txtr = result[ri]
               // We strip SPF and DMARC txt records, this is more for digging for other stuff !!
               // Proper SPF viewing should be done directly on the target!
               if ( /v=dmarc1/i.test(txtr) ) {
                 fuzzTxtOutSPF.append("<span class='key'>   `- </span><span class='note'>DMARC txt found, see main domain dns deep dive for details</span><br>")
-              } else if ( /v=spf1/i.test(txtr) || /spf2.0/i.test(txtr) ) {
+              } else if ( /^v=spf/i.test(txtr) && /\s/i.test(txtr) || /^spf[23]/i.test(txtr) ) {
                 fuzzTxtOutSPF.append("<span class='key'>   `- </span><span class='note'>SPF txt found, click the hostname to set target for details</span><br>")
               } else {
                 var fingerprintResult = fingerprintVendorStrings(txtr)
@@ -1903,6 +1930,8 @@ window.dnsMain = function(myID=false) {
                 } else {
                   fuzzTxtOutOther.append("<span class='key'>   `- \"</span><span class='value'>"+txtParser(txtr)+"</span><span class='key'>\"</span><br>")
                 }
+                fuzzTxtTITLE.show();
+                fuzzTxtOut.show();
               }
 
             }

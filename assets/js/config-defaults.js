@@ -48,6 +48,7 @@
             timeout: 5
         },
         fuzzDNSCustom: {
+            hideMAILrecords: true,
             hostFuzz: [],
             txtFuzz: [],
             srvFuzz: []
