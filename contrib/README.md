@@ -1,12 +1,12 @@
 # ᵔᴥᵔ Contrib - Scripts and other things!
 
-We all know the "contrib" content can often help you any so many ways :) It should come as no surprice here that we want the same thing. Redjoust is a application and getting larger and larger. That said we are implementing a lot of features in it and some of those would perhaps be of great usage in your project so the whole point of the contrib content is to carve out some of the functonallity and then show you how to use it for your self!
+We all know the "contrib" content can often help you any so many ways :) It should come as no surprice here that we want the same thing. Redjoust is a application and getting larger and larger. That said we are implementing a lot of features in it and some of those would perhaps be of great usage in your project so the whole point of the contrib content is to carve out some of the functionality and then show you how to use it for your self!
 
 ## DNS TXT Fingerprinting Online Vendor verification strings
 
-We have a JSON file with all the fingerprinting data in it, so we have made a few example scripts to show you how to ustilize it on your own. Only shown the actualy output from the PHP script, but the JS and Pyton does exactly the same.
+We have a JSON file with all the fingerprinting data in it, so we have made a few example scripts to show you how to utilize it on your own. Only shown the actually output from the PHP script, but the JS and Pyton does exactly the same.
 
-### Explenation
+### Explanation
 
 To view categories you can go over the array `serviceCategories`
 
