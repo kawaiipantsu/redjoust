@@ -403,6 +403,9 @@ contextBridge.exposeInMainWorld('setMode', {
 });
 
 contextBridge.exposeInMainWorld('actionHandler', {
+  contextmenuHandler ( event=false, command=false ) {
+    ipcRenderer.send('show-context-menu')
+  },
   downloadReport (filedata=false, filename="redjoust.txt", filetype="text/plain;charset=utf-8") {
     if ( filedata ) {
       const { convert } = require('html-to-text');
@@ -1423,7 +1426,7 @@ window.dnsMain = function(myID=false) {
   // Clear page
   itemResult.html("");
   // Set totalt subtasts and prepare for subwork
-  itemResult.data("totalTasks",11) // Set to actual number of subtasks you do ...
+  itemResult.data("totalTasks",12) // Set to actual number of subtasks you do ...
   itemResult.data("totalTasksDone",0)
 
   // Prepare placeholders
@@ -1439,7 +1442,7 @@ window.dnsMain = function(myID=false) {
   itemResult.append('<div class="loc dnsrecords"></div>') // Wishfull thinking, NodeJS dns dont support this, so we would have to build our own dns client ....
   itemResult.append('<div class="txt dnsrecords"><div class="txttitle"></div><div class="txtspf"></div><div class="txtfingerprint"></div><div class="txtother"></div></div>') // Still dump all TXT here even spf (or ?) info ...
   itemResult.append('<div class="txtfuzz dnsrecords"><div class="txtfuzztitle"></div><div class="txtfuzzout"></div></div>')
-  itemResult.append('<div class="srv dnsrecords"></div>')
+  itemResult.append('<div class="srvfuzz dnsrecords"><div class="srvfuzztitle"></div><div class="srvfuzzout"></div></div>')
   // Any new "POI" targets, dont forget to wrap them in
   // <span class="poitarget"></span>
 
@@ -1633,7 +1636,7 @@ window.dnsMain = function(myID=false) {
 
   fuzzTITLE.append("<span class='title'>==[ Subdomain Fuzz ]===========================</span>")
   // Wildcard detection - Lets just try to resolve something stupid :)
-  resolver.resolve('somethingthatshouldneverresolvewhentryingthisout.'+String(workTarget),'A', (err, addresses) => {
+  resolver.resolve('_redjoust_.'+String(workTarget),'A', (err, addresses) => {
     if (!err) {
       fuzzWILD.append("<span class='key'> - </span><span class='valueb'>WARNING</span>: <span class='value'>Target seems to have a wildcard record</span><br>")
       fuzzWILD.append("<span class='key'>   </span><span class='valueb'>WARNING</span>: <span class='value'>Fuzz results might not be reliable</span>")
@@ -1884,8 +1887,18 @@ window.dnsMain = function(myID=false) {
     fuzzTxtTITLE.append("<br><span class='note text--small'>Notice, we have supressed DMARC/SPF TXT records, change in Preferences</span>")
   }
 
+  
+  // Wildcard detection - Lets just try to resolve something stupid :)
+  resolver.resolve('_redjoust_.'+String(workTarget),'TXT', (err, addresses) => {
+    if (!err) {
+      fuzzTxtTITLE.append("<br><span class='key'> - </span><span class='valueb'>WARNING</span>: <span class='value'>Target seems to have a wildcard record</span><br>")
+      fuzzTxtTITLE.append("<span class='key'>   </span><span class='valueb'>WARNING</span>: <span class='value'>Fuzz results might not be reliable</span>")
+    }
+  });
+
   fuzzTxtTITLE.hide();
   fuzzTxtOut.hide();
+
 
   var ifuzzTXT=0
   txtFuzzArray = fuzzTXT['dns-txt-fuzz'].concat( store.get('info.fuzzDNSCustom.txtFuzz') )
@@ -1949,6 +1962,79 @@ window.dnsMain = function(myID=false) {
 
 
 
+
+
+  const fuzzSRV = require("./assets/json/dns-srv-fuzz.json");
+  const fuzzSrvTITLE = $("#"+itemPage).find(".dnsresult").find(".srvfuzz").find(".srvfuzztitle")
+  const fuzzSrvOut = $("#"+itemPage).find(".dnsresult").find(".srvfuzz").find(".srvfuzzout")
+
+  fuzzSrvTITLE.append("<span class='title'>==[ SRV Fuzz ]===========================</span>")
+  fuzzSrvTITLE.hide();
+
+  // Also do it on the main target before we forget ...
+  resolver.resolve(String(workTarget),'SRV', (err, srvresult) => {
+    if (!err) {
+      for(ri=0;ri<srvresult.length;ri++) {
+        var srvr = srvresult[ri]
+        fuzzSrvOut.append("<span class='key'>   `- </span><span class='value'>"+strSanitizer(srvr)+"</span><br>")
+        fuzzSrvTITLE.show();
+      }
+    }
+  });
+
+  var ifuzzSRV=0
+  srvFuzzArray = fuzzSRV['dns-srv-fuzz'].concat( store.get('info.fuzzDNSCustom.srvFuzz') )
+  srvFuzzArraySorted = srvFuzzArray.sort().filter(function(item, pos, ary) {
+    return !pos || item != ary[pos - 1];
+  });
+
+  var srvFuzzTargets = [
+    "%FUZZ%."+workTarget,
+    "_%FUZZ%._tcp."+workTarget,
+    "_%FUZZ%._udp."+workTarget,
+    "_%FUZZ%._tls."+workTarget,
+    "_%FUZZ%._tcp.dc._msdcs."+workTarget,
+  ]
+  var ifuzzSRVend = srvFuzzArraySorted.length * srvFuzzTargets.length
+
+  for ( fiii=0 ; fiii < srvFuzzTargets.length ; fiii++ ) {
+    var fuzzSub = srvFuzzTargets[fiii]
+    srvFuzzArraySorted.forEach( function(fuzz) {
+      var fuzzTarget = fuzzSub.replace('%FUZZ%', fuzz)
+      ifuzzSRV++
+      resolver.resolve(String(fuzzTarget),'SRV', (err, result) => {
+        if (!err) {
+          if ( result.length > 0 ) {
+            result.sort();
+            fuzzSrvOut.append("<div data-srvfuzzTarget='"+strSanitizer(fuzz)+"'><span class='key'> - <span class='poiTarget'>"+strSanitizer(fuzzTarget)+"</span></span> <span class='note'></span><br><div class='srvfuzzother'></div></div>")
+            var fuzzSrvOutOther = $("#"+itemPage).find(".dnsresult").find(".srvfuzz").find(".srvfuzzout").find("[data-srvfuzzTarget='"+fuzz+"']").find('.srvfuzzother')
+            console.log(result)
+            for(ri=0;ri<result.length;ri++) {
+              var srvr_name = strSanitizer(result[ri].name);
+              var srvr_port = result[ri].port;
+              var srvr_priority = result[ri].priority;
+              var srvr_weight = result[ri].weight;
+              fuzzSrvOutOther.append("<span class='key'>   `- </span><span class='valueb poiTarget'>"+srvr_name+"</span><span class='value'> Port: </span><span class='note'>"+srvr_port+"</span><span class='value'> Priority: </span><span class='note'>"+srvr_priority+"</span><span class='value'> Weight: </span><span class='note'>"+srvr_weight+"</span><br>")
+              fuzzSrvTITLE.show();
+            }
+
+          }
+        }
+      });
+      if ( ifuzzSRV == ifuzzSRVend ) { // This will run one time when loop is done, so use wisely!
+        itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
+      }
+    });
+  }
+
+
+
+
+
+
+
+
+
   // This is the internal timer to check if all async things have finished ...
   // Dont forget to count up the totalTasksDone or else we "run" in working state
   // forever :) Thats not cool bro!
@@ -1961,7 +2047,7 @@ window.dnsMain = function(myID=false) {
       $("#"+itemID).data('status',"done");
       clearInterval(itemResult.data('interval'));
     }
-  }, 1000,myID));
+  }, 3000,myID));
 }
 
 window.dnsWhois = function(myID=false) {

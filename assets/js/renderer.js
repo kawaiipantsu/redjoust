@@ -1,5 +1,14 @@
 // We are renderer process!
 
+// Let's handle contextmenu ??
+// I mean, i want it .. in the future, copy/paste you know !
+window.addEventListener('contextmenu', (e) => {
+    e.preventDefault()
+    window.actionHandler.contextmenuHandler(e);
+    
+})
+
+
 var check = document.querySelector('#check')
 
 document.getElementById("check").addEventListener('change', async () => {
