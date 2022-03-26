@@ -1317,10 +1317,10 @@ function whoisLookup ( useTarget=false, netLookupOnly=false) {
 
 function spfNote(str) {
   if ( /^v=spf1/i.test(str) ) return "(SPF Version 1)"
-  if ( /^spf2.0\/mfrom,pra/i.test(str) ) return "(SPF Sender ID - Envelope sender / Purported Responsible Address)"
-  if ( /^spf2.0\/pra,mfrom/i.test(str) ) return "(SPF Sender ID - Purported Responsible Address / Envelope sender)"
-  if ( /^spf2.0\/mfrom/i.test(str) ) return "(SPF Sender ID - Envelope sender)"
-  if ( /^spf2.0\/pra/i.test(str) ) return "(SPF Sender ID - Purported Responsible Address)"
+  if ( /^spf[23][\.0]{0,2}\/mfrom,pra/i.test(str) ) return "(SPF Sender ID - Envelope sender / Purported Responsible Address)"
+  if ( /^spf[23][\.0]{0,2}\/pra,mfrom/i.test(str) ) return "(SPF Sender ID - Purported Responsible Address / Envelope sender)"
+  if ( /^spf[23][\.0]{0,2}\/mfrom/i.test(str) ) return "(SPF Sender ID - Envelope sender)"
+  if ( /^spf[23][\.0]{0,2}\/pra/i.test(str) ) return "(SPF Sender ID - Purported Responsible Address)"
   if ( /^all/i.test(str) ) return "(Action: No security)"
   if ( /^-all/i.test(str) ) return "(Action: Hardfail - Reject)"
   if ( /^~all/i.test(str) ) return "(Action: Softfail - Allow, but mark)"
@@ -1754,7 +1754,7 @@ window.dnsMain = function(myID=false) {
       result.forEach( function(txtrecord) {
         // Have not yet decided, but for now lets skip any SPF records and handle
         // them under the SPF section and show it more pretty ...
-        if ( /^v=spf/i.test(txtrecord) && /\s/i.test(txtrecord) || /^spf[23]/i.test(txtrecord) && /\s/i.test(txtrecord) ) {
+        if ( /^v=spf/i.test(txtrecord) && /\s/i.test(txtrecord) || /^spf[23]/i.test(txtrecord) ) {
           //if ( /^v=spf1/i.test(txtrecord) ) spfCount1.data("count", parseInt(spfCount1.data("count"))+1 )
           //if ( /^spf[23]/i.test(txtrecord) ) spfCount2.data("count", parseInt(spfCount2.data("count"))+1 )
           spfCount1.html("<span class='key'> - SPFv1 Lookup count: </span><span class='value'>"+spfCount1.data("count")+" <span class='note'>(Over 10 and SPF record is invalid!!)</span></span>")
@@ -1858,7 +1858,7 @@ window.dnsMain = function(myID=false) {
       result.sort()
       result.forEach( function(txtrecord) {
         // We handle some records diffrently, just to make the output easier to read
-        if ( /^v=spf/i.test(txtrecord) && /\s/i.test(txtrecord) || /^spf[23]/i.test(txtrecord) && /\s/i.test(txtrecord) ) elmTXTSPF.append("<span class='key'> - </span><span class='valueErr'>Found SPF record, it's shown above in detail</span><br>")
+        if ( /^v=spf/i.test(txtrecord) && /\s/i.test(txtrecord) || /^spf[23]/i.test(txtrecord) ) elmTXTSPF.append("<span class='key'> - </span><span class='valueErr'>Found SPF record, it's shown above in detail</span><br>")
         else if ( /v=dmarc/i.test(txtrecord) ) elmTXTSPF.append("<span class='key'> - </span><span class='valueErr'>Found DMARC record, it's shown above in detail</span><br>")
         else {
           // Also if we fingerprint something, lets show it before all the rest
@@ -1921,7 +1921,7 @@ window.dnsMain = function(myID=false) {
               // Proper SPF viewing should be done directly on the target!
               if ( /v=dmarc1/i.test(txtr) ) {
                 fuzzTxtOutSPF.append("<span class='key'>   `- </span><span class='note'>DMARC txt found, see main domain dns deep dive for details</span><br>")
-              } else if ( /^v=spf/i.test(txtr) && /\s/i.test(txtr) || /^spf[23]/i.test(txtr) && /\s/i.test(txtr) ) {
+              } else if ( /^v=spf/i.test(txtr) && /\s/i.test(txtr) || /^spf[23]/i.test(txtr) ) {
                 fuzzTxtOutSPF.append("<span class='key'>   `- </span><span class='note'>SPF txt found, click the hostname to set target for details</span><br>")
               } else {
                 var fingerprintResult = fingerprintVendorStrings(txtr)
