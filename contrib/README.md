@@ -42,7 +42,7 @@ To use fingerprints you can go over the array `knownFingerprints`
 ``` bash
 # To Download the JSON file!
 
-❯ wget "https://raw.githubusercontent.com/kawaiipantsu/redjoust/dev/assets/json/online-service-provider-fingerprint.json" 
+❯ wget "https://raw.githubusercontent.com/kawaiipantsu/redjoust/main/assets/json/online-service-provider-fingerprint.json" 
 ```
 
 ``` bash
