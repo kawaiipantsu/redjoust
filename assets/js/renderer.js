@@ -255,9 +255,23 @@ $(function () {
         var value = $(this).val();
         window.toolAPI.doHashing(value);
     });
+
+    // Works for multiple toolbox items
     $('.hashresult').on('click', function() {
         $(this).trigger("select");
         document.execCommand("copy");
         window.toolAPI.statusbarNotify('Hash copied to clipboard!');
     });
+
+
+    $('#hashlookup').on('click focusin', function() {
+        this.value = '';
+    });
+    $('#hashlookup').on('input', function() {
+        var value = $(this).val();
+        window.toolAPI.doHashingLookup(value);
+    });
+
+
 });
+

@@ -1,3 +1,7 @@
+// Dont know if this works ?!
+// But the dns deep dive is struggeling ... ETIMEOUT problems
+process.env.UV_THREADPOOL_SIZE=64
+
 // Modules
 const { app, powerMonitor, BrowserWindow, BrowserView, Tray, ipcMain, nativeTheme, globalShortcut, nativeImage, Menu, MenuItem } = require('electron')
 const os = require('os')
