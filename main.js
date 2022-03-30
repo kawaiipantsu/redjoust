@@ -147,8 +147,10 @@ const createWindow = () => {
     setInterval(() => {
         osUtils.cpuUsage(function (v) {
             mainWindow.webContents.send("cpu", v * 100 );
-            mainWindow.webContents.send("mem", osUtils.freememPercentage() * 100);
-            mainWindow.webContents.send("total-mem", osUtils.totalmem() / 1024);
+            let tmem = osUtils.totalmem()
+            let fmem = osUtils.freemem()
+            mainWindow.webContents.send("mem", (tmem-fmem) / 1024);
+            mainWindow.webContents.send("total-mem", tmem / 1024);
         });
       }, 800);
 
