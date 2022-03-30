@@ -7,8 +7,8 @@
     <head>
         <meta charset="UTF-8">
         <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk">
-        <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk http://crackfoo.net">
+        <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk http://crackfoo.net">
 
         <base href="./assets/">
 
@@ -96,6 +96,7 @@
                 <legend id="targetExternal" class="menusegmentinfo">Toolbox</legend>
                 <div id="toolBase64" data-title="Base64 converter" data-page="pagetoolbase64" data-function="null" class="boxborder menuitem tool--click item--external status--info">BASE64 Converter</div>
                 <div id="toolHashes" data-title="Easy way to work with hashes" data-page="pagetoolhashes" data-function="null" class="boxborder menuitem tool--click item--external status--info">Hashes</div>
+                <div id="toolHashLookup" data-title="Lookup already bruteforced hashes" data-page="pagetoolhashlookup" data-function="null" class="boxborder menuitem tool--click item--external status--info">Hash Attacking</div>
                 <div id="toolCyberChef" data-title="The Cyber Swiss Army Knife" data-page="https://gchq.github.io/CyberChef/" data-function="null" class="boxborder menuitem tool--click item--external status--info">CyberChef</div>
               </fieldset>
             </div>
@@ -317,6 +318,38 @@
                         <td class="base64text boxborder"><strong>&#8647;</strong></td>
                         <td class="base64text boxborder"><strong>&#8649;</strong></td>
                         <td class="fill--50 base64container boxborder"><textarea id="b64--base64" class="base64area"></textarea></td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="pages" id="pagetoolhashlookup">
+                  <div class="toolcontainter">
+                    <table class="fill--wide boxborder tooltable">
+                      <tr class="tooltop">
+                        <td colspan="3" class="tooltext boxborder">
+                          <input id="hashlookup" class="boxborder" type="text" value="Input hash here ....">
+                        </td>
+                      </tr>
+                      <tr class="tooltop">
+                        <td colspan="3" class="tooltext boxborder">
+                          <div id="hashDetection">Hash detected to be "<span id="detectedHash">?</span>"</div>
+                          <div id="hashDetection"><span id="detectedHashDetails"></span></div>
+                        </td>
+                      </tr>
+                      <tr class="toolbottom">
+                        <td class="boxborder inmiddle hashinfo">Bruteforce/Reverse result</td>
+                        <td class="boxborder inmiddle hashicons"><strong>&#8605;</strong></td>
+                        <td class="boxborder inmiddle hashlookupresults"><input id="hash--lookup" class="hashresult boxborder" type="text" value=""></td>
+                      </tr>
+
+                      <tr class="toolbottom">
+                        <td colspan="3" class="tooltext boxborder">
+                          We use external resources like 'crackfoo.net' to lookup if a hash string is already known. There is not going any actual bruteforcing on here.
+                          <br>
+                          This might be a feature in the future but for now we are limited to external sites where we can lookup hashes. This is also much more fast.
+                          <br><br>
+                          <span class="note">Supported hashes as of now: MD4, MD5, SHA1, LM, NTLM, MYSQL4, MYSQL323, RIPEMD160</span>
+                        </td>
                       </tr>
                     </table>
                   </div>

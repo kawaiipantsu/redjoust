@@ -959,6 +959,50 @@ legend { font-weight: bold; text-align: center; }
     height: 40px;
     width: 160px;
 }
+.hashinfo {
+    border: 1px solid rgb(129, 129, 129);
+    resize: none;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.233);
+    color: rgb(180, 180, 180);
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    text-align: right;
+    height: 40px;
+    width: 310px;
+}
+.hashlookupresults {
+    border: 1px solid rgb(129, 129, 129);
+    resize: none;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.233);
+    color: rgb(180, 180, 180);
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    text-align: right;
+    height: 40px;
+    
+}
+#hashDetection {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    font-size: 30px;
+    height: 50px;
+    color: rgb(190, 190, 190);
+}
+#detectedHash {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    font-size: 40px;
+    height: 50px;
+    color: white;
+}
 .inmiddle {
     vertical-align: middle;
 }
@@ -987,6 +1031,21 @@ legend { font-weight: bold; text-align: center; }
     color: rgb(206, 206, 206);
 }
 #hashinput {
+    font-size: 25px;
+    height: 40px;
+    width: 70%;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border: 1px solid rgb(129, 129, 129);
+    resize: none;
+    background-color: rgba(0, 0, 0, 0.233);
+    color: rgb(180, 180, 180);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+#hashlookup {
     font-size: 25px;
     height: 40px;
     width: 70%;
