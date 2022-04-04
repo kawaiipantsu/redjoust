@@ -31,8 +31,12 @@ const store = new Store({defaults: configDefaults, schema: configScheme});
 
 const sysUserInfo = os.userInfo();
 
-// Our DNS resolver
-const resolver = new Resolver();
+// Our DNS resolver(s)
+const resolverInt = new Resolver();
+const resolverItems1 = new Resolver();
+const resolverItems2 = new Resolver();
+const resolverItems3 = new Resolver();
+const resolverItems4 = new Resolver();
 // Handle custom NS server for our resolver !!
 // We support
 // - System (default)
@@ -40,9 +44,25 @@ const resolver = new Resolver();
 // - Single NS (as string)
 var nsresolver = store.get('info.itemDefaults.dnsresolver');
 if ( nsresolver ) {
-  if ( nsresolver == "system" ) resolver.setServers(resolver.getServers()); // Yes set get blooper! But config might change on fly
-  else if ( Array.isArray(nsresolver) ) resolver.setServers(nsresolver);
-  else resolver.setServers([nsresolver]);
+  if ( nsresolver == "system" ) {
+    resolverInt.setServers(resolverInt.getServers()); // Yes set get blooper! But config might change on fly
+    resolverItems1.setServers(resolverItems1.getServers()); // Yes set get blooper! But config might change on fly
+    resolverItems2.setServers(resolverItems2.getServers()); // Yes set get blooper! But config might change on fly
+    resolverItems3.setServers(resolverItems3.getServers()); // Yes set get blooper! But config might change on fly
+    resolverItems4.setServers(resolverItems4.getServers()); // Yes set get blooper! But config might change on fly
+  } else if ( Array.isArray(nsresolver) ) {
+    resolverInt.setServers(nsresolver);
+    resolverItems1.setServers(nsresolver);
+    resolverItems2.setServers(nsresolver);
+    resolverItems3.setServers(nsresolver);
+    resolverItems4.setServers(nsresolver);
+  } else {
+    resolverInt.setServers([nsresolver]);
+    resolverItems1.setServers([nsresolver]);
+    resolverItems2.setServers([nsresolver]);
+    resolverItems3.setServers([nsresolver]);
+    resolverItems4.setServers([nsresolver]);
+  }
 }
 
 // Redjoust vars
@@ -697,14 +717,14 @@ contextBridge.exposeInMainWorld('toolAPI', {
       $("#detectedHashDetails").html("Bits: "+myBits+", Charlen: "+myCharLen+", Chartype: "+myCharType);
 
       var algo = "md5" // Default algo :)
-      if ( /^md4/i.test(hashtype) ) algo = "md4"
-      else if ( /^md5/i.test(hashtype) ) algo = "md5" 
-      else if ( /^sha1/i.test(hashtype) ) algo = "sha1" 
-      else if ( /^LM or MySQL/i.test(hashtype) ) algo = "mysql4" 
-      else if ( /^lm/i.test(hashtype) ) algo = "lm" 
-      else if ( /ntlm/i.test(hashtype) ) algo = "ntlm" 
-      else if ( /^md5/i.test(hashtype) ) algo = "mysql323" 
-      else if ( /^md5/i.test(hashtype) ) algo = "ripemd160" 
+      if ( /^md4/i.test(hashtype) ) algo = "md4" // Might not work as predicted
+      else if ( /^md5/i.test(hashtype) ) algo = "md5" // Set ok 
+      else if ( /^sha1/i.test(hashtype) ) algo = "sha1" // Set ok
+      else if ( /^LM or MySQL/i.test(hashtype) ) algo = "mysql4" // Might not work as predicted
+      else if ( /^lm/i.test(hashtype) ) algo = "lm" // Might not work as predicted
+      else if ( /ntlm/i.test(hashtype) ) algo = "ntlm" // Set ok
+      else if ( /^mysql3/i.test(hashtype) ) algo = "mysql323" // Might not work as predicted
+      else if ( /^ripe/i.test(hashtype) ) algo = "ripemd160" // Might not work as predicted
 
       $.ajax({type: "POST", url: "http://crackfoo.net/?algo="+algo, data: "hash="+myInput+"&sa=Search",
         success: function(result){
@@ -1211,7 +1231,7 @@ function parseTarget(target) {
     $("#targetIP").text(target).html();
     // Lets reverse DNS lookup the IP :)
     // If we get something, populate the hostname menu as well!
-    resolver.reverse(String(target), (err, hostnames) => {
+    resolverInt.reverse(String(target), (err, hostnames) => {
       if (err) {
         if (myDebug) console.log(err)
       } else {
@@ -1262,7 +1282,7 @@ function parseTarget(target) {
     
     // Lets DNS lookup the domain name for a IP! :)
     // If we get something, populate the hostname menu as well!
-    resolver.resolve(String(target), (err, ipaddresses) => {
+    resolverInt.resolve(String(target), (err, ipaddresses) => {
       if (err) {
         if (myDebug) console.log(err)
       } else {
@@ -1274,7 +1294,7 @@ function parseTarget(target) {
         // And fill in the hostname if we dont already have one :D
         // Totally host-name-ception !!
         if ( !hostOK ) {
-          resolver.reverse(String(ipaddress), (err, hostnames) => {
+          resolverInt.reverse(String(ipaddress), (err, hostnames) => {
             if (err) {
               if (myDebug) console.log(err)
             } else {
@@ -1730,7 +1750,7 @@ window.dnsMain = function(myID=false) {
 
 
   const elmSOA = $("#"+itemPage).find(".dnsresult").find(".soa")
-  resolver.resolve(String(workTarget),'SOA', (err, result) => {
+  resolverItems1.resolve(String(workTarget),'SOA', (err, result) => {
     if (err) {
       itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
     } else {
@@ -1745,7 +1765,7 @@ window.dnsMain = function(myID=false) {
   });
 
   const elmDMARC = $("#"+itemPage).find(".dnsresult").find(".dmarc")
-  resolver.resolve('_dmarc.'+String(workTarget),'TXT', (err, result) => {
+  resolverItems1.resolve('_dmarc.'+String(workTarget),'TXT', (err, result) => {
     if (err) {
       itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
     } else {
@@ -1827,16 +1847,16 @@ window.dnsMain = function(myID=false) {
   });
 
   const elmNS = $("#"+itemPage).find(".dnsresult").find(".ns")
-  resolver.resolve(String(workTarget),'NS', (err, result) => {
+  resolverItems1.resolve(String(workTarget),'NS', (err, result) => {
     if (err) {
       itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
     } else {
       elmNS.append("<span class='title'>==[ NS record ]================================</span><br>")
       result.forEach( function(nssrv) {
-        resolver.resolve(String(nssrv),'A', (err, result2) => {
+        resolverItems2.resolve(String(nssrv),'A', (err, result2) => {
           if ( !err ) {
             var nsip = result2[0]
-            resolver.reverse(String(result2[0]), (err, result3) => {
+            resolverItems3.reverse(String(result2[0]), (err, result3) => {
               if ( !err ) {
                 elmNS.append("<span class='key'> -</span> <span class='valueb'><span class='poiTarget'>"+nssrv+"</span></span> ( <span class='value'>"+nsip+"</span> <span class='key'>&#8605;</span> <span class='value'><span class='poiTarget'>"+result3+"</span></span> )<br>" )
               } else {
@@ -1856,14 +1876,14 @@ window.dnsMain = function(myID=false) {
   const elmA = $("#"+itemPage).find(".dnsresult").find(".resolve").find(".a")
   const elmAAAA = $("#"+itemPage).find(".dnsresult").find(".resolve").find(".aaaa")
   const elmCNAME = $("#"+itemPage).find(".dnsresult").find(".resolve").find(".cname")
-  resolver.resolve(String(workTarget),'A', (err, addresses) => {
+  resolverItems1.resolve(String(workTarget),'A', (err, addresses) => {
     elmA.append("<span class='title'>==[ A,AAAA,CNAME ]=============================</span><br>")
     if (err) {
       itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
       elmA.append("<span class='key'> - No A record(s)</span><br>")
     } else {
       addresses.forEach( function(addr) {
-        resolver.reverse(String(addr), (err, addrrev) => {
+        resolverItems2.reverse(String(addr), (err, addrrev) => {
           if ( !err ) {
             elmA.append("<span class='key'> - A record....:</span> <span class='value'>"+addr+"</span> ( Reverse DNS <span class='key'>&#8605;</span> <span class='value'><span class='poiTarget'>"+addrrev+"</span></span> )<br>" )
           } else {
@@ -1873,13 +1893,13 @@ window.dnsMain = function(myID=false) {
       });
       itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
     }
-    resolver.resolve(String(workTarget),'AAAA', (err, addresses) => {
+    resolverItems1.resolve(String(workTarget),'AAAA', (err, addresses) => {
       if (err) {
         itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
         elmAAAA.append("<span class='key'> - No AAAA record(s)</span><br>")
       } else {
         addresses.forEach( function(addr) {
-          resolver.reverse(String(addr), (err, addrrev) => {
+          resolverItems2.reverse(String(addr), (err, addrrev) => {
             if ( !err ) {
               elmAAAA.append("<span class='key'> - AAAA record.:</span> <span class='value'>"+addr+"</span> ( Reverse DNS <span class='key'>&#8605;</span> <span class='value'><span class='poiTarget'>"+addrrev+"</span></span> )<br>" )
             } else {
@@ -1889,7 +1909,7 @@ window.dnsMain = function(myID=false) {
         });
         itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
       }
-      resolver.resolve(String(workTarget),'CNAME', (err, addresses) => {
+      resolverItems1.resolve(String(workTarget),'CNAME', (err, addresses) => {
         if (err) {
           itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
           elmCNAME.append("<span class='key'> - No CNAME record(s)</span><br>")
@@ -1911,7 +1931,7 @@ window.dnsMain = function(myID=false) {
 
   fuzzTITLE.append("<span class='title'>==[ Subdomain Fuzz ]===========================</span>")
   // Wildcard detection - Lets just try to resolve something stupid :)
-  resolver.resolve('_redjoust_.'+String(workTarget),'A', (err, addresses) => {
+  resolverItems3.resolve('_redjoust_.'+String(workTarget),'A', (err, addresses) => {
     if (!err) {
       fuzzWILD.append("<span class='key'> - </span><span class='valueb'>WARNING</span>: <span class='value'>Target seems to have a wildcard record</span><br>")
       fuzzWILD.append("<span class='key'>   </span><span class='valueb'>WARNING</span>: <span class='value'>Fuzz results might not be reliable</span>")
@@ -1928,7 +1948,7 @@ window.dnsMain = function(myID=false) {
     ifuzzA++;
     var fuzzTarget = fuzz+"."+workTarget
     fuzzOut.append("<div data-hostfuzzid='"+strSanitizer(fuzz)+"' data-target='"+strSanitizer(fuzzTarget)+"' data-addr='[]' data-gotA=false data-gotAAAA=false data-textA='' data-textAAAA='' class='fuzz--hit--none fuzzbox hostfuzz hostfuzzclick griditem'>"+strSanitizer(fuzz)+"</div>")
-    resolver.resolve(String(fuzzTarget),'A', (errA, addressesA) => {
+    resolverItems1.resolve(String(fuzzTarget),'A', (errA, addressesA) => {
       if (!errA) {
         var me = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".resolvefuzzfuzzout").find(".griditem[data-hostfuzzid='"+fuzz+"']")
         me.attr('title','Click to set new target as: '+fuzzTarget)
@@ -1951,7 +1971,7 @@ window.dnsMain = function(myID=false) {
         }
       }
     });
-    resolver.resolve(String(fuzzTarget),'AAAA', (errAAAA, addressesAAAA) => {
+    resolverItems2.resolve(String(fuzzTarget),'AAAA', (errAAAA, addressesAAAA) => {
       if (!errAAAA) {
         var me = $("#"+itemPage).find(".dnsresult").find(".resolvefuzz").find(".resolvefuzzfuzzout").find(".griditem[data-hostfuzzid='"+fuzz+"']")
         me.attr('title','Click to set new target as: '+fuzzTarget)
@@ -1990,7 +2010,7 @@ window.dnsMain = function(myID=false) {
   });
   
   const elmMX = $("#"+itemPage).find(".dnsresult").find(".mx")
-  resolver.resolve(String(workTarget),'MX', (err, result) => {
+  resolverItems3.resolve(String(workTarget),'MX', (err, result) => {
     if (err) {
       itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
     } else {
@@ -1999,11 +2019,11 @@ window.dnsMain = function(myID=false) {
       result.forEach( function(mx) {
         var mxSrv = mx.exchange
         var mxPrio = mx.priority
-        resolver.resolve(String(mxSrv),'A', (err, mxaddr) => {
+        resolverItems4.resolve(String(mxSrv),'A', (err, mxaddr) => {
           if ( err ) {
             elmMX.append("<span class='key'> -</span> <span class='valueb'><span class='poiTarget'>" + mxSrv + "</span></span> ( <span class='valueErr'>Not found?</span> )<br>")
           } else {
-            resolver.reverse(String(mxaddr[0]), (err, mxrev) => {
+            resolverItems1.reverse(String(mxaddr[0]), (err, mxrev) => {
               if ( !err ) {
                 elmMX.append("<span class='key'> -</span> <span class='valueb'><span class='poiTarget'>"+mxSrv+"</span></span> ( <span class='value'>"+mxaddr[0]+"</span> <span class='key'>&#8605;</span> <span class='value'><span class='poiTarget'>"+mxrev+"</span></span> )<br>" )
               } else {
@@ -2023,7 +2043,7 @@ window.dnsMain = function(myID=false) {
   const spfCount1 = $("#"+itemPage).find(".dnsresult").find(".spfcount").find(".spf1")
   const spfCount2 = $("#"+itemPage).find(".dnsresult").find(".spfcount").find(".spf2")
 
-  resolver.resolve(String(workTarget),'TXT', (err, result) => {
+  resolverItems1.resolve(String(workTarget),'TXT', (err, result) => {
     if (err) {
       console.log(err)
       itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
@@ -2047,7 +2067,7 @@ window.dnsMain = function(myID=false) {
               var includeHost = spfstr.match(regexp)
               elmSPF.append("<span class='key'>   `- </span><span class='value'><span class='poiTarget'>"+includeHost[1]+"</span></span>  <span class='note'>"+spfNote(includeHost[1])+"</span><br>")
               elmSPF.append("<div data-spfincludehost='"+includeHost[1]+"'></div>")
-              resolver.resolve(String(includeHost[1]),'TXT', (err, result) => {
+              resolverItems2.resolve(String(includeHost[1]),'TXT', (err, result) => {
                 var inclHost = includeHost[1]
                 if (!err) {
                   result.forEach( function(txtrecord) {
@@ -2065,7 +2085,7 @@ window.dnsMain = function(myID=false) {
                           var includeHost2 = spfstr.match(regexp)
                           $this.append("<span class='key'>       `- </span><span class='value'><span class='poiTarget'>"+includeHost2[1]+"</span></span>  <span class='note'>"+spfNote(includeHost2[1])+"</span><br>")
                           $this.append("<div data-spfincludehostsub='"+includeHost2[1]+"'></div>")
-                          resolver.resolve(String(includeHost2[1]),'TXT', (err, result2) => {
+                          resolverItems3.resolve(String(includeHost2[1]),'TXT', (err, result2) => {
                             var inclHost2 = includeHost2[1]
                             if (!err) {
                               result2.forEach( function(txtrecord2) {
@@ -2083,7 +2103,7 @@ window.dnsMain = function(myID=false) {
                                       var includeHost3 = spfstr2.match(regexp)
                                       $this.append("<span class='key'>         `- </span><span class='value'><span class='poiTarget'>"+includeHost3[1]+"</span></span>  <span class='note'>"+spfNote(includeHost3[1])+"</span><br>")
                                       $this.append("<div data-spfincludehostsubsub='"+includeHost3[1]+"'></div>")
-                                      resolver.resolve(String(includeHost3[1]),'TXT', (err, result3) => {
+                                      resolverItems4.resolve(String(includeHost3[1]),'TXT', (err, result3) => {
                                         var inclHost3 = includeHost3[1]
                                         if (!err) {
                                           result3.forEach( function(txtrecord3) {
@@ -2126,7 +2146,7 @@ window.dnsMain = function(myID=false) {
   const elmTXTSPF = $("#"+itemPage).find(".dnsresult").find(".txt").find(".txtspf")
   const elmTXTFingerprint = $("#"+itemPage).find(".dnsresult").find(".txt").find(".txtfingerprint")
   const elmTXTOther = $("#"+itemPage).find(".dnsresult").find(".txt").find(".txtother")
-  resolver.resolve(String(workTarget),'TXT', (err, result) => {
+  resolverItems1.resolve(String(workTarget),'TXT', (err, result) => {
     if (err) {
       console.log(err)
       itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
@@ -2164,7 +2184,7 @@ window.dnsMain = function(myID=false) {
 
   
   // Wildcard detection - Lets just try to resolve something stupid :)
-  resolver.resolve('_redjoust_.'+String(workTarget),'TXT', (err, addresses) => {
+  resolverItems2.resolve('_redjoust_.'+String(workTarget),'TXT', (err, addresses) => {
     if (!err) {
       fuzzTxtTITLE.append("<br><span class='key'> - </span><span class='valueb'>WARNING</span>: <span class='value'>Target seems to have a wildcard record</span><br>")
       fuzzTxtTITLE.append("<span class='key'>   </span><span class='valueb'>WARNING</span>: <span class='value'>Fuzz results might not be reliable</span>")
@@ -2192,7 +2212,7 @@ window.dnsMain = function(myID=false) {
     txtFuzzArraySorted.forEach( function(fuzz) {
       var fuzzTarget = fuzzSub.replace('%FUZZ%', fuzz)
       ifuzzTXT++
-      resolver.resolve(String(fuzzTarget),'TXT', (err, result) => {
+      resolverItems3.resolve(String(fuzzTarget),'TXT', (err, result) => {
         if (!err) {
           if ( result.length > 0 ) {
             result.sort();
@@ -2247,7 +2267,7 @@ window.dnsMain = function(myID=false) {
   fuzzSrvTITLE.hide();
 
   // Also do it on the main target before we forget ...
-  resolver.resolve(String(workTarget),'SRV', (err, srvresult) => {
+  resolverItems1.resolve(String(workTarget),'SRV', (err, srvresult) => {
     if (!err) {
       for(ri=0;ri<srvresult.length;ri++) {
         var srvr = srvresult[ri]
@@ -2277,7 +2297,7 @@ window.dnsMain = function(myID=false) {
     srvFuzzArraySorted.forEach( function(fuzz) {
       var fuzzTarget = fuzzSub.replace('%FUZZ%', fuzz)
       ifuzzSRV++
-      resolver.resolve(String(fuzzTarget),'SRV', (err, result) => {
+      resolverItems4.resolve(String(fuzzTarget),'SRV', (err, result) => {
         if (!err) {
           if ( result.length > 0 ) {
             result.sort();
@@ -2304,32 +2324,26 @@ window.dnsMain = function(myID=false) {
   const caaTITLE = $("#"+itemPage).find(".dnsresult").find(".caa").find(".caatitle")
   const caaOut = $("#"+itemPage).find(".dnsresult").find(".caa").find(".caaout")
   caaTITLE.append("<span class='title'>==[ CAA ]===================================</span>")
-  //caaTITLE.hide();
-  resolver.resolve(String(workTarget),'CAA', (err, caaresult) => {
-    console.log("CAA resolver")
-
+  caaTITLE.hide();
+  resolverItems2.resolve(String(workTarget),'CAA', (err, caaresult) => {
     if ( err ) {
-      console.log(err)
+      //console.log(err)
     } else {
       caaresult.sort();
-      console.log(caaresult)
-    }
-    /*
-      
+      //console.log(caaresult)
       for ( ti2=0 ; ti2 < caaresult.length ; ti2++ ) {
+        //console.log(caaresult[ti2])
         var c_crit = caaresult[ti2].critical
         var c_crit_desc = "[Mandatory]"
         if ( c_crit > 0 ) c_crit_desc = "[ Optional]"
         var c_str = ""
-        if ( caaresult[ti2].issue.length > 0 ) c_str = "CA Issuer (Only Regular certs): <span class='poiTarget'>"+caaresult[ti2].issue+"</span>"
-        if ( caaresult[ti2].issuewild.length > 0 ) c_str = "CA Issuer (Wild+Regular certs): <span class='poiTarget'>"+caaresult[ti2].issuewild+"</span>"
-        if ( caaresult[ti2].iodef.length > 0 ) c_str = "Problems contact: "+caaresult[ti2].iodef
-        caaOut.append("<span class='key'> -</span> <span class='valueb'>"+c_crit_desc+"</span>: <span class='value'>"+c_str+"</span><br>" )
-        //caaTITLE.show();
+        if ( typeof caaresult[ti2].issue == "string" ) c_str = "<span class='value'>CA Issuer (Only Regular certs): <span class='poiTarget'>"+caaresult[ti2].issue+"</span></span>"
+        if ( typeof caaresult[ti2].issuewild == "string" ) c_str = "<span class='value'>CA Issuer (Wild+Regular certs): <span class='poiTarget'>"+caaresult[ti2].issuewild+"</span></span>"
+        if ( typeof caaresult[ti2].iodef == "string" ) c_str = "<span class='note'>Problems contact: "+caaresult[ti2].iodef+"</span>"
+        caaOut.append("<span class='key'> -</span> <span class='valueb'>"+c_crit_desc+"</span>: "+c_str+"<br>" )
+        caaTITLE.show();
       }
-      
     }
-    */
     itemResult.data("totalTasksDone", itemResult.data("totalTasksDone")+1)
   })
 
