@@ -7,8 +7,8 @@
     <head>
         <meta charset="UTF-8">
         <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk http://crackfoo.net">
-        <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk http://crackfoo.net">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk http://crackfoo.net https://crt.sh">
+        <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.buffer.dk http://crackfoo.net https://crt.sh">
 
         <base href="./assets/">
 
@@ -70,13 +70,13 @@
             <div class="placeholdertree" id="tree">
 
               <fieldset id="haveHostname" class="menusegment">
-                <legend id="targetHostname" class="menusegmentinfo">???</legend>
+                <legend id="targetHostname" class="findmytarget menusegmentinfo">???</legend>
 
                 <div id="doDNShost" data-title="DNS Information Recon (Deep dive)" data-page="pageDNShostname" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--disabled">DNS deep dive</div>
               
               </fieldset>
               <fieldset id="haveDomainname" class="menusegment">
-                <legend id="targetDomainname" class="menusegmentinfo">???</legend>
+                <legend id="targetDomainname" class="findmytarget menusegmentinfo">???</legend>
 
                 <div id="doDNSdom" data-title="DNS Information Recon (Deep dive)" data-page="pageDNSdomainname" data-function="dnsMain" class="boxborder menuitem item--click item--passive status--disabled">DNS deep dive</div>
                 <div id="doDOMwhois" data-title="Domain Whois" data-page="pageWhoisdomainname" data-function="dnsWhois" class="boxborder menuitem item--click item--passive status--disabled">Domain whois lookup</div>
@@ -84,7 +84,7 @@
               
               </fieldset>
               <fieldset id="haveIP" class="menusegment">
-                <legend id="targetIP" class="menusegmentinfo">???</legend>
+                <legend id="targetIP" class="findmytarget menusegmentinfo">???</legend>
 
                 <div id="doIPwhois" data-title="IP Whois" data-page="pageIPwhois" data-function="ipWhois" class="boxborder menuitem item--click item--passive status--disabled">IP / IP-Net whois lookup</div>
              

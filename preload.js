@@ -1706,6 +1706,71 @@ window.itemTemplate = function() {
   // ------
 }
 
+window.lookupCT = function(myID=false) {
+  // ------ Actual item code
+  var itemID = $("#"+myID).attr('id');
+  var itemPage = $("#"+myID).data("page");
+  var itemFunc = $("#"+myID).data("function");
+  var itemResult = $("#"+itemPage).find("#ctresult");
+  if (myDebug) console.log("["+itemFunc+"]"+itemID+": Function running, output to: "+itemPage);
+  // Clear page
+  itemResult.html("");
+
+  // Find my target
+  var myTargetID = $("#"+myID).parent().find("legend.findmytarget").attr("id")
+  var myTargetName = strSanitizer($("#"+myID).parent().find("legend.findmytarget").text())
+
+  var ctlog = []
+
+  $.ajax({
+    dataType: 'json',
+    url: "https://crt.sh/?q="+myTargetName+"&output=json",
+    success: function(result){
+      for (let i = 0; i < result.length; i++ ) {
+        var nv = String(result[i].name_value).replace('\n',' ')
+        if ( nv in ctlog ) {
+          ctlog[nv].certs.push(
+            {
+              "id": result[i].id, 
+              "commonname": result[i].common_name,
+              "issuername": result[i].issuer_name,
+              "unixtime": Date.parse(result[i].entry_timestamp), // Always formatted like 2022-12-30T00:00:00.000 Date.parse actually understands it!
+              "not_after": result[i].not_after,
+              "not_before": result[i].not_before,
+              "serial": result[i].serial_number
+            }
+          )
+        } else {
+          ctlog[nv] = {
+            "names": String(result[i].name_value).split('\n'),
+            "certs": [ 
+              {
+                "id": result[i].id, 
+                "commonname": result[i].common_name,
+                "issuername": result[i].issuer_name,
+                "unixtime": Date.parse(result[i].entry_timestamp), // Always formatted like 2022-12-30T00:00:00.000 Date.parse actually understands it!
+                "not_after": result[i].not_after,
+                "not_before": result[i].not_before,
+                "serial": result[i].serial_number
+              } 
+            ]
+          }
+        }
+      }
+      console.log(ctlog)
+      $("#"+itemID).data('status',"done"); // Mark us as done! ( Or you will see working-spin-of-death :D )
+    },
+    fail: function(xhr, textStatus, errorThrown){
+      itemResult.html("Error!!");
+      console.log(xhr)
+      console.log(textStatus)
+      console.log(errorThrown)
+      $("#"+itemID).data('status',"done"); // Mark us as done! ( Or you will see working-spin-of-death :D )
+    }
+  });
+  // ------
+}
+
 window.dnsMain = function(myID=false) {
   var itemID = $("#"+myID).attr('id');
   var itemTitle = $("#"+myID).data("title");
