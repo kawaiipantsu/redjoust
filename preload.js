@@ -821,7 +821,7 @@ function showPage( pagename=null ) {
 
         $("#"+pagename).show() // The main "magic" - Show the page :D
         // A click hack for the dns deep dive! (its a nice feature! Quickly change POI target)
-        if ( pagename == "pageDNSdomainname" || pagename == "pageDNShostname" ) {
+        if ( pagename == "pageDNSdomainname" || pagename == "pageDNShostname" || pagename == "pageCTdomainname" ) {
           $(".poiTarget").on("click", function() {
             if ( $(this).html().length > 0 ) {
               var poiTarget = $(this).html()
@@ -1720,7 +1720,14 @@ window.lookupCT = function(myID=false) {
   var myTargetID = $("#"+myID).parent().find("legend.findmytarget").attr("id")
   var myTargetName = strSanitizer($("#"+myID).parent().find("legend.findmytarget").text())
 
-  var ctlog = []
+  // Honestly i think its bad that i use resources on creating a new "array/object"
+  // to hold my CT log output result. It already comes as a json list but i just cant
+  // help it :) I think its a bad habbit that i took from when i coded PHP.
+  //
+  // There i judt something nice about having an array that suits you and the way to want
+  // to lay out the things. So thats why for now - I build soemthing that i want to work with
+  // later :) If it ever becomes a problem or i grow up, then i might redo this part ...
+  var ctlog = [];
 
   $.ajax({
     dataType: 'json',
@@ -1757,7 +1764,45 @@ window.lookupCT = function(myID=false) {
           }
         }
       }
-      console.log(ctlog)
+
+      // Now lets re-use my newly generated array with ct log output
+      // I know i know ... i could have shorten this down, read statement higher up :)
+      var ct_output = "";
+      ct_output += " ";
+      ct_output += " <table class='fill--wide'>";
+      ct_output += "  <tr>";
+      ct_output += "  <td class=''>Known domain names</td>";
+      ct_output += "  <td class=''>IP Lookup</td>";
+      ct_output += "  <td class=''>Expire date</td>";
+      ct_output += "  <td class=''>First seen</td>";
+      ct_output += "  </tr>";
+
+      for (const key in ctlog) {
+        for (const key2 in ctlog[key].names) {
+          ct_output += "  <tr>";
+          ct_output += "   <td class=''><span class='poiTarget'>"+strSanitizer(ctlog[key].names[key2])+"</span></td>";
+          ct_output += "   <td id='ct-"+strSanitizer(ctlog[key].names[key2])+"' class='ct-ip-lookup'>-</td>";
+          ct_output += "   <td>"+strSanitizer(ctlog[key].certs[0].not_before)+"</td>";
+          ct_output += "   <td>"+strSanitizer(ctlog[key].certs[ctlog[key].certs.length - 1].not_after)+"</td>";
+          ct_output += "  </tr>";
+        }
+      }
+
+      ct_output += "  </table>";
+      itemResult.html(ct_output);
+
+      $( ".ct-ip-lookup" ).each(function( index ) {
+        var ipID = $(this).attr("id")
+        var me = $(this);
+        resolverItems1.resolve(String(ipID.replace("ct-","")),'A', (err, addresses) => {
+          if (!err) {
+            me.html(addresses[0])
+          }
+        })
+      });
+      
+
+
       $("#"+itemID).data('status',"done"); // Mark us as done! ( Or you will see working-spin-of-death :D )
     },
     fail: function(xhr, textStatus, errorThrown){
