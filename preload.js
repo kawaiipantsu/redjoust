@@ -1769,13 +1769,14 @@ window.lookupCT = function(myID=false) {
       // I know i know ... i could have shorten this down, read statement higher up :)
       var ct_output = "";
       ct_output += " ";
-      ct_output += " <table class='fill--wide'>";
+      ct_output += " <table id='ctlogs-table' class='fill--wide'>";
       ct_output += "  <tr>";
       ct_output += "  <td class=''>Known domain names</td>";
       ct_output += "  <td class=''>IP Lookup</td>";
       ct_output += "  <td class=''>Expire date</td>";
       ct_output += "  <td class=''>First seen</td>";
       ct_output += "  </tr>";
+      ct_output += "  <tbody id='ctdata'>";
 
       for (const key in ctlog) {
         for (const key2 in ctlog[key].names) {
@@ -1787,9 +1788,22 @@ window.lookupCT = function(myID=false) {
           ct_output += "  </tr>";
         }
       }
-
+      ct_output += "  </tbody>";
       ct_output += "  </table>";
       itemResult.html(ct_output);
+
+      var table=$('#ctlogs-table');
+      var tbody =$('#ctdata');
+      var sortOrder = "asc";
+      
+      tbody.find('tr').sort(function(a, b) {
+        if(sortOrder=='asc') {
+          return $('td:first', a).text().localeCompare($('td:first', b).text());
+        } else {
+          return $('td:first', b).text().localeCompare($('td:first', a).text());
+        }
+      }).appendTo(tbody);
+
 
       $( ".ct-ip-lookup" ).each(function( index ) {
         var ipID = $(this).attr("id")
